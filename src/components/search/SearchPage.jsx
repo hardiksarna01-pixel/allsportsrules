@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { h } from '../../constants';
+import { usePageTitle } from '../../hooks/usePageTitle';
 import { useSearch } from '../../hooks/useSearch';
 import { trending } from '../../data/trending';
 
@@ -72,6 +73,7 @@ const chip = {
 };
 
 export default function SearchPage() {
+  usePageTitle('Search');
   const navigate = useNavigate();
   const inputRef = useRef(null);
   const [input, setInput] = useState('');

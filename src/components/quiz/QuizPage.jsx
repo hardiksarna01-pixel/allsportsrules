@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { h } from '../../constants';
+import { usePageTitle } from '../../hooks/usePageTitle';
 import { sports } from '../../data/sports';
 import { generateQuiz, generateGeneralQuiz } from '../../utils/quizGenerator';
 import { useProfileContext } from '../../context/ProfileContext';
@@ -61,6 +62,7 @@ function saveQuizStats(stats) {
    QuizPage
    ═════════════════════════════════════════════ */
 export default function QuizPage() {
+  usePageTitle('Sports Quiz');
   const { addXP } = useProfileContext();
 
   /* ── state ── */

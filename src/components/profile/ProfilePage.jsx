@@ -1,4 +1,5 @@
 import { h } from '../../constants';
+import { usePageTitle } from '../../hooks/usePageTitle';
 import { useProfileContext } from '../../context/ProfileContext';
 import { achievements } from '../../data/achievements';
 import { sports } from '../../data/sports';
@@ -21,6 +22,7 @@ const SETTINGS = [
 ];
 
 export default function ProfilePage() {
+  usePageTitle('My Profile');
   const { xp, level, xpInLevel, streak, bookmarks } = useProfileContext();
 
   const xpToNext = 1000;

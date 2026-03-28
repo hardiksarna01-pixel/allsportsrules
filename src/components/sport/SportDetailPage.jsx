@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { h } from '../../constants';
+import { usePageTitle } from '../../hooks/usePageTitle';
 import SportImg from './SportImg';
 import FieldDiagram from './FieldDiagram';
 import FactsSection from './FactsSection';
@@ -19,6 +20,7 @@ const pill = {
 };
 
 export default function SportDetailPage({ sport, onBookmarkToggle }) {
+  usePageTitle(sport ? `${sport.n} Rules & Guide` : null);
   const [tab, setTab] = useState('rules');
   const navigate = useNavigate();
   const { isBookmarked } = useProfileContext();

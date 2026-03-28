@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { h } from '../../constants';
+import { usePageTitle } from '../../hooks/usePageTitle';
 import { glossary } from '../../data/glossary';
 import { images } from '../../data/images';
 
@@ -33,6 +34,7 @@ function sportKey(sport) {
 }
 
 export default function GlossaryPage() {
+  usePageTitle('Sports Glossary — 70+ Terms Explained');
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [sportFilter, setSportFilter] = useState('all');

@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { h } from '../../constants';
+import { usePageTitle } from '../../hooks/usePageTitle';
 import { sports } from '../../data/sports';
 import { images } from '../../data/images';
 import { events } from '../../data/events';
@@ -91,6 +92,7 @@ const sectionTitleStyle = (isDesktop) => ({
 });
 
 export default function HomePage() {
+  usePageTitle(null);
   const navigate = useNavigate();
   const isDesktop = useIsDesktop();
   const [search, setSearch] = useState('');
@@ -130,25 +132,27 @@ export default function HomePage() {
   }, []);
 
   const chipBase = {
-    padding: isDesktop ? '8px 18px' : '6px 14px',
-    borderRadius: 24,
-    fontSize: isDesktop ? 13 : 11,
+    padding: isDesktop ? '10px 22px' : '8px 16px',
+    borderRadius: 28,
+    fontSize: isDesktop ? 14 : 12,
     fontWeight: 700,
-    border: '1.5px solid #e2ddd5',
-    background: 'rgba(255,255,255,0.8)',
+    border: '1.5px solid #e0dbd3',
+    background: 'rgba(255,255,255,0.9)',
     backdropFilter: 'blur(8px)',
     cursor: 'pointer',
     whiteSpace: 'nowrap',
-    transition: 'all .2s cubic-bezier(.4,0,.2,1)',
+    transition: 'all .25s cubic-bezier(.4,0,.2,1)',
+    color: '#444',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
     ...h,
   };
 
   const chipActive = {
     ...chipBase,
-    background: 'linear-gradient(135deg, #1a1a2e, #16213e)',
+    background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
     color: '#fff',
-    border: '1.5px solid #1a1a2e',
-    boxShadow: '0 4px 12px rgba(26,26,46,0.3)',
+    border: '1.5px solid transparent',
+    boxShadow: '0 6px 20px rgba(37,99,235,0.35)',
   };
 
   const pageMaxWidth = isDesktop ? 1200 : 600;
@@ -393,42 +397,76 @@ export default function HomePage() {
         paddingBottom: isDesktop ? 0 : 8,
         scrollbarWidth: 'none',
       }}>
-        {whereToWatch.map((w) => (
-          <div key={w.sport} style={{
-            ...glassCard(isDesktop),
-            minWidth: isDesktop ? 'auto' : 220,
-            padding: isDesktop ? 20 : 14,
-            flexShrink: 0,
-          }}>
-            <div style={{
-              fontSize: isDesktop ? 15 : 13,
-              fontWeight: 800,
-              color: '#1a1a2e',
-              marginBottom: 8,
-              ...h,
+        {whereToWatch.map((w) => {
+          const wSport = sports.find((s) => s.id === w.sport);
+          const wc = wSport?.c || '#2563eb';
+          return (
+            <div key={w.sport} style={{
+              minWidth: isDesktop ? 'auto' : 260,
+              flexShrink: 0,
+              borderRadius: isDesktop ? 20 : 16,
+              overflow: 'hidden',
+              background: `linear-gradient(160deg, ${wc}08, rgba(255,255,255,0.85))`,
+              border: '1px solid rgba(255,255,255,0.6)',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
+              transition: 'all 0.2s',
             }}>
-              {w.e} {w.n}
-            </div>
-            {w.regions.map((r) => (
-              <div key={r.r} style={{ marginTop: 8 }}>
-                <div style={{
-                  fontSize: isDesktop ? 10 : 9,
-                  fontWeight: 700,
-                  color: '#999',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
-                  ...h,
-                }}>{r.r}</div>
-                <div style={{
-                  fontSize: isDesktop ? 13 : 11,
-                  color: '#444',
-                  marginTop: 2,
-                  ...h,
-                }}>{r.platforms.join(' \u00B7 ')}</div>
+              {/* Top accent stripe */}
+              <div style={{ height: 4, background: `linear-gradient(90deg, ${wc}, ${wc}88)` }} />
+              <div style={{ padding: isDesktop ? 20 : 14 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+                  <div style={{
+                    width: isDesktop ? 40 : 34,
+                    height: isDesktop ? 40 : 34,
+                    borderRadius: '50%',
+                    background: `${wc}18`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: isDesktop ? 20 : 16,
+                  }}>{w.e}</div>
+                  <div style={{
+                    fontSize: isDesktop ? 16 : 14,
+                    fontWeight: 800,
+                    color: '#1a1a2e',
+                    ...h,
+                  }}>{w.n}</div>
+                </div>
+                {w.regions.map((r) => (
+                  <div key={r.r} style={{ marginTop: 10 }}>
+                    <div style={{
+                      display: 'inline-block',
+                      fontSize: isDesktop ? 9 : 8,
+                      fontWeight: 800,
+                      color: '#fff',
+                      background: `${wc}90`,
+                      padding: '2px 8px',
+                      borderRadius: 4,
+                      letterSpacing: '0.06em',
+                      textTransform: 'uppercase',
+                      marginBottom: 6,
+                      ...h,
+                    }}>{r.r}</div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginTop: 4 }}>
+                      {r.platforms.map((p) => (
+                        <span key={p} style={{
+                          fontSize: isDesktop ? 11 : 10,
+                          fontWeight: 600,
+                          color: wc,
+                          background: `${wc}12`,
+                          border: `1px solid ${wc}25`,
+                          padding: '3px 10px',
+                          borderRadius: 20,
+                          ...h,
+                        }}>{p}</span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        ))}
+            </div>
+          );
+        })}
       </div>
 
       {/* ===== GLOSSARY ===== */}
@@ -438,31 +476,61 @@ export default function HomePage() {
         gridTemplateColumns: isDesktop ? '1fr 1fr' : '1fr 1fr',
         gap: isDesktop ? 16 : 10,
       }}>
-        {glossary.slice(0, isDesktop ? 6 : 4).map((g) => (
-          <div key={g.id} style={{
-            ...glassCard(isDesktop),
-            padding: isDesktop ? 20 : 12,
-          }}>
-            <div style={{
-              fontSize: isDesktop ? 15 : 13,
-              fontWeight: 800,
-              color: '#1a1a2e',
-              ...h,
-            }}>{g.term}</div>
-            <div style={{
-              fontSize: isDesktop ? 12 : 10,
-              color: '#666',
-              marginTop: 4,
-              lineHeight: 1.5,
-              ...h,
+        {glossary.slice(0, isDesktop ? 6 : 4).map((g) => {
+          const glossarySportColors = { Football: '#16a34a', Cricket: '#2563eb', Basketball: '#ea580c', Tennis: '#7c3aed', 'Formula 1': '#dc2626', Rugby: '#b91c1c', Pickleball: '#0891b2', MMA: '#9333ea', 'Cricket / Football': '#2563eb' };
+          const gc = glossarySportColors[g.sport] || '#7c3aed';
+          return (
+            <div key={g.id} style={{
+              ...glassCard(isDesktop),
+              padding: isDesktop ? 20 : 12,
+              borderLeft: `4px solid ${gc}`,
+              borderRadius: isDesktop ? '4px 20px 20px 4px' : '4px 16px 16px 4px',
+              background: `linear-gradient(135deg, ${gc}06, rgba(255,255,255,0.85))`,
+              position: 'relative',
+              overflow: 'hidden',
             }}>
-              {g.def.length > (isDesktop ? 120 : 80) ? g.def.slice(0, isDesktop ? 120 : 80) + '...' : g.def}
+              <div style={{ position: 'absolute', top: -15, right: -15, width: 60, height: 60, borderRadius: '50%', background: `${gc}08` }} />
+              <div style={{
+                fontSize: isDesktop ? 17 : 14,
+                fontWeight: 900,
+                color: '#1a1a2e',
+                letterSpacing: '-0.01em',
+                ...h,
+              }}>{g.term}</div>
+              <div style={{
+                display: 'inline-block',
+                fontSize: isDesktop ? 9 : 8,
+                fontWeight: 800,
+                color: '#fff',
+                background: gc,
+                padding: '2px 10px',
+                borderRadius: 20,
+                marginTop: 6,
+                marginBottom: 6,
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
+                ...h,
+              }}>{g.sport}</div>
+              <div style={{
+                fontSize: isDesktop ? 12 : 10,
+                color: '#555',
+                marginTop: 4,
+                lineHeight: 1.6,
+                ...h,
+              }}>
+                {g.def.length > (isDesktop ? 120 : 80) ? g.def.slice(0, isDesktop ? 120 : 80) + '...' : g.def}
+              </div>
+              <div style={{
+                marginTop: 10,
+                fontSize: isDesktop ? 11 : 10,
+                fontWeight: 700,
+                color: gc,
+                cursor: 'pointer',
+                ...h,
+              }}>Learn more {'\u2192'}</div>
             </div>
-            <div style={{ marginTop: 8 }}>
-              <Badge color="#7c3aed" bg="#f3f0ff">{g.sport}</Badge>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
       <div
         onClick={() => navigate('/glossary')}
@@ -620,6 +688,8 @@ export default function HomePage() {
 /* ── Guide Card with hover ── */
 function GuideCard({ guide: g, isDesktop, onClick }) {
   const [hovered, setHovered] = useState(false);
+  const sport = sports.find((s) => s.id === g.sport);
+  const sc = sport?.c || '#2563eb';
 
   return (
     <div
@@ -627,42 +697,65 @@ function GuideCard({ guide: g, isDesktop, onClick }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        ...glassCard(isDesktop),
-        minWidth: isDesktop ? 'auto' : 200,
-        padding: isDesktop ? 24 : 14,
+        minWidth: isDesktop ? 'auto' : 220,
+        padding: isDesktop ? 24 : 16,
         flexShrink: 0,
         cursor: 'pointer',
-        transform: hovered ? 'translateY(-4px) scale(1.02)' : 'translateY(0) scale(1)',
+        borderRadius: isDesktop ? 20 : 16,
+        background: `linear-gradient(135deg, ${sc}14, ${sc}08)`,
+        border: `1.5px solid ${sc}25`,
+        position: 'relative',
+        overflow: 'hidden',
+        transition: 'all 0.25s cubic-bezier(.4,0,.2,1)',
+        transform: hovered ? 'translateY(-5px) scale(1.02)' : 'translateY(0) scale(1)',
         boxShadow: hovered
-          ? '0 16px 48px rgba(0,0,0,0.12), 0 4px 8px rgba(0,0,0,0.06)'
-          : '0 8px 32px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04)',
+          ? `0 16px 48px ${sc}30, 0 4px 12px ${sc}18`
+          : '0 4px 16px rgba(0,0,0,0.06)',
       }}
     >
-      <span style={{ fontSize: isDesktop ? 36 : 28 }}>{g.e}</span>
+      {/* Decorative circle top-right */}
+      <div style={{ position: 'absolute', top: -25, right: -25, width: 90, height: 90, borderRadius: '50%', background: `${sc}0a` }} />
+      {/* Emoji on gradient circle */}
+      <div style={{
+        width: isDesktop ? 56 : 46,
+        height: isDesktop ? 56 : 46,
+        borderRadius: '50%',
+        background: `linear-gradient(135deg, ${sc}, ${sc}bb)`,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 10,
+        boxShadow: `0 4px 14px ${sc}40`,
+      }}>
+        <span style={{ fontSize: isDesktop ? 28 : 22, filter: 'brightness(1.1)' }}>{g.e}</span>
+      </div>
+      {/* 5 MIN READ pill */}
       <div style={{
         display: 'inline-block',
-        fontSize: isDesktop ? 10 : 8,
+        fontSize: isDesktop ? 9 : 8,
         fontWeight: 800,
-        color: '#2563eb',
-        background: 'linear-gradient(135deg, #eff6ff, #e0e7ff)',
-        padding: '2px 8px',
-        borderRadius: 6,
-        marginTop: 8,
+        color: sc,
+        background: `${sc}18`,
+        padding: '3px 10px',
+        borderRadius: 20,
+        marginBottom: 8,
+        letterSpacing: '0.04em',
         ...h,
       }}>
-        {g.tag}
+        5 MIN READ
       </div>
       <div style={{
         fontSize: isDesktop ? 15 : 13,
         fontWeight: 800,
-        marginTop: 6,
         color: '#1a1a2e',
+        lineHeight: 1.2,
         ...h,
       }}>{g.title}</div>
       <div style={{
         fontSize: isDesktop ? 12 : 10,
-        color: '#888',
-        marginTop: 2,
+        color: '#777',
+        marginTop: 4,
+        lineHeight: 1.4,
         ...h,
       }}>{g.sub}</div>
     </div>

@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { h } from '../../constants';
+import { usePageTitle } from '../../hooks/usePageTitle';
 import { worldcup } from '../../data/worldcup';
 
 const card = {
@@ -19,6 +20,7 @@ const back = {
 };
 
 export default function WorldCupHub() {
+  usePageTitle('FIFA World Cup 2026 Guide');
   const navigate = useNavigate();
   const wc = worldcup;
   const groups = Object.entries(wc.groups);

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { h } from '../../constants';
+import { usePageTitle } from '../../hooks/usePageTitle';
 
 const CALCS = [
   { id: 'rr', icon: '\u{1F4CA}', name: 'Run Rate Calculator', sport: 'Cricket', color: '#16a34a', desc: 'Chase target, current/required rate, projected score' },
@@ -439,6 +440,7 @@ const CALC_MAP = {
 };
 
 export default function CalculatorsPage() {
+  usePageTitle('Sports Calculators');
   const [active, setActive] = useState(null);
   const [vals, setVals] = useState(defaultVals);
 

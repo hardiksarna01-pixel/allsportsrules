@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { h } from '../../constants';
+import { usePageTitle } from '../../hooks/usePageTitle';
 import { sports } from '../../data/sports';
 import { sendMessage } from '../../services/anthropic';
 
@@ -22,6 +23,7 @@ const dotKeyframes = `
 `;
 
 export default function ChatPage() {
+  usePageTitle('AI Sports Tutor');
   const [messages, setMessages] = useState([
     {
       role: 'ai',

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { h } from '../../constants';
+import { usePageTitle } from '../../hooks/usePageTitle';
 import { rankings } from '../../data/rankings';
 import { archives } from '../../data/archives';
 
@@ -141,6 +142,7 @@ function ArchiveView({ sport, onBack }) {
 }
 
 export default function RankingsPage() {
+  usePageTitle('World Rankings');
   const [active, setActive] = useState(null);
   const [archSport, setArchSport] = useState(null);
 
