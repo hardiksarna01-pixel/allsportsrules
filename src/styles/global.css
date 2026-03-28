@@ -120,11 +120,54 @@ ul, ol {
   display: none;
 }
 
-/* ── Mobile-First Shell ──────────────────────────────── */
+/* ── Responsive Shell ───────────────────────────────── */
 #root {
-  max-width: 480px;
+  width: 100%;
+  max-width: 1400px;
   margin: 0 auto;
   min-height: 100dvh;
   position: relative;
   overflow-x: hidden;
+}
+
+/* ── Responsive Breakpoints ─────────────────────────── */
+@media (min-width: 768px) {
+  :root {
+    --content-padding: 32px;
+  }
+}
+@media (min-width: 1024px) {
+  :root {
+    --content-padding: 48px;
+  }
+}
+
+/* ── Modern Card Styles ─────────────────────────────── */
+.card-hover {
+  transition: transform 0.2s cubic-bezier(.34,1.56,.64,1), box-shadow 0.2s;
+}
+.card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(0,0,0,.08);
+}
+
+/* ── Glass Effect ───────────────────────────────────── */
+.glass {
+  background: rgba(255,255,255,.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* ── Gradient Text ──────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #16a34a, #0ea5e9, #7c3aed);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Selection Color ────────────────────────────────── */
+::selection {
+  background: #16a34a30;
+  color: #1a1a2e;
 }
