@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { h } from '../../constants';
 import { glossary } from '../../data/glossary';
 import { images } from '../../data/images';
@@ -31,7 +32,8 @@ function sportKey(sport) {
   return map[s] || s;
 }
 
-export default function GlossaryPage({ onBack }) {
+export default function GlossaryPage() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [sportFilter, setSportFilter] = useState('all');
 
@@ -55,9 +57,7 @@ export default function GlossaryPage({ onBack }) {
 
   return (
     <div style={{ padding: 20, maxWidth: 600, margin: '0 auto', paddingBottom: 40 }}>
-      {onBack && (
-        <button style={back} onClick={onBack}>{'\u2190'} Back</button>
-      )}
+      <button style={back} onClick={() => navigate(-1)}>{'\u2190'} Back</button>
 
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>

@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { h } from '../../constants';
 import { sports } from '../../data/sports';
 import { events } from '../../data/events';
@@ -50,7 +51,8 @@ function todayMMDD() {
   return `${mm}-${dd}`;
 }
 
-export default function HomePage({ onSport, onWorldCup, onGlossary }) {
+export default function HomePage() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [cat, setCat] = useState('all');
   const [type, setType] = useState('all');
@@ -183,7 +185,7 @@ export default function HomePage({ onSport, onWorldCup, onGlossary }) {
           return (
             <Card
               key={ev.id}
-              onClick={isWC ? onWorldCup : undefined}
+              onClick={isWC ? () => navigate('/worldcup') : undefined}
               style={{
                 minWidth: 200,
                 padding: 14,
@@ -247,7 +249,7 @@ export default function HomePage({ onSport, onWorldCup, onGlossary }) {
           return (
             <Card
               key={g.id}
-              onClick={() => sport && onSport(sport)}
+              onClick={() => sport && navigate('/sports/' + sport.id)}
               style={{ minWidth: 180, padding: 14, flexShrink: 0 }}
             >
               <span style={{ fontSize: 28 }}>{g.e}</span>
@@ -305,7 +307,7 @@ export default function HomePage({ onSport, onWorldCup, onGlossary }) {
         ))}
       </div>
       <div
-        onClick={onGlossary}
+        onClick={() => navigate('/glossary')}
         style={{
           textAlign: 'center',
           fontSize: 12,
@@ -387,7 +389,7 @@ export default function HomePage({ onSport, onWorldCup, onGlossary }) {
           </div>
         )}
         {filtered.map((s) => (
-          <SportRow key={s.id} sport={s} onClick={() => onSport(s)} />
+          <SportRow key={s.id} sport={s} onClick={() => navigate('/sports/' + s.id)} />
         ))}
       </div>
     </div>

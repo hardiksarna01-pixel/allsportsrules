@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { h } from '../../constants';
 import { worldcup } from '../../data/worldcup';
 
@@ -17,15 +18,14 @@ const back = {
   color: '#2563eb', padding: 0, marginBottom: 16, ...h,
 };
 
-export default function WorldCupHub({ onBack }) {
+export default function WorldCupHub() {
+  const navigate = useNavigate();
   const wc = worldcup;
   const groups = Object.entries(wc.groups);
 
   return (
     <div style={{ padding: 20, maxWidth: 600, margin: '0 auto', paddingBottom: 40 }}>
-      {onBack && (
-        <button style={back} onClick={onBack}>{'\u2190'} Back</button>
-      )}
+      <button style={back} onClick={() => navigate(-1)}>{'\u2190'} Back</button>
 
       {/* Hero Header */}
       <div

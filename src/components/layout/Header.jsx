@@ -1,7 +1,9 @@
+import { useNavigate } from 'react-router-dom';
 import { h } from '../../constants';
 import { useProfileContext } from '../../context/ProfileContext';
 
 export default function Header() {
+  const navigate = useNavigate();
   const { sk, xp } = useProfileContext();
 
   return (
@@ -21,7 +23,10 @@ export default function Header() {
         ...h,
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <div
+        onClick={() => navigate('/')}
+        style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}
+      >
         <div
           style={{
             width: 28,
@@ -64,6 +69,22 @@ export default function Header() {
         >
           💎 {xp}
         </span>
+        <button
+          onClick={() => navigate('/search')}
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: 16,
+            padding: '2px 4px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          aria-label="Search"
+        >
+          🔍
+        </button>
       </div>
     </div>
   );

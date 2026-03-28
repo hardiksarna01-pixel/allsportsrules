@@ -1,15 +1,27 @@
+import { useNavigate, useLocation } from 'react-router-dom';
 import { h } from '../../constants';
 
 const tabs = [
-  { id: 'home', icon: '🏠', label: 'Home' },
-  { id: 'ai', icon: '🤖', label: 'AI' },
-  { id: 'calc', icon: '🧮', label: 'Calc' },
-  { id: 'explore', icon: '🌍', label: 'Explore' },
-  { id: 'rank', icon: '🏆', label: 'Rank' },
-  { id: 'profile', icon: '👤', label: 'Profile' },
+  { id: 'home', icon: '🏠', label: 'Home', path: '/' },
+  { id: 'ai', icon: '🤖', label: 'AI', path: '/ai' },
+  { id: 'calc', icon: '🧮', label: 'Calc', path: '/calculators' },
+  { id: 'explore', icon: '🌍', label: 'Explore', path: '/' },
+  { id: 'rank', icon: '🏆', label: 'Rank', path: '/rankings' },
+  { id: 'profile', icon: '👤', label: 'Profile', path: '/profile' },
 ];
 
-export default function BottomNav({ tab, setTab }) {
+function getActiveTab(pathname) {
+  if (pathname === '/ai') return 'ai';
+  if (pathname === '/calculators') return 'calc';
+  if (pathname === '/rankings') return 'rank';
+  if (pathname === '/profile') return 'profile';
+  return 'home';
+}
+
+export default function BottomNav() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const tab = getActiveTab(location.pathname);
   return (
     <div
       style={{
@@ -34,7 +46,7 @@ export default function BottomNav({ tab, setTab }) {
         return (
           <div
             key={t.id}
-            onClick={() => setTab(t.id)}
+            onClick={() => navigate(t.path)}
             style={{
               display: 'flex',
               flexDirection: 'column',

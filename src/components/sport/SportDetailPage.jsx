@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { h } from '../../constants';
 import SportImg from './SportImg';
 import FieldDiagram from './FieldDiagram';
@@ -17,8 +18,9 @@ const pill = {
   letterSpacing: 0.5,
 };
 
-export default function SportDetailPage({ sport, onBack, onPlayer, onBookmarkToggle }) {
+export default function SportDetailPage({ sport, onBookmarkToggle }) {
   const [tab, setTab] = useState('rules');
+  const navigate = useNavigate();
   const { isBookmarked } = useProfileContext();
 
   if (!sport) return null;
@@ -150,7 +152,7 @@ export default function SportDetailPage({ sport, onBack, onPlayer, onBookmarkTog
             {(sp.p || []).map((player, i) => (
               <div
                 key={i}
-                onClick={() => onPlayer && onPlayer(player)}
+                onClick={() => navigate('player/' + i)}
                 style={{
                   background: '#fff',
                   border: '1.5px solid #ede8e0',
@@ -476,7 +478,7 @@ export default function SportDetailPage({ sport, onBack, onPlayer, onBookmarkTog
         }}
       >
         <button
-          onClick={onBack}
+          onClick={() => navigate('/')}
           style={{
             background: '#f5f0ea',
             border: 'none',

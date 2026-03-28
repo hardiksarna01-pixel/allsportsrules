@@ -1,7 +1,9 @@
+import { useNavigate } from 'react-router-dom';
 import { h } from '../../constants';
 import PlayerAvatar from '../sport/PlayerAvatar';
 
-export default function PlayerProfilePage({ player, color, onBack }) {
+export default function PlayerProfilePage({ player, color }) {
+  const navigate = useNavigate();
   if (!player) return null;
 
   const c = color || '#6366f1';
@@ -11,7 +13,7 @@ export default function PlayerProfilePage({ player, color, onBack }) {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', padding: '10px 0' }}>
         <button
-          onClick={onBack}
+          onClick={() => navigate(-1)}
           style={{
             background: '#f5f0ea',
             border: 'none',
