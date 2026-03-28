@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { h } from '../../constants';
 import { sports } from '../../data/sports';
@@ -42,7 +42,25 @@ const heroGradientKeyframes = `
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-6px); }
 }
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
 `;
+
+function useIsDesktop() {
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768);
+  useEffect(() => {
+    const handler = () => setIsDesktop(window.innerWidth >= 768);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
+  return isDesktop;
+}
 
 function todayMMDD() {
   const d = new Date();
@@ -51,8 +69,29 @@ function todayMMDD() {
   return `${mm}-${dd}`;
 }
 
+/* ── Shared style helpers ── */
+const glassCard = (isDesktop) => ({
+  background: 'rgba(255,255,255,0.72)',
+  backdropFilter: 'blur(16px)',
+  WebkitBackdropFilter: 'blur(16px)',
+  borderRadius: isDesktop ? 20 : 16,
+  border: '1px solid rgba(255,255,255,0.6)',
+  boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04)',
+  transition: 'all 0.25s cubic-bezier(.4,0,.2,1)',
+});
+
+const sectionTitleStyle = (isDesktop) => ({
+  fontSize: isDesktop ? 20 : 16,
+  fontWeight: 800,
+  margin: isDesktop ? '40px 0 16px' : '28px 0 12px',
+  letterSpacing: '-0.01em',
+  color: '#1a1a2e',
+  ...h,
+});
+
 export default function HomePage() {
   const navigate = useNavigate();
+  const isDesktop = useIsDesktop();
   const [search, setSearch] = useState('');
   const [cat, setCat] = useState('all');
   const [type, setType] = useState('all');
@@ -89,49 +128,68 @@ export default function HomePage() {
     return counts;
   }, []);
 
-  const scrollRow = {
-    display: 'flex',
-    gap: 12,
-    overflowX: 'auto',
-    paddingBottom: 8,
-    scrollbarWidth: 'none',
-  };
-
-  const sectionTitle = {
-    fontSize: 16,
-    fontWeight: 800,
-    margin: '24px 0 10px',
-    ...h,
-  };
-
   const chipBase = {
-    padding: '6px 14px',
-    borderRadius: 20,
-    fontSize: 11,
+    padding: isDesktop ? '8px 18px' : '6px 14px',
+    borderRadius: 24,
+    fontSize: isDesktop ? 13 : 11,
     fontWeight: 700,
     border: '1.5px solid #e2ddd5',
-    background: '#fff',
+    background: 'rgba(255,255,255,0.8)',
+    backdropFilter: 'blur(8px)',
     cursor: 'pointer',
     whiteSpace: 'nowrap',
-    transition: 'all .15s',
+    transition: 'all .2s cubic-bezier(.4,0,.2,1)',
     ...h,
   };
 
   const chipActive = {
     ...chipBase,
-    background: '#111',
+    background: 'linear-gradient(135deg, #1a1a2e, #16213e)',
     color: '#fff',
-    border: '1.5px solid #111',
+    border: '1.5px solid #1a1a2e',
+    boxShadow: '0 4px 12px rgba(26,26,46,0.3)',
   };
 
+  const pageMaxWidth = isDesktop ? 1200 : 600;
+
   return (
-    <div style={{ padding: '0 0 40px', maxWidth: 600, margin: '0 auto' }}>
+    <div style={{
+      padding: isDesktop ? '0 40px 60px' : '0 16px 40px',
+      maxWidth: pageMaxWidth,
+      margin: '0 auto',
+      minHeight: '100vh',
+    }}>
       <style>{heroGradientKeyframes}</style>
 
-      {/* ── Hero ── */}
-      <div style={{ textAlign: 'center', padding: '48px 0 32px', position: 'relative' }}>
-        <div style={{ position: 'relative', width: 160, height: 160, margin: '0 auto 20px' }}>
-          <span style={{ fontSize: 52, position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)' }}>
+      {/* ===== HERO SECTION ===== */}
+      <div style={{
+        textAlign: 'center',
+        padding: isDesktop ? '64px 0 48px' : '48px 0 32px',
+        position: 'relative',
+        borderRadius: isDesktop ? '0 0 32px 32px' : '0 0 24px 24px',
+        margin: isDesktop ? '0 -40px' : '0 -16px',
+        marginBottom: isDesktop ? 16 : 0,
+        paddingLeft: isDesktop ? 40 : 16,
+        paddingRight: isDesktop ? 40 : 16,
+        background: 'linear-gradient(135deg, #f0f4ff 0%, #fdf2f8 30%, #fef3c7 60%, #ecfdf5 100%)',
+        backgroundSize: '400% 400%',
+        animation: 'gradientShift 12s ease infinite',
+      }}>
+        {/* Orbit animation */}
+        <div style={{
+          position: 'relative',
+          width: isDesktop ? 180 : 160,
+          height: isDesktop ? 180 : 160,
+          margin: '0 auto 24px',
+        }}>
+          <span style={{
+            fontSize: isDesktop ? 64 : 52,
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%,-50%)',
+            filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.1))',
+          }}>
             {'\u{1F3DF}\uFE0F'}
           </span>
           {orbitEmojis.map((em, i) => (
@@ -141,7 +199,7 @@ export default function HomePage() {
                 position: 'absolute',
                 top: '50%',
                 left: '50%',
-                fontSize: 24,
+                fontSize: isDesktop ? 28 : 24,
                 animation: `orbit ${8 + i * 0.6}s linear infinite`,
                 animationDelay: `${-i * (8 / orbitEmojis.length)}s`,
               }}
@@ -151,30 +209,72 @@ export default function HomePage() {
           ))}
         </div>
 
-        <h1
-          style={{
-            fontSize: 28,
-            fontWeight: 900,
-            lineHeight: 1.15,
-            background: 'linear-gradient(135deg, #2563eb, #7c3aed, #ec4899, #f59e0b, #16a34a)',
-            backgroundSize: '300% 300%',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            animation: 'gradientShift 6s ease infinite',
-            ...h,
-          }}
-        >
+        <h1 style={{
+          fontSize: isDesktop ? 42 : 26,
+          fontWeight: 900,
+          lineHeight: 1.1,
+          letterSpacing: '-0.02em',
+          background: 'linear-gradient(135deg, #2563eb, #7c3aed, #ec4899, #f59e0b, #16a34a)',
+          backgroundSize: '300% 300%',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          animation: 'gradientShift 6s ease infinite',
+          maxWidth: isDesktop ? 600 : 'none',
+          margin: '0 auto',
+          ...h,
+        }}>
           Every sport. Every rule. Made fun.
         </h1>
 
-        <p style={{ fontSize: 12, color: '#666', marginTop: 8, ...h }}>
-          {sports.length} sports &middot; AI tutor &middot; Player profiles &middot; {glossary.length}+ terms
-        </p>
+        {/* Stats row */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          gap: isDesktop ? 32 : 16,
+          marginTop: isDesktop ? 24 : 14,
+          flexWrap: 'wrap',
+        }}>
+          {[
+            { val: sports.length, label: 'Sports' },
+            { val: 'AI', label: 'Tutor' },
+            { val: glossary.length + '+', label: 'Terms' },
+            { val: events.length, label: 'Events' },
+          ].map((stat) => (
+            <div key={stat.label} style={{
+              ...glassCard(isDesktop),
+              padding: isDesktop ? '12px 24px' : '8px 16px',
+              textAlign: 'center',
+              minWidth: isDesktop ? 100 : 70,
+            }}>
+              <div style={{
+                fontSize: isDesktop ? 22 : 16,
+                fontWeight: 900,
+                color: '#1a1a2e',
+                ...h,
+              }}>{stat.val}</div>
+              <div style={{
+                fontSize: isDesktop ? 11 : 9,
+                fontWeight: 600,
+                color: '#888',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                ...h,
+              }}>{stat.label}</div>
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* ── Events Carousel ── */}
-      <div style={sectionTitle}>{'\u{1F4C5}'} Upcoming Events</div>
-      <div style={scrollRow}>
+      {/* ===== EVENTS ===== */}
+      <div style={sectionTitleStyle(isDesktop)}>{'\u{1F4C5}'} Upcoming Events</div>
+      <div style={{
+        display: isDesktop ? 'grid' : 'flex',
+        gridTemplateColumns: isDesktop ? 'repeat(3, 1fr)' : undefined,
+        gap: isDesktop ? 16 : 12,
+        overflowX: isDesktop ? 'visible' : 'auto',
+        paddingBottom: isDesktop ? 0 : 8,
+        scrollbarWidth: 'none',
+      }}>
         {events.map((ev) => {
           const now = new Date();
           const start = new Date(ev.date);
@@ -183,220 +283,445 @@ export default function HomePage() {
           const isWC = ev.id === 'wc26';
 
           return (
-            <Card
+            <div
               key={ev.id}
               onClick={isWC ? () => navigate('/worldcup') : undefined}
               style={{
-                minWidth: 200,
-                padding: 14,
+                ...glassCard(isDesktop),
+                minWidth: isDesktop ? 'auto' : 220,
+                padding: isDesktop ? 20 : 14,
                 flexShrink: 0,
-                border: isLive ? '2px solid #16a34a' : undefined,
+                cursor: isWC ? 'pointer' : 'default',
+                border: isLive
+                  ? '2px solid #16a34a'
+                  : '1px solid rgba(255,255,255,0.6)',
+                position: 'relative',
+                overflow: 'hidden',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: 24 }}>{ev.e}</span>
+              {/* Gradient accent top */}
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: 3,
+                background: isLive
+                  ? 'linear-gradient(90deg, #16a34a, #22d3ee)'
+                  : 'linear-gradient(90deg, #2563eb, #7c3aed)',
+                borderRadius: '20px 20px 0 0',
+              }} />
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+                marginTop: 4,
+              }}>
+                <span style={{
+                  fontSize: isDesktop ? 32 : 24,
+                  filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
+                }}>{ev.e}</span>
                 <div>
-                  <div style={{ fontSize: 13, fontWeight: 800, ...h }}>{ev.n}</div>
-                  <div style={{ fontSize: 10, color: '#888', ...h }}>{ev.loc}</div>
+                  <div style={{
+                    fontSize: isDesktop ? 15 : 13,
+                    fontWeight: 800,
+                    color: '#1a1a2e',
+                    ...h,
+                  }}>{ev.n}</div>
+                  <div style={{
+                    fontSize: isDesktop ? 12 : 10,
+                    color: '#888',
+                    ...h,
+                  }}>{ev.loc}</div>
                 </div>
               </div>
               {isLive && (
-                <span
-                  style={{
-                    display: 'inline-block',
-                    marginTop: 6,
-                    fontSize: 9,
-                    fontWeight: 800,
-                    color: '#fff',
-                    background: '#16a34a',
-                    padding: '2px 8px',
-                    borderRadius: 6,
-                    animation: 'pulse 1.5s infinite',
-                    ...h,
-                  }}
-                >
-                  {'\u{1F534}'} LIVE
+                <span style={{
+                  display: 'inline-block',
+                  marginTop: 10,
+                  fontSize: isDesktop ? 10 : 9,
+                  fontWeight: 800,
+                  color: '#fff',
+                  background: 'linear-gradient(135deg, #16a34a, #059669)',
+                  padding: '3px 10px',
+                  borderRadius: 8,
+                  animation: 'pulse 1.5s infinite',
+                  ...h,
+                }}>
+                  {'\u{1F534}'} LIVE NOW
                 </span>
               )}
               {!isLive && (
-                <div style={{ fontSize: 10, color: '#aaa', marginTop: 6, ...h }}>
+                <div style={{
+                  fontSize: isDesktop ? 11 : 10,
+                  color: '#aaa',
+                  marginTop: 10,
+                  ...h,
+                }}>
                   {start.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                 </div>
               )}
-            </Card>
+            </div>
           );
         })}
       </div>
 
-      {/* ── Trending Searches ── */}
-      <div style={sectionTitle}>{'\u{1F525}'} Trending Searches</div>
-      <div style={scrollRow}>
+      {/* ===== TRENDING ===== */}
+      <div style={sectionTitleStyle(isDesktop)}>{'\u{1F525}'} Trending Searches</div>
+      <div style={{
+        display: isDesktop ? 'grid' : 'flex',
+        gridTemplateColumns: isDesktop ? 'repeat(3, 1fr)' : undefined,
+        gap: isDesktop ? 16 : 12,
+        overflowX: isDesktop ? 'visible' : 'auto',
+        paddingBottom: isDesktop ? 0 : 8,
+        scrollbarWidth: 'none',
+      }}>
         {trending.map((t) => (
-          <Card key={t.id} style={{ minWidth: 170, padding: 12, flexShrink: 0 }}>
-            <div style={{ fontSize: 12, fontWeight: 600, ...h }}>"{t.q}"</div>
-            <div style={{ fontSize: 10, color: '#888', marginTop: 4, ...h }}>
-              {'\u{1F4C8}'} {t.vol} searches
+          <div key={t.id} style={{
+            ...glassCard(isDesktop),
+            minWidth: isDesktop ? 'auto' : 180,
+            padding: isDesktop ? 20 : 14,
+            flexShrink: 0,
+          }}>
+            <div style={{
+              fontSize: isDesktop ? 15 : 13,
+              fontWeight: 700,
+              color: '#1a1a2e',
+              ...h,
+            }}>"{t.q}"</div>
+            <div style={{
+              fontSize: isDesktop ? 12 : 10,
+              color: '#888',
+              marginTop: 6,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4,
+              ...h,
+            }}>
+              <span style={{
+                display: 'inline-block',
+                width: 6,
+                height: 6,
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #f59e0b, #ef4444)',
+              }} />
+              {t.vol} searches
             </div>
-          </Card>
+          </div>
         ))}
       </div>
 
-      {/* ── 5-Minute Guides ── */}
-      <div style={sectionTitle}>{'\u23F1\uFE0F'} 5-Minute Guides</div>
-      <div style={scrollRow}>
+      {/* ===== 5-MINUTE GUIDES ===== */}
+      <div style={sectionTitleStyle(isDesktop)}>{'\u23F1\uFE0F'} 5-Minute Guides</div>
+      <div style={{
+        display: isDesktop ? 'grid' : 'flex',
+        gridTemplateColumns: isDesktop ? 'repeat(3, 1fr)' : undefined,
+        gap: isDesktop ? 16 : 12,
+        overflowX: isDesktop ? 'visible' : 'auto',
+        paddingBottom: isDesktop ? 0 : 8,
+        scrollbarWidth: 'none',
+      }}>
         {fiveMinGuides.map((g) => {
           const sport = sports.find((s) => s.id === g.sport);
           return (
-            <Card
+            <GuideCard
               key={g.id}
+              guide={g}
+              isDesktop={isDesktop}
               onClick={() => sport && navigate('/sports/' + sport.id)}
-              style={{ minWidth: 180, padding: 14, flexShrink: 0 }}
-            >
-              <span style={{ fontSize: 28 }}>{g.e}</span>
-              <div
-                style={{
-                  display: 'inline-block',
-                  fontSize: 8,
-                  fontWeight: 800,
-                  color: '#2563eb',
-                  background: '#eff6ff',
-                  padding: '1px 6px',
-                  borderRadius: 4,
-                  marginTop: 6,
-                  ...h,
-                }}
-              >
-                {g.tag}
-              </div>
-              <div style={{ fontSize: 13, fontWeight: 800, marginTop: 4, ...h }}>{g.title}</div>
-              <div style={{ fontSize: 10, color: '#888', ...h }}>{g.sub}</div>
-            </Card>
+            />
           );
         })}
       </div>
 
-      {/* ── Where to Watch ── */}
-      <div style={sectionTitle}>{'\u{1F4FA}'} Where to Watch</div>
-      <div style={scrollRow}>
+      {/* ===== WHERE TO WATCH ===== */}
+      <div style={sectionTitleStyle(isDesktop)}>{'\u{1F4FA}'} Where to Watch</div>
+      <div style={{
+        display: isDesktop ? 'grid' : 'flex',
+        gridTemplateColumns: isDesktop ? 'repeat(2, 1fr)' : undefined,
+        gap: isDesktop ? 16 : 12,
+        overflowX: isDesktop ? 'visible' : 'auto',
+        paddingBottom: isDesktop ? 0 : 8,
+        scrollbarWidth: 'none',
+      }}>
         {whereToWatch.map((w) => (
-          <Card key={w.sport} style={{ minWidth: 200, padding: 14, flexShrink: 0 }}>
-            <div style={{ fontSize: 12, fontWeight: 800, ...h }}>
+          <div key={w.sport} style={{
+            ...glassCard(isDesktop),
+            minWidth: isDesktop ? 'auto' : 220,
+            padding: isDesktop ? 20 : 14,
+            flexShrink: 0,
+          }}>
+            <div style={{
+              fontSize: isDesktop ? 15 : 13,
+              fontWeight: 800,
+              color: '#1a1a2e',
+              marginBottom: 8,
+              ...h,
+            }}>
               {w.e} {w.n}
             </div>
             {w.regions.map((r) => (
-              <div key={r.r} style={{ marginTop: 6 }}>
-                <div style={{ fontSize: 9, fontWeight: 700, color: '#888', textTransform: 'uppercase', ...h }}>{r.r}</div>
-                <div style={{ fontSize: 11, color: '#333', ...h }}>{r.platforms.join(' \u00B7 ')}</div>
+              <div key={r.r} style={{ marginTop: 8 }}>
+                <div style={{
+                  fontSize: isDesktop ? 10 : 9,
+                  fontWeight: 700,
+                  color: '#999',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                  ...h,
+                }}>{r.r}</div>
+                <div style={{
+                  fontSize: isDesktop ? 13 : 11,
+                  color: '#444',
+                  marginTop: 2,
+                  ...h,
+                }}>{r.platforms.join(' \u00B7 ')}</div>
               </div>
             ))}
-          </Card>
+          </div>
         ))}
       </div>
 
-      {/* ── Glossary Preview ── */}
-      <div style={sectionTitle}>{'\u{1F4D6}'} Glossary</div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-        {glossary.slice(0, 4).map((g) => (
-          <Card key={g.id} style={{ padding: 12 }}>
-            <div style={{ fontSize: 13, fontWeight: 800, ...h }}>{g.term}</div>
-            <div style={{ fontSize: 10, color: '#666', marginTop: 2, lineHeight: 1.4, ...h }}>
-              {g.def.length > 80 ? g.def.slice(0, 80) + '...' : g.def}
+      {/* ===== GLOSSARY ===== */}
+      <div style={sectionTitleStyle(isDesktop)}>{'\u{1F4D6}'} Glossary</div>
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: isDesktop ? '1fr 1fr' : '1fr 1fr',
+        gap: isDesktop ? 16 : 10,
+      }}>
+        {glossary.slice(0, isDesktop ? 6 : 4).map((g) => (
+          <div key={g.id} style={{
+            ...glassCard(isDesktop),
+            padding: isDesktop ? 20 : 12,
+          }}>
+            <div style={{
+              fontSize: isDesktop ? 15 : 13,
+              fontWeight: 800,
+              color: '#1a1a2e',
+              ...h,
+            }}>{g.term}</div>
+            <div style={{
+              fontSize: isDesktop ? 12 : 10,
+              color: '#666',
+              marginTop: 4,
+              lineHeight: 1.5,
+              ...h,
+            }}>
+              {g.def.length > (isDesktop ? 120 : 80) ? g.def.slice(0, isDesktop ? 120 : 80) + '...' : g.def}
             </div>
-            <Badge color="#7c3aed" bg="#f3f0ff">{g.sport}</Badge>
-          </Card>
+            <div style={{ marginTop: 8 }}>
+              <Badge color="#7c3aed" bg="#f3f0ff">{g.sport}</Badge>
+            </div>
+          </div>
         ))}
       </div>
       <div
         onClick={() => navigate('/glossary')}
         style={{
           textAlign: 'center',
-          fontSize: 12,
+          fontSize: isDesktop ? 14 : 12,
           fontWeight: 700,
           color: '#2563eb',
-          marginTop: 8,
+          marginTop: 12,
           cursor: 'pointer',
+          padding: '8px 0',
+          transition: 'color 0.2s',
           ...h,
         }}
       >
-        View all {glossary.length} {'\u2192'}
+        View all {glossary.length} terms {'\u2192'}
       </div>
 
-      {/* ── Birthdays ── */}
+      {/* ===== BIRTHDAYS ===== */}
       {birthdays.length > 0 && (
         <>
-          <div style={sectionTitle}>
-            <span style={{ animation: 'bounce 1s infinite' }}>{'\u{1F382}'}</span> Born Today
+          <div style={sectionTitleStyle(isDesktop)}>
+            <span style={{ animation: 'bounce 1s infinite', display: 'inline-block' }}>{'\u{1F382}'}</span> Born Today
           </div>
-          {birthdays.map((b, i) => (
-            <Card key={i} style={{ padding: 12, marginBottom: 8 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: 22 }}>{b.e}</span>
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 800, ...h }}>{b.name}</div>
-                  <div style={{ fontSize: 10, color: '#888', ...h }}>{b.sport}</div>
+          <div style={{
+            display: isDesktop ? 'grid' : 'flex',
+            gridTemplateColumns: isDesktop ? 'repeat(2, 1fr)' : undefined,
+            flexDirection: isDesktop ? undefined : 'column',
+            gap: isDesktop ? 16 : 8,
+          }}>
+            {birthdays.map((b, i) => (
+              <div key={i} style={{
+                ...glassCard(isDesktop),
+                padding: isDesktop ? 20 : 12,
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span style={{
+                    fontSize: isDesktop ? 28 : 22,
+                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
+                  }}>{b.e}</span>
+                  <div>
+                    <div style={{
+                      fontSize: isDesktop ? 15 : 13,
+                      fontWeight: 800,
+                      color: '#1a1a2e',
+                      ...h,
+                    }}>{b.name}</div>
+                    <div style={{
+                      fontSize: isDesktop ? 12 : 10,
+                      color: '#888',
+                      ...h,
+                    }}>{b.sport}</div>
+                  </div>
                 </div>
               </div>
-            </Card>
-          ))}
+            ))}
+          </div>
         </>
       )}
 
-      {/* ── Search Bar ── */}
-      <div style={{ ...sectionTitle, marginTop: 32 }}>{'\u{1F50D}'} Explore Sports</div>
-      <SearchBar
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder={`Search ${sports.length} sports...`}
-      />
+      {/* ===== EXPLORE / SEARCH ===== */}
+      <div style={{
+        ...sectionTitleStyle(isDesktop),
+        marginTop: isDesktop ? 48 : 32,
+        fontSize: isDesktop ? 24 : 18,
+      }}>{'\u{1F50D}'} Explore Sports</div>
 
-      {/* ── Category Chips ── */}
-      <div style={{ ...scrollRow, marginTop: 12, gap: 8 }}>
-        <button
-          style={cat === 'all' ? chipActive : chipBase}
-          onClick={() => setCat('all')}
-        >
-          All
-        </button>
-        {CATS.map((c) => (
+      <div style={{
+        ...glassCard(isDesktop),
+        padding: isDesktop ? 24 : 16,
+        marginBottom: 16,
+      }}>
+        <SearchBar
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder={`Search ${sports.length} sports...`}
+        />
+
+        {/* Category Chips */}
+        <div style={{
+          display: 'flex',
+          flexWrap: isDesktop ? 'wrap' : 'nowrap',
+          gap: 8,
+          marginTop: 16,
+          overflowX: isDesktop ? 'visible' : 'auto',
+          scrollbarWidth: 'none',
+          paddingBottom: isDesktop ? 0 : 4,
+        }}>
           <button
-            key={c.id}
-            style={cat === c.id ? chipActive : chipBase}
-            onClick={() => setCat(c.id)}
+            style={cat === 'all' ? chipActive : chipBase}
+            onClick={() => setCat('all')}
           >
-            {c.e} {c.n} ({catCounts[c.id] || 0})
+            All
           </button>
-        ))}
+          {CATS.map((c) => (
+            <button
+              key={c.id}
+              style={cat === c.id ? chipActive : chipBase}
+              onClick={() => setCat(c.id)}
+            >
+              {c.e} {c.n} ({catCounts[c.id] || 0})
+            </button>
+          ))}
+        </div>
+
+        {/* Type / Contact Chips */}
+        <div style={{
+          display: 'flex',
+          flexWrap: isDesktop ? 'wrap' : 'nowrap',
+          gap: 8,
+          marginTop: 10,
+          overflowX: isDesktop ? 'visible' : 'auto',
+          scrollbarWidth: 'none',
+          paddingBottom: isDesktop ? 0 : 4,
+        }}>
+          {TYPE_FILTERS.map((t) => (
+            <button
+              key={t.id}
+              style={type === t.id ? chipActive : chipBase}
+              onClick={() => setType(t.id)}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* ── Type / Contact Chips ── */}
-      <div style={{ ...scrollRow, marginTop: 8, gap: 8 }}>
-        {TYPE_FILTERS.map((t) => (
-          <button
-            key={t.id}
-            style={type === t.id ? chipActive : chipBase}
-            onClick={() => setType(t.id)}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
-
-      {/* ── Sport List ── */}
-      <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
+      {/* ===== SPORT LIST ===== */}
+      <div style={{
+        marginTop: 8,
+        display: 'grid',
+        gridTemplateColumns: isDesktop ? 'repeat(2, 1fr)' : '1fr',
+        gap: isDesktop ? 14 : 8,
+      }}>
         {filtered.length === 0 && (
-          <div style={{ textAlign: 'center', color: '#aaa', fontSize: 13, padding: 24, ...h }}>
+          <div style={{
+            gridColumn: isDesktop ? '1 / -1' : undefined,
+            textAlign: 'center',
+            color: '#aaa',
+            fontSize: isDesktop ? 15 : 13,
+            padding: 32,
+            ...h,
+          }}>
             No sports match your filters.
           </div>
         )}
         {filtered.map((s) => (
-          <SportRow key={s.id} sport={s} onClick={() => navigate('/sports/' + s.id)} />
+          <SportRow key={s.id} sport={s} isDesktop={isDesktop} onClick={() => navigate('/sports/' + s.id)} />
         ))}
       </div>
     </div>
   );
 }
 
-function SportRow({ sport: s, onClick }) {
+/* ── Guide Card with hover ── */
+function GuideCard({ guide: g, isDesktop, onClick }) {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <div
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        ...glassCard(isDesktop),
+        minWidth: isDesktop ? 'auto' : 200,
+        padding: isDesktop ? 24 : 14,
+        flexShrink: 0,
+        cursor: 'pointer',
+        transform: hovered ? 'translateY(-4px) scale(1.02)' : 'translateY(0) scale(1)',
+        boxShadow: hovered
+          ? '0 16px 48px rgba(0,0,0,0.12), 0 4px 8px rgba(0,0,0,0.06)'
+          : '0 8px 32px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04)',
+      }}
+    >
+      <span style={{ fontSize: isDesktop ? 36 : 28 }}>{g.e}</span>
+      <div style={{
+        display: 'inline-block',
+        fontSize: isDesktop ? 10 : 8,
+        fontWeight: 800,
+        color: '#2563eb',
+        background: 'linear-gradient(135deg, #eff6ff, #e0e7ff)',
+        padding: '2px 8px',
+        borderRadius: 6,
+        marginTop: 8,
+        ...h,
+      }}>
+        {g.tag}
+      </div>
+      <div style={{
+        fontSize: isDesktop ? 15 : 13,
+        fontWeight: 800,
+        marginTop: 6,
+        color: '#1a1a2e',
+        ...h,
+      }}>{g.title}</div>
+      <div style={{
+        fontSize: isDesktop ? 12 : 10,
+        color: '#888',
+        marginTop: 2,
+        ...h,
+      }}>{g.sub}</div>
+    </div>
+  );
+}
+
+/* ── Sport Row Card ── */
+function SportRow({ sport: s, isDesktop, onClick }) {
   const [hovered, setHovered] = useState(false);
 
   const badges = [];
@@ -410,6 +735,8 @@ function SportRow({ sport: s, onClick }) {
   if (s.ct === 'full') badges.push({ label: 'FULL CONTACT', color: '#dc2626', bg: '#fef2f2' });
   if (s.ct === 'limited') badges.push({ label: 'LIMITED CONTACT', color: '#f59e0b', bg: '#fffbeb' });
 
+  const sportColor = s.c || '#2563eb';
+
   return (
     <div
       onClick={onClick}
@@ -418,51 +745,79 @@ function SportRow({ sport: s, onClick }) {
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: 12,
-        padding: '10px 14px',
-        borderRadius: 14,
-        background: hovered ? '#f8f6f3' : '#fff',
-        border: '1.5px solid #ede8e0',
+        gap: isDesktop ? 16 : 12,
+        padding: isDesktop ? '16px 20px' : '12px 14px',
+        borderRadius: isDesktop ? 18 : 14,
+        background: hovered
+          ? 'rgba(255,255,255,0.9)'
+          : 'rgba(255,255,255,0.72)',
+        backdropFilter: 'blur(12px)',
+        border: '1px solid rgba(255,255,255,0.6)',
+        borderLeft: `4px solid ${sportColor}`,
         cursor: 'pointer',
-        transition: 'all .15s',
-        transform: hovered ? 'translateY(-1px)' : 'none',
-        boxShadow: hovered ? '0 4px 14px rgba(0,0,0,.06)' : '0 1px 4px rgba(0,0,0,.02)',
+        transition: 'all .25s cubic-bezier(.4,0,.2,1)',
+        transform: hovered ? 'translateY(-2px) scale(1.01)' : 'none',
+        boxShadow: hovered
+          ? '0 12px 40px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.05)'
+          : '0 4px 16px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.03)',
       }}
     >
       {/* Icon */}
-      <div
-        style={{
-          width: 40,
-          height: 40,
-          borderRadius: 10,
-          background: s.c + '18',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: 22,
-          flexShrink: 0,
-        }}
-      >
+      <div style={{
+        width: isDesktop ? 52 : 40,
+        height: isDesktop ? 52 : 40,
+        borderRadius: isDesktop ? 14 : 10,
+        background: `linear-gradient(135deg, ${sportColor}18, ${sportColor}30)`,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: isDesktop ? 28 : 22,
+        flexShrink: 0,
+        transition: 'transform 0.2s',
+        transform: hovered ? 'scale(1.1)' : 'scale(1)',
+      }}>
         {s.i}
       </div>
 
       {/* Info */}
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-          <span style={{ fontSize: 14, fontWeight: 800, ...h }}>{s.n}</span>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+          flexWrap: 'wrap',
+        }}>
+          <span style={{
+            fontSize: isDesktop ? 16 : 14,
+            fontWeight: 800,
+            color: '#1a1a2e',
+            ...h,
+          }}>{s.n}</span>
           {badges.map((b) => (
             <Badge key={b.label} color={b.color} bg={b.bg}>
               {b.label}
             </Badge>
           ))}
         </div>
-        <div style={{ fontSize: 10, color: '#999', marginTop: 2, ...h }}>
+        <div style={{
+          fontSize: isDesktop ? 12 : 10,
+          color: '#999',
+          marginTop: 3,
+          ...h,
+        }}>
           {s.fans} fans &middot; {s.r ? s.r.length : 0} rules &middot; {s.p ? s.p.length : 0} profiles
         </div>
       </div>
 
       {/* Chevron */}
-      <span style={{ color: '#ccc', fontSize: 16 }}>{'\u203A'}</span>
+      <span style={{
+        color: hovered ? sportColor : '#ccc',
+        fontSize: isDesktop ? 20 : 16,
+        fontWeight: 300,
+        transition: 'all 0.2s',
+        transform: hovered ? 'translateX(4px)' : 'translateX(0)',
+        display: 'inline-block',
+      }}>{'\u203A'}</span>
     </div>
   );
 }
