@@ -260,7 +260,7 @@ export default function SportDetailPage({ sport, onBookmarkToggle }) {
       case 'scoring':
         return (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {sp.sc.pts && (
+            {sp.sc && sp.sc.pts && (
               <div
                 style={{
                   background: '#fff',
@@ -275,7 +275,7 @@ export default function SportDetailPage({ sport, onBookmarkToggle }) {
                 <div style={{ fontSize: 11, color: '#2a2520', lineHeight: 1.6 }}>{sp.sc.pts}</div>
               </div>
             )}
-            {sp.sc.win && (
+            {sp.sc && sp.sc.win && (
               <div
                 style={{
                   background: '#fff',

@@ -1,7 +1,28 @@
+import { Component } from 'react';
 import { Routes, Route, useParams, useNavigate } from 'react-router-dom';
 import { ProfileProvider } from './context/ProfileContext';
 import Header from './components/layout/Header';
 import BottomNav from './components/layout/BottomNav';
+
+class ErrorBoundary extends Component {
+  constructor(props) { super(props); this.state = { error: null }; }
+  static getDerivedStateFromError(error) { return { error }; }
+  render() {
+    if (this.state.error) {
+      return (
+        <div style={{ padding: 40, textAlign: 'center', maxWidth: 600, margin: '0 auto' }}>
+          <h2 style={{ fontSize: 20, fontWeight: 800, color: '#dc2626', fontFamily: "'Outfit',sans-serif" }}>Something went wrong</h2>
+          <p style={{ fontSize: 13, color: '#666', marginTop: 8, lineHeight: 1.5 }}>{this.state.error.message}</p>
+          <button onClick={() => { this.setState({ error: null }); window.location.href = '/'; }}
+            style={{ marginTop: 16, padding: '10px 24px', borderRadius: 10, background: '#16a34a', color: '#fff', border: 'none', fontWeight: 700, cursor: 'pointer', fontFamily: "'Outfit',sans-serif" }}>
+            Go Home
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 import HomePage from './components/home/HomePage';
 import ChatPage from './components/chat/ChatPage';
 import CalculatorsPage from './components/calculators/CalculatorsPage';
@@ -35,6 +56,7 @@ function PlayerProfileWrapper() {
 export default function App() {
   return (
     <ProfileProvider>
+      <ErrorBoundary>
       <div style={{ width: '100%', maxWidth: 1400, margin: '0 auto', minHeight: '100vh', background: '#fbf8f3', position: 'relative' }}>
         <Header />
         <Routes>
@@ -52,6 +74,7 @@ export default function App() {
         </Routes>
         <BottomNav />
       </div>
+      </ErrorBoundary>
     </ProfileProvider>
   );
 }
