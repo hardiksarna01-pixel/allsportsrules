@@ -1,0 +1,53 @@
+export const worldcup = {
+  title: "FIFA World Cup 2026",
+  dates: "June 11 - July 19, 2026",
+  countries: "USA, Mexico & Canada",
+  stats: { teams: 48, matches: 104, cities: 16 },
+  format: "48 teams divided into 12 groups of 4. Top 2 from each group plus 8 best third-placed teams advance to a 32-team knockout round. Extra time and penalties apply in knockout matches.",
+  newRules: [
+    "Expanded to 48 teams (up from 32)",
+    "12 groups of 4 instead of 8 groups of 4",
+    "104 matches total (up from 64)",
+    "Semi-automated offside technology",
+    "Enhanced VAR with limb-tracking cameras",
+    "New concussion substitution rules",
+    "Multi-ball system for faster restarts",
+  ],
+  openingMatch: {
+    match: "Mexico vs. TBD",
+    date: "June 11, 2026",
+    venue: "Estadio Azteca, Mexico City",
+    note: "First FIFA World Cup match with 48 teams",
+  },
+  final: {
+    venue: "MetLife Stadium, New Jersey",
+    date: "July 19, 2026",
+    note: "The largest World Cup final venue ever, capacity 82,500",
+  },
+  groups: {
+    A: ["USA", "TBD", "TBD", "TBD"],
+    B: ["Mexico", "TBD", "TBD", "TBD"],
+    C: ["Canada", "TBD", "TBD", "TBD"],
+    D: ["Argentina", "TBD", "TBD", "TBD"],
+    E: ["France", "TBD", "TBD", "TBD"],
+    F: ["Brazil", "TBD", "TBD", "TBD"],
+    G: ["England", "TBD", "TBD", "TBD"],
+    H: ["Germany", "TBD", "TBD", "TBD"],
+    I: ["Spain", "TBD", "TBD", "TBD"],
+    J: ["Portugal", "TBD", "TBD", "TBD"],
+    K: ["Netherlands", "TBD", "TBD", "TBD"],
+    L: ["Japan", "TBD", "TBD", "TBD"],
+  },
+  debutants: [
+    { name: "Indonesia", flag: "\uD83C\uDDEE\uD83C\uDDE9" },
+    { name: "Uzbekistan", flag: "\uD83C\uDDFA\uD83C\uDDFF" },
+    { name: "DR Congo", flag: "\uD83C\uDDE8\uD83C\uDDE9" },
+    { name: "Mali", flag: "\uD83C\uDDF2\uD83C\uDDF1" },
+    { name: "Bahrain", flag: "\uD83C\uDDE7\uD83C\uDDED" },
+    { name: "Burkina Faso", flag: "\uD83C\uDDE7\uD83C\uDDEB" },
+  ],
+  broadcast: "Available on FOX, FS1, and Telemundo in the US. BBC and ITV in the UK. Global streaming on FIFA+.",
+  ball: "adidas Al Hilm III - featuring connected ball technology with an internal sensor for enhanced VAR decisions and real-time tracking data.",
+};
+
+export default worldcup;
