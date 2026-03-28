@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { h } from '../../constants';
 import { sports } from '../../data/sports';
+import { images } from '../../data/images';
 import { events } from '../../data/events';
 import { categories } from '../../data/categories';
 import { trending } from '../../data/trending';
@@ -641,16 +642,16 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ===== SPORT LIST ===== */}
+      {/* ===== SPORT CARDS ===== */}
       <div style={{
         marginTop: 8,
         display: 'grid',
-        gridTemplateColumns: isDesktop ? 'repeat(2, 1fr)' : '1fr',
-        gap: isDesktop ? 14 : 8,
+        gridTemplateColumns: isDesktop ? 'repeat(3, 1fr)' : 'repeat(2, 1fr)',
+        gap: isDesktop ? 16 : 10,
       }}>
         {filtered.length === 0 && (
           <div style={{
-            gridColumn: isDesktop ? '1 / -1' : undefined,
+            gridColumn: '1 / -1',
             textAlign: 'center',
             color: '#aaa',
             fontSize: isDesktop ? 15 : 13,
@@ -661,7 +662,7 @@ export default function HomePage() {
           </div>
         )}
         {filtered.map((s) => (
-          <SportRow key={s.id} sport={s} isDesktop={isDesktop} onClick={() => navigate('/sports/' + s.id)} />
+          <SportCard key={s.id} sport={s} isDesktop={isDesktop} onClick={() => navigate('/sports/' + s.id)} />
         ))}
       </div>
     </div>
@@ -721,21 +722,18 @@ function GuideCard({ guide: g, isDesktop, onClick }) {
 }
 
 /* ── Sport Row Card ── */
-function SportRow({ sport: s, isDesktop, onClick }) {
+function SportCard({ sport: s, isDesktop, onClick }) {
   const [hovered, setHovered] = useState(false);
+  const [imgErr, setImgErr] = useState(false);
+  const sportColor = s.c || '#2563eb';
+  const imgSrc = images[s.id];
 
   const badges = [];
-  if (s.oly) badges.push({ label: 'OLYMPIC', color: '#d97706', bg: '#fef3c7' });
-  if (s.esports) badges.push({ label: 'ESPORTS', color: '#7c3aed', bg: '#f3f0ff' });
-  if (s.womens) badges.push({ label: "WOMEN'S", color: '#db2777', bg: '#fdf2f8' });
-  if (s.trending) badges.push({ label: 'TRENDING', color: '#ea580c', bg: '#fff7ed' });
-  if (s.indoor) badges.push({ label: 'INDOOR', color: '#0891b2', bg: '#ecfeff' });
-  if (s.tp === 'team') badges.push({ label: 'TEAM', color: '#2563eb', bg: '#eff6ff' });
-  if (s.tp === 'individual') badges.push({ label: 'INDIVIDUAL', color: '#16a34a', bg: '#f0fdf4' });
-  if (s.ct === 'full') badges.push({ label: 'FULL CONTACT', color: '#dc2626', bg: '#fef2f2' });
-  if (s.ct === 'limited') badges.push({ label: 'LIMITED CONTACT', color: '#f59e0b', bg: '#fffbeb' });
-
-  const sportColor = s.c || '#2563eb';
+  if (s.oly) badges.push({ label: 'OLYMPIC', color: '#fff', bg: 'rgba(217,119,6,.85)' });
+  if (s.tp === 'team') badges.push({ label: 'TEAM', color: '#fff', bg: 'rgba(37,99,235,.75)' });
+  if (s.ct === 'full') badges.push({ label: 'CONTACT', color: '#fff', bg: 'rgba(220,38,38,.75)' });
+  if (s.cat === 'trending') badges.push({ label: 'TRENDING', color: '#fff', bg: 'rgba(234,88,12,.85)' });
+  if (s.cat === 'esports') badges.push({ label: 'ESPORTS', color: '#fff', bg: 'rgba(124,58,237,.8)' });
 
   return (
     <div
@@ -743,81 +741,77 @@ function SportRow({ sport: s, isDesktop, onClick }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: isDesktop ? 16 : 12,
-        padding: isDesktop ? '16px 20px' : '12px 14px',
-        borderRadius: isDesktop ? 18 : 14,
-        background: hovered
-          ? 'rgba(255,255,255,0.9)'
-          : 'rgba(255,255,255,0.72)',
-        backdropFilter: 'blur(12px)',
-        border: '1px solid rgba(255,255,255,0.6)',
-        borderLeft: `4px solid ${sportColor}`,
+        borderRadius: isDesktop ? 20 : 16,
+        overflow: 'hidden',
         cursor: 'pointer',
-        transition: 'all .25s cubic-bezier(.4,0,.2,1)',
-        transform: hovered ? 'translateY(-2px) scale(1.01)' : 'none',
+        transition: 'all .3s cubic-bezier(.34,1.56,.64,1)',
+        transform: hovered ? 'translateY(-6px) scale(1.02)' : 'none',
         boxShadow: hovered
-          ? '0 12px 40px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.05)'
-          : '0 4px 16px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.03)',
+          ? `0 20px 50px rgba(0,0,0,.15), 0 0 0 1px ${sportColor}30`
+          : '0 4px 20px rgba(0,0,0,.08)',
+        position: 'relative',
       }}
     >
-      {/* Icon */}
+      {/* Image / Gradient background */}
+      {imgErr || !imgSrc ? (
+        <div style={{
+          height: isDesktop ? 180 : 140,
+          background: `linear-gradient(135deg, ${sportColor}, ${sportColor}cc)`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: isDesktop ? 64 : 48,
+          transition: 'transform .4s',
+          transform: hovered ? 'scale(1.05)' : 'scale(1)',
+        }}>{s.i}</div>
+      ) : (
+        <div style={{ height: isDesktop ? 180 : 140, overflow: 'hidden' }}>
+          <img
+            src={imgSrc}
+            alt={s.n}
+            onError={() => setImgErr(true)}
+            style={{
+              width: '100%', height: '100%', objectFit: 'cover',
+              transition: 'transform .4s',
+              transform: hovered ? 'scale(1.08)' : 'scale(1)',
+            }}
+          />
+        </div>
+      )}
+
+      {/* Gradient overlay */}
       <div style={{
-        width: isDesktop ? 52 : 40,
-        height: isDesktop ? 52 : 40,
-        borderRadius: isDesktop ? 14 : 10,
-        background: `linear-gradient(135deg, ${sportColor}18, ${sportColor}30)`,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontSize: isDesktop ? 28 : 22,
-        flexShrink: 0,
-        transition: 'transform 0.2s',
-        transform: hovered ? 'scale(1.1)' : 'scale(1)',
+        position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+        background: `linear-gradient(to top, ${sportColor}ee 0%, ${sportColor}88 35%, transparent 60%)`,
+        pointerEvents: 'none',
+      }} />
+
+      {/* Badge row top-right */}
+      <div style={{ position: 'absolute', top: 8, right: 8, display: 'flex', gap: 4 }}>
+        {badges.map(b => (
+          <span key={b.label} style={{
+            ...h, fontSize: 7, fontWeight: 800, color: b.color,
+            background: b.bg, backdropFilter: 'blur(8px)',
+            padding: '3px 7px', borderRadius: 6,
+          }}>{b.label}</span>
+        ))}
+      </div>
+
+      {/* Content overlay bottom */}
+      <div style={{
+        position: 'absolute', bottom: 0, left: 0, right: 0,
+        padding: isDesktop ? '16px 18px' : '12px 14px',
       }}>
-        {s.i}
-      </div>
-
-      {/* Info */}
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 6,
-          flexWrap: 'wrap',
-        }}>
-          <span style={{
-            fontSize: isDesktop ? 16 : 14,
-            fontWeight: 800,
-            color: '#1a1a2e',
-            ...h,
-          }}>{s.n}</span>
-          {badges.map((b) => (
-            <Badge key={b.label} color={b.color} bg={b.bg}>
-              {b.label}
-            </Badge>
-          ))}
-        </div>
-        <div style={{
-          fontSize: isDesktop ? 12 : 10,
-          color: '#999',
-          marginTop: 3,
-          ...h,
-        }}>
-          {s.fans} fans &middot; {s.r ? s.r.length : 0} rules &middot; {s.p ? s.p.length : 0} profiles
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontSize: isDesktop ? 28 : 22 }}>{s.i}</span>
+          <div>
+            <div style={{ ...h, fontSize: isDesktop ? 17 : 14, fontWeight: 900, color: '#fff', textShadow: '0 1px 4px rgba(0,0,0,.3)' }}>
+              {s.n}
+            </div>
+            <div style={{ ...h, fontSize: isDesktop ? 11 : 9, color: 'rgba(255,255,255,.85)', marginTop: 1 }}>
+              {s.fans} fans · {s.r ? s.r.length : 0} rules
+            </div>
+          </div>
         </div>
       </div>
-
-      {/* Chevron */}
-      <span style={{
-        color: hovered ? sportColor : '#ccc',
-        fontSize: isDesktop ? 20 : 16,
-        fontWeight: 300,
-        transition: 'all 0.2s',
-        transform: hovered ? 'translateX(4px)' : 'translateX(0)',
-        display: 'inline-block',
-      }}>{'\u203A'}</span>
     </div>
   );
 }
