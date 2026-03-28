@@ -276,10 +276,12 @@ export default function HomePage() {
         paddingBottom: isDesktop ? 0 : 8,
         scrollbarWidth: 'none',
       }}>
-        {events.map((ev) => {
+        {events.map((ev, idx) => {
           const now = new Date();
           const start = new Date(ev.date);
           const end = new Date(ev.end);
+          const evColors = [['#2563eb','#7c3aed'],['#16a34a','#0891b2'],['#dc2626','#ea580c'],['#7c3aed','#db2777']];
+          const [ec1,ec2] = evColors[idx % evColors.length];
           const isLive = now >= start && now <= end;
           const isWC = ev.id === 'wc26';
 
@@ -287,78 +289,33 @@ export default function HomePage() {
             <div
               key={ev.id}
               onClick={isWC ? () => navigate('/worldcup') : undefined}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = `0 16px 40px ${ec1}40`; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = `0 8px 24px ${ec1}30`; }}
               style={{
-                ...glassCard(isDesktop),
-                minWidth: isDesktop ? 'auto' : 220,
-                padding: isDesktop ? 20 : 14,
-                flexShrink: 0,
+                minWidth: isDesktop ? 'auto' : 260, flexShrink: 0,
+                padding: isDesktop ? 24 : 18, borderRadius: isDesktop ? 20 : 16,
+                background: `linear-gradient(135deg, ${ec1}, ${ec2})`,
+                color: '#fff', position: 'relative', overflow: 'hidden',
                 cursor: isWC ? 'pointer' : 'default',
-                border: isLive
-                  ? '2px solid #16a34a'
-                  : '1px solid rgba(255,255,255,0.6)',
-                position: 'relative',
-                overflow: 'hidden',
+                transition: 'transform .2s, box-shadow .2s',
+                boxShadow: `0 8px 24px ${ec1}30`,
               }}
             >
-              {/* Gradient accent top */}
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                height: 3,
-                background: isLive
-                  ? 'linear-gradient(90deg, #16a34a, #22d3ee)'
-                  : 'linear-gradient(90deg, #2563eb, #7c3aed)',
-                borderRadius: '20px 20px 0 0',
-              }} />
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
-                marginTop: 4,
-              }}>
-                <span style={{
-                  fontSize: isDesktop ? 32 : 24,
-                  filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
-                }}>{ev.e}</span>
+              <div style={{ position: 'absolute', top: -30, right: -30, width: 100, height: 100, borderRadius: '50%', background: 'rgba(255,255,255,.1)' }} />
+              <div style={{ position: 'absolute', bottom: -20, left: -20, width: 70, height: 70, borderRadius: '50%', background: 'rgba(255,255,255,.07)' }} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ fontSize: isDesktop ? 40 : 32, filter: 'drop-shadow(0 2px 8px rgba(0,0,0,.2))' }}>{ev.e}</span>
                 <div>
-                  <div style={{
-                    fontSize: isDesktop ? 15 : 13,
-                    fontWeight: 800,
-                    color: '#1a1a2e',
-                    ...h,
-                  }}>{ev.n}</div>
-                  <div style={{
-                    fontSize: isDesktop ? 12 : 10,
-                    color: '#888',
-                    ...h,
-                  }}>{ev.loc}</div>
+                  <div style={{ ...h, fontSize: isDesktop ? 18 : 15, fontWeight: 900 }}>{ev.n}</div>
+                  <div style={{ ...h, fontSize: isDesktop ? 12 : 10, opacity: .85 }}>{ev.loc}</div>
                 </div>
               </div>
-              {isLive && (
-                <span style={{
-                  display: 'inline-block',
-                  marginTop: 10,
-                  fontSize: isDesktop ? 10 : 9,
-                  fontWeight: 800,
-                  color: '#fff',
-                  background: 'linear-gradient(135deg, #16a34a, #059669)',
-                  padding: '3px 10px',
-                  borderRadius: 8,
-                  animation: 'pulse 1.5s infinite',
-                  ...h,
-                }}>
-                  {'\u{1F534}'} LIVE NOW
+              {isLive ? (
+                <span style={{ ...h, display: 'inline-block', marginTop: 12, fontSize: 10, fontWeight: 800, color: '#fff', background: 'rgba(255,255,255,.2)', backdropFilter: 'blur(8px)', padding: '4px 12px', borderRadius: 8, animation: 'pulse 1.5s infinite' }}>
+                  🔴 LIVE NOW
                 </span>
-              )}
-              {!isLive && (
-                <div style={{
-                  fontSize: isDesktop ? 11 : 10,
-                  color: '#aaa',
-                  marginTop: 10,
-                  ...h,
-                }}>
+              ) : (
+                <div style={{ ...h, fontSize: isDesktop ? 12 : 10, color: 'rgba(255,255,255,.75)', marginTop: 12 }}>
                   {start.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                 </div>
               )}
@@ -377,39 +334,30 @@ export default function HomePage() {
         paddingBottom: isDesktop ? 0 : 8,
         scrollbarWidth: 'none',
       }}>
-        {trending.map((t) => (
-          <div key={t.id} style={{
-            ...glassCard(isDesktop),
-            minWidth: isDesktop ? 'auto' : 180,
-            padding: isDesktop ? 20 : 14,
-            flexShrink: 0,
-          }}>
-            <div style={{
-              fontSize: isDesktop ? 15 : 13,
-              fontWeight: 700,
-              color: '#1a1a2e',
-              ...h,
-            }}>"{t.q}"</div>
-            <div style={{
-              fontSize: isDesktop ? 12 : 10,
-              color: '#888',
-              marginTop: 6,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 4,
-              ...h,
-            }}>
-              <span style={{
-                display: 'inline-block',
-                width: 6,
-                height: 6,
-                borderRadius: '50%',
-                background: 'linear-gradient(135deg, #f59e0b, #ef4444)',
-              }} />
-              {t.vol} searches
+        {trending.map((t, i) => {
+          const colors = ['#7c3aed','#2563eb','#dc2626','#ea580c','#16a34a','#0891b2'];
+          const cl = colors[i % colors.length];
+          return (
+            <div key={t.id} style={{
+              minWidth: isDesktop ? 'auto' : 200, flexShrink: 0,
+              padding: isDesktop ? 22 : 16, borderRadius: isDesktop ? 20 : 16,
+              background: `linear-gradient(135deg, ${cl}12, ${cl}06)`,
+              border: `1.5px solid ${cl}20`,
+              position: 'relative', overflow: 'hidden',
+              transition: 'transform .2s, box-shadow .2s', cursor: 'pointer',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = `0 12px 32px ${cl}18`; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = 'none'; }}
+            >
+              <div style={{ position: 'absolute', top: -20, right: -20, width: 80, height: 80, borderRadius: '50%', background: `${cl}08` }} />
+              <div style={{ ...h, fontSize: 11, fontWeight: 800, color: cl, letterSpacing: .5, marginBottom: 6 }}>TRENDING</div>
+              <div style={{ ...h, fontSize: isDesktop ? 16 : 14, fontWeight: 700, color: '#1a1a2e', lineHeight: 1.3 }}>"{t.q}"</div>
+              <div style={{ ...h, display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 10, fontSize: 11, fontWeight: 700, color: '#fff', background: cl, padding: '4px 10px', borderRadius: 8 }}>
+                🔥 {t.vol} searches
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* ===== 5-MINUTE GUIDES ===== */}
