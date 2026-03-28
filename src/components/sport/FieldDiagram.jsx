@@ -3,7 +3,7 @@ import { h } from '../../constants';
 import { positions } from '../../data/positions';
 
 const FIELD_W = 280;
-const FIELD_H = 200;
+const FIELD_H = 260;
 
 function FieldMarkings({ shape, color }) {
   const dim = '#fff3';
@@ -139,19 +139,61 @@ export default function FieldDiagram({ sportId }) {
 
         {sel && (
           <div
+            key={sel.id}
             style={{
               position: 'absolute',
               bottom: 10,
               left: 10,
               right: 10,
-              background: 'rgba(0,0,0,.7)',
-              borderRadius: 10,
-              padding: '8px 10px',
+              background: 'rgba(0,0,0,.72)',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              borderRadius: 12,
+              padding: '10px 12px',
               color: '#fff',
+              maxHeight: '60%',
+              overflowY: 'auto',
+              animation: 'fieldOverlayIn .25s ease-out both',
             }}
           >
-            <div style={{ fontWeight: 800, fontSize: 11 }}>{sel.n}</div>
-            <div style={{ fontSize: 9, opacity: 0.85, marginTop: 2 }}>{sel.desc}</div>
+            <style>{`
+              @keyframes fieldOverlayIn {
+                from { opacity: 0; transform: translateY(12px); }
+                to   { opacity: 1; transform: translateY(0); }
+              }
+            `}</style>
+            <div style={{ fontWeight: 800, fontSize: 12 }}>{sel.n}</div>
+            <div style={{ fontSize: 9, opacity: 0.85, marginTop: 2, lineHeight: 1.35 }}>{sel.desc}</div>
+
+            {sel.legends && sel.legends.length > 0 && (
+              <div style={{ marginTop: 8 }}>
+                <div style={{ fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.5px', opacity: 0.55, marginBottom: 5 }}>
+                  Famous Players
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                  {sel.legends.map((leg, i) => (
+                    <div
+                      key={i}
+                      style={{
+                        background: 'rgba(255,255,255,.1)',
+                        border: '1px solid rgba(255,255,255,.15)',
+                        borderRadius: 8,
+                        padding: '6px 8px',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                        <span style={{ fontSize: 13, lineHeight: 1 }}>{leg.country}</span>
+                        <span style={{ fontWeight: 700, fontSize: 10 }}>{leg.name}</span>
+                        <span style={{ fontSize: 8, opacity: 0.5, marginLeft: 'auto', flexShrink: 0 }}>{leg.era}</span>
+                      </div>
+                      {leg.note && (
+                        <div style={{ fontSize: 8, opacity: 0.7, marginTop: 3, lineHeight: 1.3 }}>{leg.note}</div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
