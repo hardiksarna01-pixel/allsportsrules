@@ -24,34 +24,30 @@ const TYPE_FILTERS = [
   { id: 'non', label: 'Non-Contact \u{1F91D}' },
 ];
 
-const orbitEmojis = ['\u{1F3CF}', '\u26BD', '\u{1F3C0}', '\u{1F3BE}', '\u{1F3CE}\uFE0F'];
+const floatingCards = [
+  { emoji: '🏏', name: 'Cricket', dur: 6, delay: 0 },
+  { emoji: '⚽', name: 'Football', dur: 7, delay: -1.5 },
+  { emoji: '🏀', name: 'Basketball', dur: 5.5, delay: -3 },
+  { emoji: '🎾', name: 'Tennis', dur: 8, delay: -0.8 },
+  { emoji: '🏎️', name: 'F1', dur: 6.5, delay: -2.2 },
+  { emoji: '🏸', name: 'Badminton', dur: 7.5, delay: -4 },
+];
 
-const heroGradientKeyframes = `
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-@keyframes orbit {
-  from { transform: rotate(0deg) translateX(70px) rotate(0deg); }
-  to { transform: rotate(360deg) translateX(70px) rotate(-360deg); }
-}
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: .5; }
-}
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
-}
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes shimmer {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
-}
+const heroKeyframes = `
+@keyframes meshFlow{0%{background-position:0% 50%}25%{background-position:50% 100%}50%{background-position:100% 50%}75%{background-position:50% 0%}100%{background-position:0% 50%}}
+@keyframes floatA{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-18px) rotate(2.5deg)}}
+@keyframes floatB{0%,100%{transform:translateY(-4px) rotate(0deg)}50%{transform:translateY(-24px) rotate(-2deg)}}
+@keyframes floatC{0%,100%{transform:translateY(-8px) rotate(1deg)}50%{transform:translateY(-16px) rotate(-1.5deg)}}
+@keyframes revealWord{from{opacity:0;transform:translateY(28px);filter:blur(8px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}
+@keyframes statPop{from{opacity:0;transform:scale(0.6) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes ctaGlow{0%,100%{box-shadow:0 4px 16px rgba(22,163,74,0.25)}50%{box-shadow:0 8px 40px rgba(22,163,74,0.5)}}
+@keyframes scrollBounce{0%,100%{transform:translateY(0);opacity:0.4}50%{transform:translateY(10px);opacity:1}}
+@keyframes sparkle{0%{opacity:0;transform:scale(0)}25%{opacity:0.8;transform:scale(1)}100%{opacity:0;transform:translateY(-60px) scale(0.2)}}
+@keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
 `;
 
 function useIsDesktop() {
@@ -164,109 +160,112 @@ export default function HomePage() {
       margin: '0 auto',
       minHeight: '100vh',
     }}>
-      <style>{heroGradientKeyframes}</style>
+      <style>{heroKeyframes}</style>
 
       {/* ===== HERO SECTION ===== */}
       <div style={{
-        textAlign: 'center',
-        padding: isDesktop ? '64px 0 48px' : '48px 0 32px',
-        position: 'relative',
-        borderRadius: isDesktop ? '0 0 32px 32px' : '0 0 24px 24px',
-        margin: isDesktop ? '0 -40px' : '0 -16px',
-        marginBottom: isDesktop ? 16 : 0,
-        paddingLeft: isDesktop ? 40 : 16,
-        paddingRight: isDesktop ? 40 : 16,
-        background: 'linear-gradient(135deg, #f0f4ff 0%, #fdf2f8 30%, #fef3c7 60%, #ecfdf5 100%)',
-        backgroundSize: '400% 400%',
-        animation: 'gradientShift 12s ease infinite',
+        textAlign: 'center', position: 'relative', overflow: 'hidden',
+        padding: isDesktop ? '72px 40px 56px' : '48px 16px 36px',
+        borderRadius: isDesktop ? '0 0 40px 40px' : '0 0 24px 24px',
+        margin: isDesktop ? '0 -48px 16px' : '0 -16px 0',
+        background: 'linear-gradient(135deg, #ecfdf5 0%, #eff6ff 25%, #faf5ff 50%, #fefce8 75%, #fdf2f8 100%)',
+        backgroundSize: '400% 400%', animation: 'meshFlow 20s ease infinite',
       }}>
-        {/* Orbit animation */}
-        <div style={{
-          position: 'relative',
-          width: isDesktop ? 180 : 160,
-          height: isDesktop ? 180 : 160,
-          margin: '0 auto 24px',
-        }}>
-          <span style={{
-            fontSize: isDesktop ? 64 : 52,
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%,-50%)',
-            filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.1))',
-          }}>
-            {'\u{1F3DF}\uFE0F'}
-          </span>
-          {orbitEmojis.map((em, i) => (
-            <span
-              key={i}
-              style={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                fontSize: isDesktop ? 28 : 24,
-                animation: `orbit ${8 + i * 0.6}s linear infinite`,
-                animationDelay: `${-i * (8 / orbitEmojis.length)}s`,
-              }}
+        {/* Sparkle particles */}
+        {Array.from({ length: 14 }).map((_, i) => (
+          <div key={`sp${i}`} style={{
+            position: 'absolute', borderRadius: '50%', pointerEvents: 'none',
+            width: 3 + (i % 4) * 2, height: 3 + (i % 4) * 2,
+            background: ['#16a34a', '#2563eb', '#7c3aed', '#f59e0b', '#ec4899'][i % 5],
+            opacity: 0, top: `${10 + (i * 7) % 80}%`, left: `${5 + (i * 13) % 90}%`,
+            animation: `sparkle ${3 + (i % 3)}s ease-in-out ${i * 0.7}s infinite`,
+          }} />
+        ))}
+
+        {/* Floating sport cards */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: isDesktop ? 16 : 10, flexWrap: 'wrap', marginBottom: isDesktop ? 32 : 20, position: 'relative', zIndex: 2 }}>
+          {floatingCards.map((fc, i) => (
+            <div key={fc.name} style={{
+              padding: isDesktop ? '10px 18px' : '8px 12px', borderRadius: 14,
+              background: 'rgba(255,255,255,.65)', backdropFilter: 'blur(12px)',
+              border: '1px solid rgba(255,255,255,.8)', boxShadow: '0 4px 20px rgba(0,0,0,.06)',
+              display: 'flex', alignItems: 'center', gap: 6, cursor: 'default',
+              animation: `${['floatA', 'floatB', 'floatC'][i % 3]} ${fc.dur}s ease-in-out infinite`,
+              animationDelay: `${fc.delay}s`,
+              transition: 'transform .2s, box-shadow .2s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.1)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,0,0,.12)'; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,.06)'; }}
             >
-              {em}
-            </span>
+              <span style={{ fontSize: isDesktop ? 24 : 18 }}>{fc.emoji}</span>
+              <span style={{ ...h, fontSize: isDesktop ? 12 : 10, fontWeight: 700, color: '#374151' }}>{fc.name}</span>
+            </div>
           ))}
         </div>
 
-        <h1 style={{
-          fontSize: isDesktop ? 42 : 26,
-          fontWeight: 900,
-          lineHeight: 1.1,
-          letterSpacing: '-0.02em',
-          background: 'linear-gradient(135deg, #2563eb, #7c3aed, #ec4899, #f59e0b, #16a34a)',
-          backgroundSize: '300% 300%',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          animation: 'gradientShift 6s ease infinite',
-          maxWidth: isDesktop ? 600 : 'none',
-          margin: '0 auto',
-          ...h,
-        }}>
-          Every sport. Every rule. Made fun.
-        </h1>
+        {/* Animated title — word-by-word reveal */}
+        <div style={{ position: 'relative', zIndex: 2 }}>
+          {['Every sport.', 'Every rule.', 'Made fun.'].map((line, i) => (
+            <div key={i} style={{
+              ...h, fontSize: isDesktop ? 48 : 28, fontWeight: 900, lineHeight: 1.1, letterSpacing: '-0.03em',
+              background: 'linear-gradient(135deg, #1a1a2e 15%, #16a34a 40%, #2563eb 65%, #7c3aed 85%)',
+              backgroundSize: '300% 300%', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+              animation: `gradientShift 8s ease infinite, revealWord 0.6s ease ${0.2 + i * 0.25}s both`,
+              opacity: 0,
+            }}>{line}</div>
+          ))}
+        </div>
 
-        {/* Stats row */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          gap: isDesktop ? 32 : 16,
-          marginTop: isDesktop ? 24 : 14,
-          flexWrap: 'wrap',
-        }}>
+        {/* Subtitle */}
+        <p style={{ ...h, fontSize: isDesktop ? 15 : 12, color: '#6b7280', marginTop: isDesktop ? 16 : 10, animation: 'revealWord 0.5s ease 1s both', opacity: 0, position: 'relative', zIndex: 2 }}>
+          <strong>{sports.length}+ sports</strong> · AI tutor · Interactive quizzes · {glossary.length}+ terms decoded
+        </p>
+
+        {/* Stat pills */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: isDesktop ? 16 : 8, marginTop: isDesktop ? 24 : 16, flexWrap: 'wrap', position: 'relative', zIndex: 2 }}>
           {[
-            { val: sports.length, label: 'Sports' },
-            { val: 'AI', label: 'Tutor' },
-            { val: glossary.length + '+', label: 'Terms' },
-            { val: events.length, label: 'Events' },
-          ].map((stat) => (
-            <div key={stat.label} style={{
-              ...glassCard(isDesktop),
-              padding: isDesktop ? '12px 24px' : '8px 16px',
-              textAlign: 'center',
-              minWidth: isDesktop ? 100 : 70,
+            { val: `${sports.length}+`, label: 'Sports', color: '#16a34a' },
+            { val: '5K+', label: 'Rules', color: '#2563eb' },
+            { val: `${glossary.length}+`, label: 'Terms', color: '#7c3aed' },
+            { val: 'AI', label: 'Powered', color: '#ec4899' },
+          ].map((s, i) => (
+            <div key={s.label} style={{
+              padding: isDesktop ? '12px 24px' : '8px 14px', borderRadius: 14,
+              background: 'rgba(255,255,255,.7)', backdropFilter: 'blur(12px)',
+              border: '1px solid rgba(255,255,255,.8)', textAlign: 'center',
+              boxShadow: `0 2px 12px ${s.color}15`,
+              animation: `statPop 0.4s ease ${1.2 + i * 0.15}s both`, opacity: 0,
             }}>
-              <div style={{
-                fontSize: isDesktop ? 22 : 16,
-                fontWeight: 900,
-                color: '#1a1a2e',
-                ...h,
-              }}>{stat.val}</div>
-              <div style={{
-                fontSize: isDesktop ? 11 : 9,
-                fontWeight: 600,
-                color: '#888',
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-                ...h,
-              }}>{stat.label}</div>
+              <div style={{ ...h, fontSize: isDesktop ? 24 : 18, fontWeight: 900, color: s.color }}>{s.val}</div>
+              <div style={{ ...h, fontSize: isDesktop ? 10 : 8, fontWeight: 700, color: '#8a8380', textTransform: 'uppercase', letterSpacing: 1 }}>{s.label}</div>
             </div>
           ))}
+        </div>
+
+        {/* CTA Buttons */}
+        <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginTop: isDesktop ? 28 : 18, flexWrap: 'wrap', position: 'relative', zIndex: 2 }}>
+          <button onClick={() => navigate('/quiz')} style={{
+            ...h, padding: isDesktop ? '14px 32px' : '12px 24px', borderRadius: 14,
+            background: 'linear-gradient(135deg, #16a34a, #059669)', color: '#fff',
+            fontWeight: 800, fontSize: isDesktop ? 15 : 13, border: 'none', cursor: 'pointer',
+            animation: 'ctaGlow 3s ease infinite, revealWord 0.4s ease 1.8s both', opacity: 0,
+          }}>🧠 Take a Quiz</button>
+          <button onClick={() => navigate('/search')} style={{
+            ...h, padding: isDesktop ? '14px 32px' : '12px 24px', borderRadius: 14,
+            background: 'rgba(255,255,255,.7)', backdropFilter: 'blur(12px)',
+            color: '#1a1a2e', fontWeight: 700, fontSize: isDesktop ? 15 : 13,
+            border: '1.5px solid rgba(255,255,255,.8)', cursor: 'pointer',
+            animation: 'revealWord 0.4s ease 2s both', opacity: 0,
+            transition: 'background .2s, transform .15s',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,.95)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,.7)'; e.currentTarget.style.transform = ''; }}
+          >🔍 Search anything</button>
+        </div>
+
+        {/* Scroll indicator */}
+        <div style={{ marginTop: isDesktop ? 32 : 20, animation: 'scrollBounce 2s ease infinite', position: 'relative', zIndex: 2 }}>
+          <span style={{ fontSize: 20, color: '#d1ccc4' }}>↓</span>
         </div>
       </div>
 
