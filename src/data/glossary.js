@@ -199,7 +199,6 @@ export const glossary = [
   { id: 198, term: "Waza-ari", def: "A half-score in judo — awarded for a throw that is nearly perfect but lacks some element of ippon (full score). Two waza-ari equal one ippon and end the match. Also awarded for a 10-19 second pin.", sport: "Judo" },
   { id: 199, term: "Shido", def: "A penalty in judo for minor offenses like passivity, false attacks, stalling, or grabbing below the belt. Three shidos result in disqualification (hansoku-make). Encourages active, attacking judo.", sport: "Judo" },
   { id: 200, term: "Peloton", def: "The main group of riders in a cycling road race. Riders in the peloton benefit from drafting (reduced air resistance). Breaking away from the peloton requires significant energy but can win races.", sport: "Cycling" },
-];
   { id: 201, term: "Breakaway", def: "In cycling, when one or more riders separate from the peloton and ride ahead. Breakaways often form early in a race. Most are caught before the finish, but some succeed in mountain or crosswind stages.", sport: "Cycling" },
   { id: 202, term: "Time Trial", def: "A cycling race against the clock where riders start individually at intervals. No drafting allowed — pure individual effort. Called 'the race of truth' because there's nowhere to hide.", sport: "Cycling" },
   { id: 203, term: "Domestique", def: "A support rider in cycling who sacrifices their own chances to help their team leader. They fetch water bottles, shield from wind, and chase breakaways. Essential but rarely celebrated.", sport: "Cycling" },
