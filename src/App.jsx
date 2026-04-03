@@ -68,7 +68,7 @@ export default function App() {
   return (
     <ProfileProvider>
       <ErrorBoundary>
-      <div style={{ width: '100%', maxWidth: 1400, margin: '0 auto', minHeight: '100vh', background: '#fbf8f3', position: 'relative' }}>
+      <div style={{ width: '100%', maxWidth: 1400, margin: '0 auto', minHeight: '100vh', background: '#ffffff', position: 'relative' }}>
         <Header />
         <Routes>
           <Route path="/" element={<HomePage />} />
