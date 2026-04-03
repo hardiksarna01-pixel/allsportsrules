@@ -1,7 +1,6 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { h } from '../../constants';
-import { usePageTitle } from '../../hooks/usePageTitle';
+import { motion, AnimatePresence, useInView } from 'framer-motion';
 import { sports } from '../../data/sports';
 import { images } from '../../data/images';
 import { events } from '../../data/events';
@@ -10,847 +9,386 @@ import { trending } from '../../data/trending';
 import { fiveMinGuides } from '../../data/fiveMinGuides';
 import { whereToWatch } from '../../data/whereToWatch';
 import { glossary } from '../../data/glossary';
-import Card from '../ui/Card';
-import Badge from '../ui/Badge';
-import SearchBar from '../ui/SearchBar';
+import { usePageTitle } from '../../hooks/usePageTitle';
 
-const CATS = categories;
+/* ── animation variants ── */
+const stagger = { animate: { transition: { staggerChildren: 0.06 } } };
+const fadeUp = { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0, transition: { duration: 0.4 } } };
+
+const floatingCards = [
+  { emoji: '🏏', name: 'Cricket', dur: 5, delay: 0 },
+  { emoji: '⚽', name: 'Football', dur: 6, delay: -1.2 },
+  { emoji: '🏀', name: 'Basketball', dur: 4.5, delay: -2.5 },
+  { emoji: '🎾', name: 'Tennis', dur: 7, delay: -0.6 },
+  { emoji: '🏎️', name: 'F1', dur: 5.5, delay: -1.8 },
+  { emoji: '🏸', name: 'Badminton', dur: 6.5, delay: -3 },
+];
 
 const TYPE_FILTERS = [
   { id: 'all', label: 'All Types' },
-  { id: 'team', label: 'Team Sports \u{1F465}' },
-  { id: 'individual', label: 'Individual \u{1F9D1}' },
-  { id: 'full', label: 'Full Contact \u{1F4A5}' },
-  { id: 'non', label: 'Non-Contact \u{1F91D}' },
+  { id: 'team', label: 'Team 👥' },
+  { id: 'individual', label: 'Individual 🧑' },
+  { id: 'full', label: 'Contact 💥' },
+  { id: 'non', label: 'Non-Contact 🤝' },
 ];
 
-const floatingCards = [
-  { emoji: '🏏', name: 'Cricket', dur: 6, delay: 0 },
-  { emoji: '⚽', name: 'Football', dur: 7, delay: -1.5 },
-  { emoji: '🏀', name: 'Basketball', dur: 5.5, delay: -3 },
-  { emoji: '🎾', name: 'Tennis', dur: 8, delay: -0.8 },
-  { emoji: '🏎️', name: 'F1', dur: 6.5, delay: -2.2 },
-  { emoji: '🏸', name: 'Badminton', dur: 7.5, delay: -4 },
-];
-
-const heroKeyframes = `
-@keyframes meshFlow{0%{background-position:0% 50%}25%{background-position:50% 100%}50%{background-position:100% 50%}75%{background-position:50% 0%}100%{background-position:0% 50%}}
-@keyframes floatA{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-18px) rotate(2.5deg)}}
-@keyframes floatB{0%,100%{transform:translateY(-4px) rotate(0deg)}50%{transform:translateY(-24px) rotate(-2deg)}}
-@keyframes floatC{0%,100%{transform:translateY(-8px) rotate(1deg)}50%{transform:translateY(-16px) rotate(-1.5deg)}}
-@keyframes revealWord{from{opacity:0;transform:translateY(28px);filter:blur(8px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}
-@keyframes statPop{from{opacity:0;transform:scale(0.6) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
-@keyframes ctaGlow{0%,100%{box-shadow:0 4px 16px rgba(22,163,74,0.25)}50%{box-shadow:0 8px 40px rgba(22,163,74,0.5)}}
-@keyframes scrollBounce{0%,100%{transform:translateY(0);opacity:0.4}50%{transform:translateY(10px);opacity:1}}
-@keyframes sparkle{0%{opacity:0;transform:scale(0)}25%{opacity:0.8;transform:scale(1)}100%{opacity:0;transform:translateY(-60px) scale(0.2)}}
-@keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-@keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
-`;
-
-function useIsDesktop() {
-  const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768);
-  useEffect(() => {
-    const handler = () => setIsDesktop(window.innerWidth >= 768);
-    window.addEventListener('resize', handler);
-    return () => window.removeEventListener('resize', handler);
-  }, []);
-  return isDesktop;
+/* ── scroll-reveal section ── */
+function Section({ children, className = '' }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: '-40px' });
+  return (
+    <motion.section ref={ref} initial={{ opacity: 0, y: 24 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.5 }} className={className}>
+      {children}
+    </motion.section>
+  );
 }
-
-function todayMMDD() {
-  const d = new Date();
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
-  return `${mm}-${dd}`;
-}
-
-/* ── Shared style helpers ── */
-const glassCard = (isDesktop) => ({
-  background: 'rgba(255,255,255,0.72)',
-  backdropFilter: 'blur(16px)',
-  WebkitBackdropFilter: 'blur(16px)',
-  borderRadius: isDesktop ? 20 : 16,
-  border: '1px solid rgba(255,255,255,0.6)',
-  boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04)',
-  transition: 'all 0.25s cubic-bezier(.4,0,.2,1)',
-});
-
-const sectionTitleStyle = (isDesktop) => ({
-  fontSize: isDesktop ? 20 : 16,
-  fontWeight: 800,
-  margin: isDesktop ? '40px 0 16px' : '28px 0 12px',
-  letterSpacing: '-0.01em',
-  color: '#1a1a2e',
-  ...h,
-});
 
 export default function HomePage() {
   usePageTitle(null);
   const navigate = useNavigate();
-  const isDesktop = useIsDesktop();
   const [search, setSearch] = useState('');
   const [cat, setCat] = useState('all');
   const [type, setType] = useState('all');
+  const [placeholderIdx, setPlaceholderIdx] = useState(0);
+  const [searchFocused, setSearchFocused] = useState(false);
+  const searchRef = useRef(null);
 
-  const today = todayMMDD();
+  const placeholders = ['Search cricket rules...', 'What is offside?', 'Find pickleball rules...', 'Explore F1 scoring...'];
+  useEffect(() => { const t = setInterval(() => setPlaceholderIdx(i => (i + 1) % 4), 3000); return () => clearInterval(t); }, []);
 
-  const birthdays = useMemo(() => {
-    const result = [];
-    sports.forEach((s) => {
-      (s.birthdays || []).forEach((b) => {
-        if (b.date === today) result.push({ ...b, sport: s.n, e: s.i });
-      });
-    });
-    return result;
-  }, [today]);
-
-  const filtered = useMemo(() => {
-    return sports.filter((s) => {
-      if (search && !s.n.toLowerCase().includes(search.toLowerCase())) return false;
-      if (cat !== 'all' && s.cat !== cat) return false;
-      if (type === 'team' && s.tp !== 'team') return false;
-      if (type === 'individual' && s.tp !== 'individual') return false;
-      if (type === 'full' && s.ct !== 'full') return false;
-      if (type === 'non' && s.ct !== 'non') return false;
-      return true;
-    });
-  }, [search, cat, type]);
+  const filtered = useMemo(() => sports.filter(s => {
+    if (search && !s.n.toLowerCase().includes(search.toLowerCase())) return false;
+    if (cat !== 'all' && s.cat !== cat) return false;
+    if (type === 'team' && s.tp !== 'team') return false;
+    if (type === 'individual' && s.tp !== 'individual') return false;
+    if (type === 'full' && s.ct !== 'full') return false;
+    if (type === 'non' && s.ct !== 'non') return false;
+    return true;
+  }), [search, cat, type]);
 
   const catCounts = useMemo(() => {
-    const counts = {};
-    CATS.forEach((c) => {
-      counts[c.id] = sports.filter((s) => s.cat === c.id).length;
-    });
-    return counts;
+    const c = {};
+    categories.forEach(ct => { c[ct.id] = sports.filter(s => s.cat === ct.id).length; });
+    return c;
   }, []);
 
-  const chipBase = {
-    padding: isDesktop ? '10px 22px' : '8px 16px',
-    borderRadius: 28,
-    fontSize: isDesktop ? 14 : 12,
-    fontWeight: 700,
-    border: '1.5px solid #e0dbd3',
-    background: 'rgba(255,255,255,0.9)',
-    backdropFilter: 'blur(8px)',
-    cursor: 'pointer',
-    whiteSpace: 'nowrap',
-    transition: 'all .25s cubic-bezier(.4,0,.2,1)',
-    color: '#444',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-    ...h,
-  };
-
-  const chipActive = {
-    ...chipBase,
-    background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
-    color: '#fff',
-    border: '1.5px solid transparent',
-    boxShadow: '0 6px 20px rgba(37,99,235,0.35)',
-  };
-
-  const pageMaxWidth = isDesktop ? 1200 : 600;
+  const liveResults = useMemo(() => {
+    if (search.length < 2) return null;
+    const q = search.toLowerCase();
+    const sp = sports.filter(s => s.n.toLowerCase().includes(q)).slice(0, 4);
+    const gl = glossary.filter(g => g.term.toLowerCase().includes(q)).slice(0, 3);
+    return (sp.length || gl.length) ? { sports: sp, glossary: gl } : null;
+  }, [search]);
 
   return (
-    <div style={{
-      padding: isDesktop ? '0 40px 60px' : '0 16px 40px',
-      maxWidth: pageMaxWidth,
-      margin: '0 auto',
-      minHeight: '100vh',
-    }}>
-      <style>{heroKeyframes}</style>
+    <div className="pb-24 max-w-6xl mx-auto">
 
-      {/* ===== HERO SECTION ===== */}
-      <div style={{
-        textAlign: 'center', position: 'relative', overflow: 'hidden',
-        padding: isDesktop ? '72px 40px 56px' : '48px 16px 36px',
-        borderRadius: isDesktop ? '0 0 40px 40px' : '0 0 24px 24px',
-        margin: isDesktop ? '0 -48px 16px' : '0 -16px 0',
-        background: 'linear-gradient(135deg, #ecfdf5 0%, #eff6ff 25%, #faf5ff 50%, #fefce8 75%, #fdf2f8 100%)',
-        backgroundSize: '400% 400%', animation: 'meshFlow 20s ease infinite',
-      }}>
-        {/* Sparkle particles */}
-        {Array.from({ length: 14 }).map((_, i) => (
-          <div key={`sp${i}`} style={{
-            position: 'absolute', borderRadius: '50%', pointerEvents: 'none',
-            width: 3 + (i % 4) * 2, height: 3 + (i % 4) * 2,
-            background: ['#16a34a', '#2563eb', '#7c3aed', '#f59e0b', '#ec4899'][i % 5],
-            opacity: 0, top: `${10 + (i * 7) % 80}%`, left: `${5 + (i * 13) % 90}%`,
-            animation: `sparkle ${3 + (i % 3)}s ease-in-out ${i * 0.7}s infinite`,
-          }} />
+      {/* ═══════ HERO ═══════ */}
+      <section className="relative overflow-hidden rounded-b-[2rem] md:rounded-b-[3rem] bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50 px-5 md:px-12 pt-12 md:pt-20 pb-10 md:pb-16 text-center -mx-4 md:-mx-0 mb-6">
+        {/* sparkles */}
+        {Array.from({ length: 12 }).map((_, i) => (
+          <motion.div key={i} className="absolute rounded-full pointer-events-none"
+            style={{ width: 3 + (i % 4) * 2, height: 3 + (i % 4) * 2, background: ['#16a34a','#2563eb','#7c3aed','#f59e0b','#ec4899'][i % 5], top: `${10 + (i * 7) % 80}%`, left: `${5 + (i * 13) % 90}%` }}
+            animate={{ opacity: [0, 0.7, 0], y: [0, -40], scale: [0, 1, 0.3] }}
+            transition={{ duration: 2 + (i % 3), delay: i * 0.5, repeat: Infinity }}
+          />
         ))}
 
-        {/* Floating sport cards */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: isDesktop ? 16 : 10, flexWrap: 'wrap', marginBottom: isDesktop ? 32 : 20, position: 'relative', zIndex: 2 }}>
+        {/* floating sport chips */}
+        <div className="flex justify-center gap-2 md:gap-4 flex-wrap mb-8 md:mb-12 relative z-10">
           {floatingCards.map((fc, i) => (
-            <div key={fc.name} style={{
-              padding: isDesktop ? '10px 18px' : '8px 12px', borderRadius: 14,
-              background: 'rgba(255,255,255,.65)', backdropFilter: 'blur(12px)',
-              border: '1px solid rgba(255,255,255,.8)', boxShadow: '0 4px 20px rgba(0,0,0,.06)',
-              display: 'flex', alignItems: 'center', gap: 6, cursor: 'default',
-              animation: `${['floatA', 'floatB', 'floatC'][i % 3]} ${fc.dur}s ease-in-out infinite`,
-              animationDelay: `${fc.delay}s`,
-              transition: 'transform .2s, box-shadow .2s',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.1)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,0,0,.12)'; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,.06)'; }}
+            <motion.div key={fc.name}
+              animate={{ y: [0, -14, 0] }}
+              transition={{ duration: fc.dur, delay: fc.delay, repeat: Infinity, ease: 'easeInOut' }}
+              whileHover={{ scale: 1.12 }}
+              className="flex items-center gap-1.5 md:gap-2 px-3 md:px-5 py-2 md:py-2.5 rounded-2xl bg-white/60 backdrop-blur-md border border-white/80 shadow-lg cursor-default select-none"
             >
-              <span style={{ fontSize: isDesktop ? 24 : 18 }}>{fc.emoji}</span>
-              <span style={{ ...h, fontSize: isDesktop ? 12 : 10, fontWeight: 700, color: '#374151' }}>{fc.name}</span>
-            </div>
+              <span className="text-lg md:text-2xl">{fc.emoji}</span>
+              <span className="text-[11px] md:text-sm font-bold text-gray-700 font-[Outfit]">{fc.name}</span>
+            </motion.div>
           ))}
         </div>
 
-        {/* Animated title — word-by-word reveal */}
-        <div style={{ position: 'relative', zIndex: 2 }}>
+        {/* title */}
+        <div className="relative z-10">
           {['Every sport.', 'Every rule.', 'Made fun.'].map((line, i) => (
-            <div key={i} style={{
-              ...h, fontSize: isDesktop ? 48 : 28, fontWeight: 900, lineHeight: 1.1, letterSpacing: '-0.03em',
-              background: 'linear-gradient(135deg, #1a1a2e 15%, #16a34a 40%, #2563eb 65%, #7c3aed 85%)',
-              backgroundSize: '300% 300%', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-              animation: `gradientShift 8s ease infinite, revealWord 0.6s ease ${0.2 + i * 0.25}s both`,
-              opacity: 0,
-            }}>{line}</div>
+            <motion.div key={i}
+              initial={{ opacity: 0, y: 24, filter: 'blur(8px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              transition={{ duration: 0.6, delay: 0.2 + i * 0.2 }}
+              className="font-[Outfit] text-4xl md:text-7xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 leading-[1.1]"
+            >{line}</motion.div>
           ))}
         </div>
 
-        {/* Subtitle */}
-        <p style={{ ...h, fontSize: isDesktop ? 15 : 12, color: '#6b7280', marginTop: isDesktop ? 16 : 10, animation: 'revealWord 0.5s ease 1s both', opacity: 0, position: 'relative', zIndex: 2 }}>
-          <strong>{sports.length}+ sports</strong> · AI tutor · Interactive quizzes · {glossary.length}+ terms decoded
-        </p>
+        {/* subtitle */}
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}
+          className="mt-4 md:mt-6 text-sm md:text-base text-gray-500 font-[Outfit]">
+          <strong className="text-gray-700">{sports.length}+ sports</strong> · AI tutor · Quizzes · {glossary.length}+ terms
+        </motion.p>
 
-        {/* Stat pills */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: isDesktop ? 16 : 8, marginTop: isDesktop ? 24 : 16, flexWrap: 'wrap', position: 'relative', zIndex: 2 }}>
+        {/* stat pills */}
+        <div className="flex justify-center gap-2 md:gap-4 mt-6 md:mt-8 flex-wrap relative z-10">
           {[
-            { val: `${sports.length}+`, label: 'Sports', color: '#16a34a' },
-            { val: '5K+', label: 'Rules', color: '#2563eb' },
-            { val: `${glossary.length}+`, label: 'Terms', color: '#7c3aed' },
-            { val: 'AI', label: 'Powered', color: '#ec4899' },
+            { val: `${sports.length}+`, label: 'Sports', color: 'text-emerald-600' },
+            { val: '5K+', label: 'Rules', color: 'text-blue-600' },
+            { val: `${glossary.length}+`, label: 'Terms', color: 'text-purple-600' },
+            { val: 'AI', label: 'Powered', color: 'text-pink-600' },
           ].map((s, i) => (
-            <div key={s.label} style={{
-              padding: isDesktop ? '12px 24px' : '8px 14px', borderRadius: 14,
-              background: 'rgba(255,255,255,.7)', backdropFilter: 'blur(12px)',
-              border: '1px solid rgba(255,255,255,.8)', textAlign: 'center',
-              boxShadow: `0 2px 12px ${s.color}15`,
-              animation: `statPop 0.4s ease ${1.2 + i * 0.15}s both`, opacity: 0,
-            }}>
-              <div style={{ ...h, fontSize: isDesktop ? 24 : 18, fontWeight: 900, color: s.color }}>{s.val}</div>
-              <div style={{ ...h, fontSize: isDesktop ? 10 : 8, fontWeight: 700, color: '#8a8380', textTransform: 'uppercase', letterSpacing: 1 }}>{s.label}</div>
-            </div>
+            <motion.div key={s.label}
+              initial={{ opacity: 0, scale: 0.7 }} animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 1.1 + i * 0.12, type: 'spring', stiffness: 300 }}
+              className="px-4 md:px-6 py-2 md:py-3 rounded-2xl bg-white/60 backdrop-blur-md border border-white/80 text-center"
+            >
+              <div className={`font-[Outfit] text-lg md:text-2xl font-black ${s.color}`}>{s.val}</div>
+              <div className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wider">{s.label}</div>
+            </motion.div>
           ))}
         </div>
 
-        {/* CTA Buttons */}
-        <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginTop: isDesktop ? 28 : 18, flexWrap: 'wrap', position: 'relative', zIndex: 2 }}>
-          <button onClick={() => navigate('/quiz')} style={{
-            ...h, padding: isDesktop ? '14px 32px' : '12px 24px', borderRadius: 14,
-            background: 'linear-gradient(135deg, #16a34a, #059669)', color: '#fff',
-            fontWeight: 800, fontSize: isDesktop ? 15 : 13, border: 'none', cursor: 'pointer',
-            animation: 'ctaGlow 3s ease infinite, revealWord 0.4s ease 1.8s both', opacity: 0,
-          }}>🧠 Take a Quiz</button>
-          <button onClick={() => navigate('/search')} style={{
-            ...h, padding: isDesktop ? '14px 32px' : '12px 24px', borderRadius: 14,
-            background: 'rgba(255,255,255,.7)', backdropFilter: 'blur(12px)',
-            color: '#1a1a2e', fontWeight: 700, fontSize: isDesktop ? 15 : 13,
-            border: '1.5px solid rgba(255,255,255,.8)', cursor: 'pointer',
-            animation: 'revealWord 0.4s ease 2s both', opacity: 0,
-            transition: 'background .2s, transform .15s',
-          }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,.95)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,.7)'; e.currentTarget.style.transform = ''; }}
-          >🔍 Search anything</button>
+        {/* CTAs */}
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.6 }}
+          className="flex gap-3 justify-center mt-6 md:mt-10 relative z-10">
+          <button onClick={() => navigate('/quiz')}
+            className="px-6 md:px-8 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-[Outfit] font-bold text-sm md:text-base shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:-translate-y-0.5 transition-all active:scale-95">
+            🧠 Take a Quiz
+          </button>
+          <button onClick={() => navigate('/search')}
+            className="px-6 md:px-8 py-3 rounded-2xl bg-white/70 backdrop-blur-md border border-white/80 text-gray-700 font-[Outfit] font-bold text-sm md:text-base hover:bg-white hover:-translate-y-0.5 transition-all active:scale-95">
+            🔍 Search anything
+          </button>
+        </motion.div>
+
+        {/* scroll indicator */}
+        <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 2, repeat: Infinity }}
+          className="mt-8 text-gray-300 text-xl">↓</motion.div>
+      </section>
+
+      <div className="px-4 md:px-0">
+
+      {/* ═══════ EVENTS ═══════ */}
+      <Section>
+        <h2 className="font-[Outfit] text-xl md:text-2xl font-black mb-4">📅 Upcoming Events</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {events.slice(0, 6).map((ev, idx) => {
+            const now = new Date(), start = new Date(ev.date), end = new Date(ev.end);
+            const isLive = now >= start && now <= end;
+            const isWC = ev.id === 'wc26';
+            const colors = [['from-blue-600','to-purple-600'],['from-emerald-500','to-cyan-500'],['from-red-500','to-orange-500'],['from-purple-600','to-pink-500'],['from-amber-500','to-orange-500'],['from-cyan-500','to-blue-500']];
+            const [g1, g2] = colors[idx % colors.length];
+            return (
+              <motion.div key={ev.id} whileHover={{ y: -4, scale: 1.01 }} transition={{ type: 'spring', stiffness: 300 }}
+                onClick={isWC ? () => navigate('/worldcup') : undefined}
+                className={`relative overflow-hidden rounded-2xl p-5 md:p-6 bg-gradient-to-br ${g1} ${g2} text-white cursor-pointer shadow-lg`}>
+                <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-white/10" />
+                <div className="absolute -bottom-6 -left-6 w-16 h-16 rounded-full bg-white/5" />
+                <div className="flex items-center gap-3 relative z-10">
+                  <span className="text-3xl md:text-4xl drop-shadow-md">{ev.e}</span>
+                  <div>
+                    <div className="font-[Outfit] text-base md:text-lg font-black">{ev.n}</div>
+                    <div className="text-xs md:text-sm opacity-80">{ev.loc}</div>
+                  </div>
+                </div>
+                {isLive ? (
+                  <span className="inline-block mt-3 text-xs font-bold bg-white/20 backdrop-blur-sm rounded-lg px-3 py-1 animate-pulse relative z-10">🔴 LIVE</span>
+                ) : (
+                  <div className="mt-3 text-xs opacity-70 relative z-10">{start.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
+                )}
+              </motion.div>
+            );
+          })}
         </div>
+      </Section>
 
-        {/* Scroll indicator */}
-        <div style={{ marginTop: isDesktop ? 32 : 20, animation: 'scrollBounce 2s ease infinite', position: 'relative', zIndex: 2 }}>
-          <span style={{ fontSize: 20, color: '#d1ccc4' }}>↓</span>
+      {/* ═══════ TRENDING ═══════ */}
+      <Section className="mt-10">
+        <h2 className="font-[Outfit] text-xl md:text-2xl font-black mb-4">🔥 Trending Searches</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {trending.slice(0, 6).map((t, i) => {
+            const cls = ['border-l-purple-500 bg-purple-50/50','border-l-blue-500 bg-blue-50/50','border-l-red-500 bg-red-50/50','border-l-orange-500 bg-orange-50/50','border-l-emerald-500 bg-emerald-50/50','border-l-cyan-500 bg-cyan-50/50'][i % 6];
+            return (
+              <motion.div key={t.id} whileHover={{ y: -2 }} className={`rounded-2xl border-l-4 ${cls} p-4 md:p-5`}>
+                <div className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">Trending</div>
+                <div className="font-[Outfit] text-sm md:text-base font-bold text-gray-800">"{t.q}"</div>
+                <span className="inline-block mt-2 text-xs font-bold text-white bg-gray-800 rounded-full px-3 py-0.5">🔥 {t.vol}</span>
+              </motion.div>
+            );
+          })}
         </div>
-      </div>
+      </Section>
 
-      {/* ===== EVENTS ===== */}
-      <div style={sectionTitleStyle(isDesktop)}>{'\u{1F4C5}'} Upcoming Events</div>
-      <div style={{
-        display: isDesktop ? 'grid' : 'flex',
-        gridTemplateColumns: isDesktop ? 'repeat(3, 1fr)' : undefined,
-        gap: isDesktop ? 16 : 12,
-        overflowX: isDesktop ? 'visible' : 'auto',
-        paddingBottom: isDesktop ? 0 : 8,
-        scrollbarWidth: 'none',
-      }}>
-        {events.map((ev, idx) => {
-          const now = new Date();
-          const start = new Date(ev.date);
-          const end = new Date(ev.end);
-          const evColors = [['#2563eb','#7c3aed'],['#16a34a','#0891b2'],['#dc2626','#ea580c'],['#7c3aed','#db2777']];
-          const [ec1,ec2] = evColors[idx % evColors.length];
-          const isLive = now >= start && now <= end;
-          const isWC = ev.id === 'wc26';
+      {/* ═══════ 5-MIN GUIDES ═══════ */}
+      <Section className="mt-10">
+        <h2 className="font-[Outfit] text-xl md:text-2xl font-black mb-4">⏱️ 5-Minute Guides</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {fiveMinGuides.map(g => {
+            const sp = sports.find(s => s.id === g.sport);
+            return (
+              <motion.div key={g.id} whileHover={{ y: -4 }} transition={{ type: 'spring', stiffness: 300 }}
+                onClick={() => sp && navigate('/sports/' + sp.id + '/beginners')}
+                className="rounded-2xl bg-white border border-gray-100 shadow-sm p-4 cursor-pointer hover:shadow-md transition-shadow">
+                <span className="text-3xl">{g.e}</span>
+                <span className="inline-block mt-2 text-[9px] font-extrabold text-blue-600 bg-blue-50 rounded-full px-2 py-0.5">{g.tag}</span>
+                <div className="font-[Outfit] text-sm font-bold mt-2 text-gray-800">{g.title}</div>
+                <div className="text-xs text-gray-400 mt-0.5">{g.sub}</div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </Section>
 
-          return (
-            <div
-              key={ev.id}
-              onClick={isWC ? () => navigate('/worldcup') : undefined}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = `0 16px 40px ${ec1}40`; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = `0 8px 24px ${ec1}30`; }}
-              style={{
-                minWidth: isDesktop ? 'auto' : 260, flexShrink: 0,
-                padding: isDesktop ? 24 : 18, borderRadius: isDesktop ? 20 : 16,
-                background: `linear-gradient(135deg, ${ec1}, ${ec2})`,
-                color: '#fff', position: 'relative', overflow: 'hidden',
-                cursor: isWC ? 'pointer' : 'default',
-                transition: 'transform .2s, box-shadow .2s',
-                boxShadow: `0 8px 24px ${ec1}30`,
-              }}
-            >
-              <div style={{ position: 'absolute', top: -30, right: -30, width: 100, height: 100, borderRadius: '50%', background: 'rgba(255,255,255,.1)' }} />
-              <div style={{ position: 'absolute', bottom: -20, left: -20, width: 70, height: 70, borderRadius: '50%', background: 'rgba(255,255,255,.07)' }} />
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <span style={{ fontSize: isDesktop ? 40 : 32, filter: 'drop-shadow(0 2px 8px rgba(0,0,0,.2))' }}>{ev.e}</span>
-                <div>
-                  <div style={{ ...h, fontSize: isDesktop ? 18 : 15, fontWeight: 900 }}>{ev.n}</div>
-                  <div style={{ ...h, fontSize: isDesktop ? 12 : 10, opacity: .85 }}>{ev.loc}</div>
-                </div>
-              </div>
-              {isLive ? (
-                <span style={{ ...h, display: 'inline-block', marginTop: 12, fontSize: 10, fontWeight: 800, color: '#fff', background: 'rgba(255,255,255,.2)', backdropFilter: 'blur(8px)', padding: '4px 12px', borderRadius: 8, animation: 'pulse 1.5s infinite' }}>
-                  🔴 LIVE NOW
-                </span>
-              ) : (
-                <div style={{ ...h, fontSize: isDesktop ? 12 : 10, color: 'rgba(255,255,255,.75)', marginTop: 12 }}>
-                  {start.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-
-      {/* ===== TRENDING ===== */}
-      <div style={sectionTitleStyle(isDesktop)}>{'\u{1F525}'} Trending Searches</div>
-      <div style={{
-        display: isDesktop ? 'grid' : 'flex',
-        gridTemplateColumns: isDesktop ? 'repeat(3, 1fr)' : undefined,
-        gap: isDesktop ? 16 : 12,
-        overflowX: isDesktop ? 'visible' : 'auto',
-        paddingBottom: isDesktop ? 0 : 8,
-        scrollbarWidth: 'none',
-      }}>
-        {trending.map((t, i) => {
-          const colors = ['#7c3aed','#2563eb','#dc2626','#ea580c','#16a34a','#0891b2'];
-          const cl = colors[i % colors.length];
-          return (
-            <div key={t.id} style={{
-              minWidth: isDesktop ? 'auto' : 200, flexShrink: 0,
-              padding: isDesktop ? 22 : 16, borderRadius: isDesktop ? 20 : 16,
-              background: `linear-gradient(135deg, ${cl}12, ${cl}06)`,
-              border: `1.5px solid ${cl}20`,
-              position: 'relative', overflow: 'hidden',
-              transition: 'transform .2s, box-shadow .2s', cursor: 'pointer',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = `0 12px 32px ${cl}18`; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = 'none'; }}
-            >
-              <div style={{ position: 'absolute', top: -20, right: -20, width: 80, height: 80, borderRadius: '50%', background: `${cl}08` }} />
-              <div style={{ ...h, fontSize: 11, fontWeight: 800, color: cl, letterSpacing: .5, marginBottom: 6 }}>TRENDING</div>
-              <div style={{ ...h, fontSize: isDesktop ? 16 : 14, fontWeight: 700, color: '#1a1a2e', lineHeight: 1.3 }}>"{t.q}"</div>
-              <div style={{ ...h, display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 10, fontSize: 11, fontWeight: 700, color: '#fff', background: cl, padding: '4px 10px', borderRadius: 8 }}>
-                🔥 {t.vol} searches
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* ===== 5-MINUTE GUIDES ===== */}
-      <div style={sectionTitleStyle(isDesktop)}>{'\u23F1\uFE0F'} 5-Minute Guides</div>
-      <div style={{
-        display: isDesktop ? 'grid' : 'flex',
-        gridTemplateColumns: isDesktop ? 'repeat(3, 1fr)' : undefined,
-        gap: isDesktop ? 16 : 12,
-        overflowX: isDesktop ? 'visible' : 'auto',
-        paddingBottom: isDesktop ? 0 : 8,
-        scrollbarWidth: 'none',
-      }}>
-        {fiveMinGuides.map((g) => {
-          const sport = sports.find((s) => s.id === g.sport);
-          return (
-            <GuideCard
-              key={g.id}
-              guide={g}
-              isDesktop={isDesktop}
-              onClick={() => sport && navigate('/sports/' + sport.id)}
-            />
-          );
-        })}
-      </div>
-
-      {/* ===== WHERE TO WATCH ===== */}
-      <div style={sectionTitleStyle(isDesktop)}>{'\u{1F4FA}'} Where to Watch</div>
-      <div style={{
-        display: isDesktop ? 'grid' : 'flex',
-        gridTemplateColumns: isDesktop ? 'repeat(2, 1fr)' : undefined,
-        gap: isDesktop ? 16 : 12,
-        overflowX: isDesktop ? 'visible' : 'auto',
-        paddingBottom: isDesktop ? 0 : 8,
-        scrollbarWidth: 'none',
-      }}>
-        {whereToWatch.map((w) => {
-          const wSport = sports.find((s) => s.id === w.sport);
-          const wc = wSport?.c || '#2563eb';
-          return (
-            <div key={w.sport} style={{
-              minWidth: isDesktop ? 'auto' : 260,
-              flexShrink: 0,
-              borderRadius: isDesktop ? 20 : 16,
-              overflow: 'hidden',
-              background: `linear-gradient(160deg, ${wc}08, rgba(255,255,255,0.85))`,
-              border: '1px solid rgba(255,255,255,0.6)',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
-              transition: 'all 0.2s',
-            }}>
-              {/* Top accent stripe */}
-              <div style={{ height: 4, background: `linear-gradient(90deg, ${wc}, ${wc}88)` }} />
-              <div style={{ padding: isDesktop ? 20 : 14 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                  <div style={{
-                    width: isDesktop ? 40 : 34,
-                    height: isDesktop ? 40 : 34,
-                    borderRadius: '50%',
-                    background: `${wc}18`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: isDesktop ? 20 : 16,
-                  }}>{w.e}</div>
-                  <div style={{
-                    fontSize: isDesktop ? 16 : 14,
-                    fontWeight: 800,
-                    color: '#1a1a2e',
-                    ...h,
-                  }}>{w.n}</div>
-                </div>
-                {w.regions.map((r) => (
-                  <div key={r.r} style={{ marginTop: 10 }}>
-                    <div style={{
-                      display: 'inline-block',
-                      fontSize: isDesktop ? 9 : 8,
-                      fontWeight: 800,
-                      color: '#fff',
-                      background: `${wc}90`,
-                      padding: '2px 8px',
-                      borderRadius: 4,
-                      letterSpacing: '0.06em',
-                      textTransform: 'uppercase',
-                      marginBottom: 6,
-                      ...h,
-                    }}>{r.r}</div>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginTop: 4 }}>
-                      {r.platforms.map((p) => (
-                        <span key={p} style={{
-                          fontSize: isDesktop ? 11 : 10,
-                          fontWeight: 600,
-                          color: wc,
-                          background: `${wc}12`,
-                          border: `1px solid ${wc}25`,
-                          padding: '3px 10px',
-                          borderRadius: 20,
-                          ...h,
-                        }}>{p}</span>
-                      ))}
+      {/* ═══════ WHERE TO WATCH ═══════ */}
+      <Section className="mt-10">
+        <h2 className="font-[Outfit] text-xl md:text-2xl font-black mb-4">📺 Where to Watch</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {whereToWatch.map(w => {
+            const sp = sports.find(s => s.id === w.sport);
+            const c = sp?.c || '#2563eb';
+            return (
+              <div key={w.sport} className="rounded-2xl bg-white border border-gray-100 shadow-sm overflow-hidden">
+                <div className="h-1" style={{ background: c }} />
+                <div className="p-4 md:p-5">
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="w-10 h-10 rounded-full flex items-center justify-center text-lg" style={{ background: c + '15' }}>{w.e}</span>
+                    <span className="font-[Outfit] text-base font-bold text-gray-800">{w.n}</span>
+                  </div>
+                  {w.regions.map(r => (
+                    <div key={r.r} className="mt-2">
+                      <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{r.r}</div>
+                      <div className="flex gap-1.5 mt-1 flex-wrap">
+                        {r.platforms.map(p => (
+                          <span key={p} className="text-xs font-semibold bg-gray-100 text-gray-600 rounded-full px-2.5 py-0.5">{p}</span>
+                        ))}
+                      </div>
                     </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </Section>
+
+      {/* ═══════ GLOSSARY ═══════ */}
+      <Section className="mt-10">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-[Outfit] text-xl md:text-2xl font-black">📖 Glossary</h2>
+          <button onClick={() => navigate('/glossary')} className="text-sm font-bold text-blue-600 hover:text-blue-800 transition-colors font-[Outfit]">
+            View all {glossary.length} →
+          </button>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+          {glossary.slice(0, 8).map(g => {
+            const sp = sports.find(s => s.n.toLowerCase().includes(g.sport?.toLowerCase?.() || ''));
+            const c = sp?.c || '#7c3aed';
+            return (
+              <div key={g.id} onClick={() => navigate(`/glossary/${g.term.toLowerCase().replace(/\s+/g, '-')}`)}
+                className="rounded-2xl bg-white border border-gray-100 shadow-sm p-4 cursor-pointer hover:shadow-md transition-shadow border-l-4" style={{ borderLeftColor: c }}>
+                <div className="font-[Outfit] text-base font-black text-gray-800">{g.term}</div>
+                <div className="text-xs text-gray-500 mt-1 leading-relaxed line-clamp-2">{g.def}</div>
+                <span className="inline-block mt-2 text-[10px] font-bold text-white rounded-full px-2 py-0.5" style={{ background: c }}>{g.sport}</span>
+              </div>
+            );
+          })}
+        </div>
+      </Section>
+
+      {/* ═══════ EXPLORE ═══════ */}
+      <Section className="mt-12">
+        <h2 className="font-[Outfit] text-2xl md:text-3xl font-black mb-5">🔍 Explore Sports</h2>
+
+        {/* search */}
+        <div className="relative mb-4" ref={searchRef}>
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 text-lg pointer-events-none">🔍</span>
+          <input
+            value={search} onChange={e => setSearch(e.target.value)}
+            onFocus={() => setSearchFocused(true)} onBlur={() => setTimeout(() => setSearchFocused(false), 200)}
+            placeholder={placeholders[placeholderIdx]}
+            className="w-full pl-12 pr-5 py-3.5 md:py-4 rounded-2xl bg-white border border-gray-200 text-sm md:text-base font-medium text-gray-800 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent focus:shadow-lg focus:shadow-emerald-500/10 transition-all font-[Outfit]"
+          />
+          {/* live dropdown */}
+          <AnimatePresence>
+            {searchFocused && liveResults && (
+              <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+                className="absolute top-full mt-2 left-0 right-0 bg-white rounded-2xl border border-gray-100 shadow-xl z-40 p-3 space-y-1">
+                {liveResults.sports.map(s => (
+                  <div key={s.id} onClick={() => { navigate('/sports/' + s.id); setSearch(''); }}
+                    className="flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 cursor-pointer">
+                    <span className="text-lg">{s.i}</span>
+                    <span className="text-sm font-bold text-gray-700">{s.n}</span>
                   </div>
                 ))}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* ===== GLOSSARY ===== */}
-      <div style={sectionTitleStyle(isDesktop)}>{'\u{1F4D6}'} Glossary</div>
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: isDesktop ? '1fr 1fr' : '1fr 1fr',
-        gap: isDesktop ? 16 : 10,
-      }}>
-        {glossary.slice(0, isDesktop ? 6 : 4).map((g) => {
-          const glossarySportColors = { Football: '#16a34a', Cricket: '#2563eb', Basketball: '#ea580c', Tennis: '#7c3aed', 'Formula 1': '#dc2626', Rugby: '#b91c1c', Pickleball: '#0891b2', MMA: '#9333ea', 'Cricket / Football': '#2563eb' };
-          const gc = glossarySportColors[g.sport] || '#7c3aed';
-          return (
-            <div key={g.id} style={{
-              ...glassCard(isDesktop),
-              padding: isDesktop ? 20 : 12,
-              borderLeft: `4px solid ${gc}`,
-              borderRadius: isDesktop ? '4px 20px 20px 4px' : '4px 16px 16px 4px',
-              background: `linear-gradient(135deg, ${gc}06, rgba(255,255,255,0.85))`,
-              position: 'relative',
-              overflow: 'hidden',
-            }}>
-              <div style={{ position: 'absolute', top: -15, right: -15, width: 60, height: 60, borderRadius: '50%', background: `${gc}08` }} />
-              <div style={{
-                fontSize: isDesktop ? 17 : 14,
-                fontWeight: 900,
-                color: '#1a1a2e',
-                letterSpacing: '-0.01em',
-                ...h,
-              }}>{g.term}</div>
-              <div style={{
-                display: 'inline-block',
-                fontSize: isDesktop ? 9 : 8,
-                fontWeight: 800,
-                color: '#fff',
-                background: gc,
-                padding: '2px 10px',
-                borderRadius: 20,
-                marginTop: 6,
-                marginBottom: 6,
-                letterSpacing: '0.04em',
-                textTransform: 'uppercase',
-                ...h,
-              }}>{g.sport}</div>
-              <div style={{
-                fontSize: isDesktop ? 12 : 10,
-                color: '#555',
-                marginTop: 4,
-                lineHeight: 1.6,
-                ...h,
-              }}>
-                {g.def.length > (isDesktop ? 120 : 80) ? g.def.slice(0, isDesktop ? 120 : 80) + '...' : g.def}
-              </div>
-              <div style={{
-                marginTop: 10,
-                fontSize: isDesktop ? 11 : 10,
-                fontWeight: 700,
-                color: gc,
-                cursor: 'pointer',
-                ...h,
-              }}>Learn more {'\u2192'}</div>
-            </div>
-          );
-        })}
-      </div>
-      <div
-        onClick={() => navigate('/glossary')}
-        style={{
-          textAlign: 'center',
-          fontSize: isDesktop ? 14 : 12,
-          fontWeight: 700,
-          color: '#2563eb',
-          marginTop: 12,
-          cursor: 'pointer',
-          padding: '8px 0',
-          transition: 'color 0.2s',
-          ...h,
-        }}
-      >
-        View all {glossary.length} terms {'\u2192'}
-      </div>
-
-      {/* ===== BIRTHDAYS ===== */}
-      {birthdays.length > 0 && (
-        <>
-          <div style={sectionTitleStyle(isDesktop)}>
-            <span style={{ animation: 'bounce 1s infinite', display: 'inline-block' }}>{'\u{1F382}'}</span> Born Today
-          </div>
-          <div style={{
-            display: isDesktop ? 'grid' : 'flex',
-            gridTemplateColumns: isDesktop ? 'repeat(2, 1fr)' : undefined,
-            flexDirection: isDesktop ? undefined : 'column',
-            gap: isDesktop ? 16 : 8,
-          }}>
-            {birthdays.map((b, i) => (
-              <div key={i} style={{
-                ...glassCard(isDesktop),
-                padding: isDesktop ? 20 : 12,
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <span style={{
-                    fontSize: isDesktop ? 28 : 22,
-                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
-                  }}>{b.e}</span>
-                  <div>
-                    <div style={{
-                      fontSize: isDesktop ? 15 : 13,
-                      fontWeight: 800,
-                      color: '#1a1a2e',
-                      ...h,
-                    }}>{b.name}</div>
-                    <div style={{
-                      fontSize: isDesktop ? 12 : 10,
-                      color: '#888',
-                      ...h,
-                    }}>{b.sport}</div>
+                {liveResults.glossary.map(g => (
+                  <div key={g.id} onClick={() => navigate(`/glossary/${g.term.toLowerCase().replace(/\s+/g, '-')}`)}
+                    className="flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 cursor-pointer">
+                    <span className="text-lg">📖</span>
+                    <span className="text-sm font-semibold text-gray-600">{g.term}</span>
                   </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </>
-      )}
+                ))}
+                <div onClick={() => { navigate('/search'); setSearch(''); }}
+                  className="text-center text-xs font-bold text-blue-600 pt-2 cursor-pointer hover:text-blue-800">See all results →</div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
 
-      {/* ===== EXPLORE / SEARCH ===== */}
-      <div style={{
-        ...sectionTitleStyle(isDesktop),
-        marginTop: isDesktop ? 48 : 32,
-        fontSize: isDesktop ? 24 : 18,
-      }}>{'\u{1F50D}'} Explore Sports</div>
-
-      <div style={{
-        ...glassCard(isDesktop),
-        padding: isDesktop ? 24 : 16,
-        marginBottom: 16,
-      }}>
-        <SearchBar
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder={`Search ${sports.length} sports...`}
-        />
-
-        {/* Category Chips */}
-        <div style={{
-          display: 'flex',
-          flexWrap: isDesktop ? 'wrap' : 'nowrap',
-          gap: 8,
-          marginTop: 16,
-          overflowX: isDesktop ? 'visible' : 'auto',
-          scrollbarWidth: 'none',
-          paddingBottom: isDesktop ? 0 : 4,
-        }}>
-          <button
-            style={cat === 'all' ? chipActive : chipBase}
-            onClick={() => setCat('all')}
-          >
-            All
-          </button>
-          {CATS.map((c) => (
-            <button
-              key={c.id}
-              style={cat === c.id ? chipActive : chipBase}
-              onClick={() => setCat(c.id)}
-            >
-              {c.e} {c.n} ({catCounts[c.id] || 0})
+        {/* category chips */}
+        <div className="flex gap-2 overflow-x-auto md:flex-wrap pb-2 mb-2 scrollbar-none">
+          <button onClick={() => setCat('all')} className={`shrink-0 rounded-full px-4 py-2 text-xs md:text-sm font-bold transition-all ${cat === 'all' ? 'bg-gray-900 text-white shadow-md' : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'}`}>All</button>
+          {categories.map(c => catCounts[c.id] > 0 && (
+            <button key={c.id} onClick={() => setCat(c.id)} className={`shrink-0 rounded-full px-4 py-2 text-xs md:text-sm font-bold transition-all ${cat === c.id ? 'bg-gray-900 text-white shadow-md' : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'}`}>
+              {c.e} {c.n}
             </button>
           ))}
         </div>
-
-        {/* Type / Contact Chips */}
-        <div style={{
-          display: 'flex',
-          flexWrap: isDesktop ? 'wrap' : 'nowrap',
-          gap: 8,
-          marginTop: 10,
-          overflowX: isDesktop ? 'visible' : 'auto',
-          scrollbarWidth: 'none',
-          paddingBottom: isDesktop ? 0 : 4,
-        }}>
-          {TYPE_FILTERS.map((t) => (
-            <button
-              key={t.id}
-              style={type === t.id ? chipActive : chipBase}
-              onClick={() => setType(t.id)}
-            >
+        <div className="flex gap-2 overflow-x-auto md:flex-wrap pb-3 mb-4 scrollbar-none">
+          {TYPE_FILTERS.map(t => (
+            <button key={t.id} onClick={() => setType(t.id)} className={`shrink-0 rounded-full px-4 py-2 text-xs md:text-sm font-bold transition-all ${type === t.id ? 'bg-gray-900 text-white shadow-md' : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'}`}>
               {t.label}
             </button>
           ))}
         </div>
-      </div>
 
-      {/* ===== SPORT CARDS ===== */}
-      <div style={{
-        marginTop: 8,
-        display: 'grid',
-        gridTemplateColumns: isDesktop ? 'repeat(3, 1fr)' : 'repeat(2, 1fr)',
-        gap: isDesktop ? 16 : 10,
-      }}>
-        {filtered.length === 0 && (
-          <div style={{
-            gridColumn: '1 / -1',
-            textAlign: 'center',
-            color: '#aaa',
-            fontSize: isDesktop ? 15 : 13,
-            padding: 32,
-            ...h,
-          }}>
-            No sports match your filters.
-          </div>
-        )}
-        {filtered.map((s) => (
-          <SportCard key={s.id} sport={s} isDesktop={isDesktop} onClick={() => navigate('/sports/' + s.id)} />
-        ))}
-      </div>
-    </div>
-  );
-}
+        {/* sport grid */}
+        <motion.div variants={stagger} initial="initial" animate="animate"
+          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+          {filtered.length === 0 && (
+            <div className="col-span-full text-center py-12 text-gray-400 font-[Outfit] text-sm">No sports match your filters.</div>
+          )}
+          {filtered.map(s => (
+            <motion.div key={s.id} variants={fadeUp} whileHover={{ y: -6 }} transition={{ type: 'spring', stiffness: 300 }}
+              onClick={() => navigate('/sports/' + s.id)}
+              className="group relative rounded-2xl overflow-hidden cursor-pointer shadow-md hover:shadow-xl transition-shadow">
+              {/* image or gradient */}
+              {images[s.id] ? (
+                <div className="h-36 md:h-44 overflow-hidden">
+                  <img src={images[s.id]} alt={s.n} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy" />
+                </div>
+              ) : (
+                <div className="h-36 md:h-44 flex items-center justify-center text-5xl" style={{ background: `linear-gradient(135deg, ${s.c}, ${s.c}cc)` }}>{s.i}</div>
+              )}
+              {/* overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none" />
+              {/* badges */}
+              <div className="absolute top-2 right-2 flex gap-1">
+                {s.oly && <span className="text-[9px] font-extrabold text-white bg-amber-500/80 backdrop-blur-sm rounded-md px-1.5 py-0.5">OLYMPIC</span>}
+                {s.cat === 'trending' && <span className="text-[9px] font-extrabold text-white bg-orange-500/80 backdrop-blur-sm rounded-md px-1.5 py-0.5">TRENDING</span>}
+              </div>
+              {/* info */}
+              <div className="absolute bottom-0 left-0 right-0 p-3 md:p-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl md:text-2xl">{s.i}</span>
+                  <div>
+                    <div className="font-[Outfit] text-sm md:text-base font-black text-white drop-shadow-md">{s.n}</div>
+                    <div className="text-[10px] md:text-xs text-white/80">{s.fans} fans · {s.r ? s.r.length : 0} rules</div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      </Section>
 
-/* ── Guide Card with hover ── */
-function GuideCard({ guide: g, isDesktop, onClick }) {
-  const [hovered, setHovered] = useState(false);
-  const sport = sports.find((s) => s.id === g.sport);
-  const sc = sport?.c || '#2563eb';
-
-  return (
-    <div
-      onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        minWidth: isDesktop ? 'auto' : 220,
-        padding: isDesktop ? 24 : 16,
-        flexShrink: 0,
-        cursor: 'pointer',
-        borderRadius: isDesktop ? 20 : 16,
-        background: `linear-gradient(135deg, ${sc}14, ${sc}08)`,
-        border: `1.5px solid ${sc}25`,
-        position: 'relative',
-        overflow: 'hidden',
-        transition: 'all 0.25s cubic-bezier(.4,0,.2,1)',
-        transform: hovered ? 'translateY(-5px) scale(1.02)' : 'translateY(0) scale(1)',
-        boxShadow: hovered
-          ? `0 16px 48px ${sc}30, 0 4px 12px ${sc}18`
-          : '0 4px 16px rgba(0,0,0,0.06)',
-      }}
-    >
-      {/* Decorative circle top-right */}
-      <div style={{ position: 'absolute', top: -25, right: -25, width: 90, height: 90, borderRadius: '50%', background: `${sc}0a` }} />
-      {/* Emoji on gradient circle */}
-      <div style={{
-        width: isDesktop ? 56 : 46,
-        height: isDesktop ? 56 : 46,
-        borderRadius: '50%',
-        background: `linear-gradient(135deg, ${sc}, ${sc}bb)`,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: 10,
-        boxShadow: `0 4px 14px ${sc}40`,
-      }}>
-        <span style={{ fontSize: isDesktop ? 28 : 22, filter: 'brightness(1.1)' }}>{g.e}</span>
-      </div>
-      {/* 5 MIN READ pill */}
-      <div style={{
-        display: 'inline-block',
-        fontSize: isDesktop ? 9 : 8,
-        fontWeight: 800,
-        color: sc,
-        background: `${sc}18`,
-        padding: '3px 10px',
-        borderRadius: 20,
-        marginBottom: 8,
-        letterSpacing: '0.04em',
-        ...h,
-      }}>
-        5 MIN READ
-      </div>
-      <div style={{
-        fontSize: isDesktop ? 15 : 13,
-        fontWeight: 800,
-        color: '#1a1a2e',
-        lineHeight: 1.2,
-        ...h,
-      }}>{g.title}</div>
-      <div style={{
-        fontSize: isDesktop ? 12 : 10,
-        color: '#777',
-        marginTop: 4,
-        lineHeight: 1.4,
-        ...h,
-      }}>{g.sub}</div>
-    </div>
-  );
-}
-
-/* ── Sport Row Card ── */
-function SportCard({ sport: s, isDesktop, onClick }) {
-  const [hovered, setHovered] = useState(false);
-  const [imgErr, setImgErr] = useState(false);
-  const sportColor = s.c || '#2563eb';
-  const imgSrc = images[s.id];
-
-  const badges = [];
-  if (s.oly) badges.push({ label: 'OLYMPIC', color: '#fff', bg: 'rgba(217,119,6,.85)' });
-  if (s.tp === 'team') badges.push({ label: 'TEAM', color: '#fff', bg: 'rgba(37,99,235,.75)' });
-  if (s.ct === 'full') badges.push({ label: 'CONTACT', color: '#fff', bg: 'rgba(220,38,38,.75)' });
-  if (s.cat === 'trending') badges.push({ label: 'TRENDING', color: '#fff', bg: 'rgba(234,88,12,.85)' });
-  if (s.cat === 'esports') badges.push({ label: 'ESPORTS', color: '#fff', bg: 'rgba(124,58,237,.8)' });
-
-  return (
-    <div
-      onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        borderRadius: isDesktop ? 20 : 16,
-        overflow: 'hidden',
-        cursor: 'pointer',
-        transition: 'all .3s cubic-bezier(.34,1.56,.64,1)',
-        transform: hovered ? 'translateY(-6px) scale(1.02)' : 'none',
-        boxShadow: hovered
-          ? `0 20px 50px rgba(0,0,0,.15), 0 0 0 1px ${sportColor}30`
-          : '0 4px 20px rgba(0,0,0,.08)',
-        position: 'relative',
-      }}
-    >
-      {/* Image / Gradient background */}
-      {imgErr || !imgSrc ? (
-        <div style={{
-          height: isDesktop ? 180 : 140,
-          background: `linear-gradient(135deg, ${sportColor}, ${sportColor}cc)`,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: isDesktop ? 64 : 48,
-          transition: 'transform .4s',
-          transform: hovered ? 'scale(1.05)' : 'scale(1)',
-        }}>{s.i}</div>
-      ) : (
-        <div style={{ height: isDesktop ? 180 : 140, overflow: 'hidden' }}>
-          <img
-            src={imgSrc}
-            alt={s.n}
-            onError={() => setImgErr(true)}
-            style={{
-              width: '100%', height: '100%', objectFit: 'cover',
-              transition: 'transform .4s',
-              transform: hovered ? 'scale(1.08)' : 'scale(1)',
-            }}
-          />
-        </div>
-      )}
-
-      {/* Gradient overlay */}
-      <div style={{
-        position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-        background: `linear-gradient(to top, ${sportColor}ee 0%, ${sportColor}88 35%, transparent 60%)`,
-        pointerEvents: 'none',
-      }} />
-
-      {/* Badge row top-right */}
-      <div style={{ position: 'absolute', top: 8, right: 8, display: 'flex', gap: 4 }}>
-        {badges.map(b => (
-          <span key={b.label} style={{
-            ...h, fontSize: 7, fontWeight: 800, color: b.color,
-            background: b.bg, backdropFilter: 'blur(8px)',
-            padding: '3px 7px', borderRadius: 6,
-          }}>{b.label}</span>
-        ))}
-      </div>
-
-      {/* Content overlay bottom */}
-      <div style={{
-        position: 'absolute', bottom: 0, left: 0, right: 0,
-        padding: isDesktop ? '16px 18px' : '12px 14px',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: isDesktop ? 28 : 22 }}>{s.i}</span>
-          <div>
-            <div style={{ ...h, fontSize: isDesktop ? 17 : 14, fontWeight: 900, color: '#fff', textShadow: '0 1px 4px rgba(0,0,0,.3)' }}>
-              {s.n}
-            </div>
-            <div style={{ ...h, fontSize: isDesktop ? 11 : 9, color: 'rgba(255,255,255,.85)', marginTop: 1 }}>
-              {s.fans} fans · {s.r ? s.r.length : 0} rules
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
