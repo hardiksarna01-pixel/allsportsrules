@@ -8,6 +8,7 @@ import DiagramCard from './DiagramCard';
 import PlayerAvatar from './PlayerAvatar';
 import { useProfileContext } from '../../context/ProfileContext';
 import { usePageTitle } from '../../hooks/usePageTitle';
+import { getRules, getRulesByCategory } from '../../data/rules';
 import { diagrams } from '../../data/diagrams';
 import { positions as POSITIONS } from '../../data/positions';
 
@@ -44,7 +45,9 @@ export default function SportDetailPage({ sport, onBookmarkToggle }) {
 
   /* ── build tabs ── */
   const tabs = [];
-  tabs.push({ key: 'rules', label: 'Rules', count: sp.r ? sp.r.length : 0 });
+  const structuredCount = getRules(sportId).length;
+  const ruleCount = structuredCount > 0 ? structuredCount : (sp.r ? sp.r.length : 0);
+  tabs.push({ key: 'rules', label: 'Rules', count: ruleCount });
   if (POSITIONS[sportId]) tabs.push({ key: 'positions', label: 'Positions' });
   tabs.push({ key: 'players', label: 'Players', count: sp.p ? sp.p.length : 0 });
   if (sp.f) tabs.push({ key: 'facts', label: 'Facts', count: sp.f.length });
@@ -77,30 +80,50 @@ export default function SportDetailPage({ sport, onBookmarkToggle }) {
       /* ───── RULES ───── */
       case 'rules': {
         const d = diagrams[sportId];
+        const structuredRules = getRules(sportId);
+        const hasStructured = structuredRules.length > 0;
+        const rulesByCategory = hasStructured ? getRulesByCategory(sportId) : null;
+        const legacyRules = sp.r || [];
+
         return (
-          <motion.div className="space-y-3" variants={staggerContainer} initial="initial" animate="animate">
+          <motion.div className="space-y-4" variants={staggerContainer} initial="initial" animate="animate">
             {d && (
               <motion.div variants={staggerItem}>
                 <DiagramCard d={d} />
               </motion.div>
             )}
-            {(sp.r || []).map((rule, i) => (
-              <motion.div
-                key={i}
-                variants={staggerItem}
-                className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex gap-3 items-start"
-              >
-                <span
-                  className="shrink-0 w-8 h-8 rounded-xl flex items-center justify-center text-xs font-extrabold"
-                  style={{ background: c + '18', color: c }}
-                >
+
+            {/* Structured rules — grouped by category */}
+            {hasStructured ? Object.entries(rulesByCategory).map(([cat, rules]) => (
+              <motion.div key={cat} variants={staggerItem} className="space-y-3">
+                {/* Category header */}
+                <div className="flex items-center gap-2 pt-4 pb-1">
+                  <div className="w-1.5 h-5 rounded-full" style={{ background: c }} />
+                  <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wide">{cat}</h3>
+                  <span className="text-xs text-gray-400 ml-1">({rules.length})</span>
+                </div>
+                {rules.map((rule) => (
+                  <StructuredRuleCard key={rule.id} rule={rule} color={c} />
+                ))}
+              </motion.div>
+            )) : legacyRules.map((rule, i) => (
+              /* Legacy string rules fallback */
+              <motion.div key={i} variants={staggerItem}
+                className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex gap-3 items-start">
+                <span className="shrink-0 w-8 h-8 rounded-xl flex items-center justify-center text-xs font-extrabold"
+                  style={{ background: c + '18', color: c }}>
                   {i + 1}
                 </span>
-                <span className="text-sm md:text-base text-gray-700 leading-relaxed font-medium">
-                  {rule}
-                </span>
+                <span className="text-sm md:text-base text-gray-700 leading-relaxed font-medium">{rule}</span>
               </motion.div>
             ))}
+
+            {/* Rule count summary */}
+            {hasStructured && (
+              <div className="text-center py-4 text-xs text-gray-400">
+                {structuredRules.length} official rules · Source: {sp.gb || 'Official governing body'}
+              </div>
+            )}
           </motion.div>
         );
       }
@@ -568,5 +591,58 @@ export default function SportDetailPage({ sport, onBookmarkToggle }) {
         </AnimatePresence>
       </div>
     </motion.div>
+  );
+}
+
+/* ── Structured Rule Card (expandable with sub-rules) ── */
+function StructuredRuleCard({ rule, color }) {
+  const [open, setOpen] = useState(false);
+  const num = rule.law || rule.rule || '';
+
+  return (
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      {/* Header — always visible */}
+      <button onClick={() => setOpen(!open)}
+        className="w-full flex items-start gap-3 p-4 text-left hover:bg-gray-50 transition-colors">
+        {/* Number badge */}
+        <span className="shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-xs font-extrabold mt-0.5"
+          style={{ background: color + '15', color }}>
+          {num}
+        </span>
+        <div className="flex-1 min-w-0">
+          <div className="text-sm font-bold text-gray-900">{rule.title}</div>
+          <div className="text-xs text-gray-500 mt-0.5 leading-relaxed">{rule.short}</div>
+        </div>
+        {/* Expand icon */}
+        <svg className={`w-4 h-4 text-gray-400 shrink-0 mt-1 transition-transform ${open ? 'rotate-180' : ''}`}
+          fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {/* Expanded content */}
+      {open && (
+        <div className="px-4 pb-4 border-t border-gray-50">
+          {/* Full explanation */}
+          <p className="text-sm text-gray-600 leading-relaxed mt-3">{rule.full}</p>
+
+          {/* Sub-rules */}
+          {rule.sub && rule.sub.length > 0 && (
+            <div className="mt-4 space-y-2">
+              <div className="text-xs font-bold text-gray-400 uppercase tracking-wide">Key Points</div>
+              {rule.sub.map(s => (
+                <div key={s.id} className="flex gap-2 text-xs bg-gray-50 rounded-lg p-2.5">
+                  <span className="font-bold text-gray-500 shrink-0">•</span>
+                  <div>
+                    <span className="font-semibold text-gray-800">{s.title}: </span>
+                    <span className="text-gray-600">{s.text}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
