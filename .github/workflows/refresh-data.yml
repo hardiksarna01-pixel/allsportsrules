@@ -1,0 +1,85 @@
+name: Refresh Sports Data
+
+on:
+  schedule:
+    # Every Sunday at 6:00 AM UTC
+    - cron: '0 6 * * 0'
+  workflow_dispatch:
+    inputs:
+      scripts:
+        description: 'Which scripts to run (comma-separated: rankings,events,streaming,kb or all)'
+        required: false
+        default: 'all'
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Determine scripts to run
+        id: scripts
+        run: |
+          INPUT="${{ github.event.inputs.scripts || 'all' }}"
+          if [ "$INPUT" = "all" ]; then
+            echo "run_rankings=true" >> $GITHUB_OUTPUT
+            echo "run_events=true" >> $GITHUB_OUTPUT
+            echo "run_streaming=true" >> $GITHUB_OUTPUT
+            echo "run_kb=true" >> $GITHUB_OUTPUT
+          else
+            echo "run_rankings=$(echo $INPUT | grep -q 'rankings' && echo true || echo false)" >> $GITHUB_OUTPUT
+            echo "run_events=$(echo $INPUT | grep -q 'events' && echo true || echo false)" >> $GITHUB_OUTPUT
+            echo "run_streaming=$(echo $INPUT | grep -q 'streaming' && echo true || echo false)" >> $GITHUB_OUTPUT
+            echo "run_kb=$(echo $INPUT | grep -q 'kb' && echo true || echo false)" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Fetch Rankings
+        if: steps.scripts.outputs.run_rankings == 'true'
+        env:
+          FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
+        run: node src/scripts/fetchRankings.js --live
+
+      - name: Fetch Events
+        if: steps.scripts.outputs.run_events == 'true'
+        env:
+          FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
+        run: node src/scripts/fetchEvents.js --live
+
+      - name: Fetch Streaming
+        if: steps.scripts.outputs.run_streaming == 'true'
+        env:
+          FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
+        run: node src/scripts/fetchStreaming.js --live
+
+      - name: Build Knowledge Base
+        if: steps.scripts.outputs.run_kb == 'true'
+        env:
+          FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
+        run: node src/scripts/buildKnowledgeBase.js --live
+
+      - name: Check for changes
+        id: changes
+        run: |
+          git diff --quiet src/data/ && echo "changed=false" >> $GITHUB_OUTPUT || echo "changed=true" >> $GITHUB_OUTPUT
+
+      - name: Commit and push changes
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add src/data/rankings.js src/data/events.js src/data/whereToWatch.js src/data/knowledgeBase.js
+          git commit -m "chore: refresh sports data $(date -u +%Y-%m-%d)"
+          git push
