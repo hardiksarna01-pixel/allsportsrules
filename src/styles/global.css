@@ -108,6 +108,12 @@ ul, ol {
   display: none;
 }
 
+/* ── Search Bar Placeholder ────────────────────────── */
+input::placeholder {
+  color: #9CA3AF !important;
+  opacity: 1;
+}
+
 /* ── Responsive Shell ───────────────────────────────── */
 #root {
   width: 100%;

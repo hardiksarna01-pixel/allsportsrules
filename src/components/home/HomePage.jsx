@@ -117,13 +117,27 @@ export default function HomePage() {
           The free encyclopedia of sports rules. {sports.length} sports · {glossary.length}+ terms · AI-powered.
         </motion.p>
 
-        {/* Big search bar */}
+        {/* Big search bar — inline styles to prevent CSS override */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
           className="mt-7 max-w-2xl mx-auto relative">
           <input value={search} onChange={e => setSearch(e.target.value)}
             placeholder="Search any sport, rule, or term..."
-            className="w-full py-4 pl-12 pr-5 rounded-full bg-white border border-gray-300 text-[15px] text-gray-900 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:shadow-lg transition-all" />
-          <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            style={{
+              width: '100%',
+              padding: '16px 20px 16px 48px',
+              borderRadius: '9999px',
+              backgroundColor: '#FFFFFF',
+              border: '2px solid #D1D5DB',
+              fontSize: '16px',
+              color: '#111827',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+              outline: 'none',
+              transition: 'all 0.2s',
+            }}
+            onFocus={e => { e.target.style.borderColor = '#10B981'; e.target.style.boxShadow = '0 4px 24px rgba(16,185,129,0.15)'; }}
+            onBlur={e => { e.target.style.borderColor = '#D1D5DB'; e.target.style.boxShadow = '0 4px 16px rgba(0,0,0,0.08)'; }}
+          />
+          <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: '#6B7280' }} />
         </motion.div>
 
         {/* Filter pills (Google-style) */}
