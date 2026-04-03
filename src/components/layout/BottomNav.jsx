@@ -1,19 +1,19 @@
-import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { h } from '../../constants';
+import { motion } from 'framer-motion';
 
 const tabs = [
   { id: 'home', icon: '🏠', label: 'Home', path: '/' },
   { id: 'ai', icon: '🤖', label: 'AI', path: '/ai' },
-  { id: 'calc', icon: '🧮', label: 'Calc', path: '/calculators' },
-  { id: 'explore', icon: '🌍', label: 'Explore', path: '/' },
+  { id: 'games', icon: '🎮', label: 'Games', path: '/games' },
+  { id: 'explore', icon: '🌍', label: 'Explore', path: '/explore' },
   { id: 'rank', icon: '🏆', label: 'Rank', path: '/rankings' },
   { id: 'profile', icon: '👤', label: 'Profile', path: '/profile' },
 ];
 
 function getActiveTab(pathname) {
   if (pathname === '/ai') return 'ai';
-  if (pathname === '/calculators') return 'calc';
+  if (pathname === '/games') return 'games';
+  if (pathname.startsWith('/explore')) return 'explore';
   if (pathname === '/rankings') return 'rank';
   if (pathname === '/profile') return 'profile';
   return 'home';
@@ -22,93 +22,41 @@ function getActiveTab(pathname) {
 export default function BottomNav() {
   const navigate = useNavigate();
   const location = useLocation();
-  const tab = getActiveTab(location.pathname);
-
-  const [isDesktop, setIsDesktop] = useState(
-    typeof window !== 'undefined' && window.innerWidth >= 768
-  );
-  useEffect(() => {
-    const handler = () => setIsDesktop(window.innerWidth >= 768);
-    window.addEventListener('resize', handler);
-    return () => window.removeEventListener('resize', handler);
-  }, []);
+  const activeTab = getActiveTab(location.pathname);
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        zIndex: 100,
-        background: 'rgba(251,248,243,.92)',
-        backdropFilter: 'blur(24px)',
-        WebkitBackdropFilter: 'blur(24px)',
-        borderTop: '1px solid rgba(0,0,0,.06)',
-        boxShadow: '0 -1px 3px rgba(0,0,0,.04)',
-        ...h,
-      }}
-    >
-      <div
-        style={{
-          maxWidth: 1400,
-          margin: '0 auto',
-          display: 'flex',
-          justifyContent: 'space-around',
-          alignItems: 'center',
-          padding: isDesktop
-            ? '10px 32px env(safe-area-inset-bottom, 10px)'
-            : '6px 0 env(safe-area-inset-bottom, 6px)',
-        }}
-      >
-        {tabs.map((t) => {
-          const active = tab === t.id;
+    <div className="fixed bottom-0 inset-x-0 z-50 backdrop-blur-xl bg-white/90 border-t border-gray-200/50">
+      <div className="max-w-7xl mx-auto flex justify-around items-center h-16 md:h-[4.5rem] px-2 pb-[env(safe-area-inset-bottom)]">
+        {tabs.map((tab) => {
+          const isActive = activeTab === tab.id;
           return (
-            <div
-              key={t.id}
-              onClick={() => navigate(t.path)}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                cursor: 'pointer',
-                padding: isDesktop ? '6px 16px' : '4px 8px',
-                position: 'relative',
-                borderRadius: isDesktop ? 10 : 0,
-                transition: 'background .15s',
-                ...(isDesktop && active ? { background: 'rgba(22,163,74,.08)' } : {}),
-              }}
-              onMouseEnter={(e) => {
-                if (isDesktop) e.currentTarget.style.background = active ? 'rgba(22,163,74,.12)' : 'rgba(0,0,0,.04)';
-              }}
-              onMouseLeave={(e) => {
-                if (isDesktop) e.currentTarget.style.background = active ? 'rgba(22,163,74,.08)' : 'transparent';
-              }}
+            <button
+              key={tab.id}
+              onClick={() => navigate(tab.path)}
+              className="relative flex flex-col items-center gap-0.5 py-2 px-3 bg-transparent border-none cursor-pointer"
             >
-              {active && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    width: isDesktop ? 24 : 16,
-                    height: 3,
-                    borderRadius: 2,
-                    background: '#16a34a',
-                  }}
+              <span
+                className={`text-xl md:text-2xl transition-colors ${
+                  isActive ? 'text-emerald-600' : 'text-gray-400 hover:text-gray-600'
+                }`}
+              >
+                {tab.icon}
+              </span>
+              <span
+                className={`text-[10px] md:text-xs font-semibold mt-0.5 transition-colors ${
+                  isActive ? 'text-emerald-600' : 'text-gray-400 hover:text-gray-600'
+                }`}
+              >
+                {tab.label}
+              </span>
+              {isActive && (
+                <motion.div
+                  layoutId="activeTab"
+                  className="absolute -bottom-0.5 w-8 h-1 bg-emerald-500 rounded-full"
+                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                 />
               )}
-              <span style={{ fontSize: isDesktop ? 22 : 18 }}>{t.icon}</span>
-              <span
-                style={{
-                  fontSize: isDesktop ? 11 : 9,
-                  fontWeight: 700,
-                  color: active ? '#16a34a' : '#8a8380',
-                  marginTop: isDesktop ? 3 : 1,
-                }}
-              >
-                {t.label}
-              </span>
-            </div>
+            </button>
           );
         })}
       </div>

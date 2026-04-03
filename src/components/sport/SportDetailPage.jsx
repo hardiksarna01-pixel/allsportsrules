@@ -1,27 +1,37 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { h } from '../../constants';
-import { usePageTitle } from '../../hooks/usePageTitle';
+import { motion, AnimatePresence } from 'framer-motion';
 import SportImg from './SportImg';
 import FieldDiagram from './FieldDiagram';
 import FactsSection from './FactsSection';
 import DiagramCard from './DiagramCard';
 import PlayerAvatar from './PlayerAvatar';
 import { useProfileContext } from '../../context/ProfileContext';
+import { usePageTitle } from '../../hooks/usePageTitle';
 import { diagrams } from '../../data/diagrams';
 import { positions as POSITIONS } from '../../data/positions';
 
-const pill = {
-  fontSize: 7,
-  fontWeight: 800,
-  padding: '2px 6px',
-  borderRadius: 4,
-  letterSpacing: 0.5,
+/* ── animation variants ── */
+const fadeSlide = {
+  initial: { opacity: 0, y: 10 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -10 },
+  transition: { duration: 0.2 },
+};
+
+const staggerContainer = {
+  animate: { transition: { staggerChildren: 0.04 } },
+};
+
+const staggerItem = {
+  initial: { opacity: 0, y: 12 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.25 } },
 };
 
 export default function SportDetailPage({ sport, onBookmarkToggle }) {
   usePageTitle(sport ? `${sport.n} Rules & Guide` : null);
   const [tab, setTab] = useState('rules');
+  const [expandedFaq, setExpandedFaq] = useState({});
   const navigate = useNavigate();
   const { isBookmarked } = useProfileContext();
 
@@ -32,7 +42,7 @@ export default function SportDetailPage({ sport, onBookmarkToggle }) {
   const c = sp.c || '#6366f1';
   const bookmarked = isBookmarked(sportId);
 
-  // --- build tabs ---
+  /* ── build tabs ── */
   const tabs = [];
   tabs.push({ key: 'rules', label: 'Rules', count: sp.r ? sp.r.length : 0 });
   if (POSITIONS[sportId]) tabs.push({ key: 'positions', label: 'Positions' });
@@ -61,406 +71,302 @@ export default function SportDetailPage({ sport, onBookmarkToggle }) {
     }
   };
 
-  // --- render tab content ---
+  /* ── render tab content ── */
   const renderContent = () => {
     switch (tab) {
+      /* ───── RULES ───── */
       case 'rules': {
         const d = diagrams[sportId];
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {d && <DiagramCard d={d} />}
+          <motion.div className="space-y-3" variants={staggerContainer} initial="initial" animate="animate">
+            {d && (
+              <motion.div variants={staggerItem}>
+                <DiagramCard d={d} />
+              </motion.div>
+            )}
             {(sp.r || []).map((rule, i) => (
-              <div
+              <motion.div
                 key={i}
-                style={{
-                  background: '#fff',
-                  border: '1.5px solid #ede8e0',
-                  borderRadius: 12,
-                  padding: '10px 12px',
-                  display: 'flex',
-                  gap: 10,
-                  alignItems: 'flex-start',
-                }}
+                variants={staggerItem}
+                className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex gap-3 items-start"
               >
                 <span
-                  style={{
-                    flexShrink: 0,
-                    width: 22,
-                    height: 22,
-                    borderRadius: 7,
-                    background: c + '18',
-                    color: c,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: 10,
-                    fontWeight: 800,
-                  }}
+                  className="shrink-0 w-8 h-8 rounded-xl flex items-center justify-center text-xs font-extrabold"
+                  style={{ background: c + '18', color: c }}
                 >
                   {i + 1}
                 </span>
-                <span style={{ fontSize: 11, fontWeight: 600, color: '#2a2520', lineHeight: 1.55 }}>
+                <span className="text-sm md:text-base text-gray-700 leading-relaxed font-medium">
                   {rule}
                 </span>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         );
       }
 
+      /* ───── POSITIONS ───── */
       case 'positions': {
         const posData = POSITIONS[sportId];
         if (!posData) return null;
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <FieldDiagram sportId={sportId} />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              {posData.list.map((pos) => (
-                <div
-                  key={pos.id}
-                  style={{
-                    background: '#fff',
-                    border: '1.5px solid #ede8e0',
-                    borderRadius: 12,
-                    padding: '8px 12px',
-                    display: 'flex',
-                    gap: 10,
-                    alignItems: 'center',
-                  }}
-                >
-                  <span
-                    style={{
-                      width: 10,
-                      height: 10,
-                      borderRadius: '50%',
-                      background: posData.color,
-                      flexShrink: 0,
-                    }}
-                  />
-                  <div>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: '#2a2520' }}>{pos.n}</div>
-                    <div style={{ fontSize: 9, color: '#8a8380', marginTop: 1 }}>{pos.desc}</div>
-                  </div>
+          <motion.div className="space-y-3" variants={staggerContainer} initial="initial" animate="animate">
+            <motion.div variants={staggerItem}>
+              <FieldDiagram sportId={sportId} />
+            </motion.div>
+            {posData.list.map((pos) => (
+              <motion.div
+                key={pos.id}
+                variants={staggerItem}
+                className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex gap-3 items-center"
+              >
+                <span
+                  className="w-3 h-3 rounded-full shrink-0"
+                  style={{ background: posData.color }}
+                />
+                <div>
+                  <div className="text-sm font-bold text-gray-800">{pos.n}</div>
+                  <div className="text-xs text-gray-400 mt-0.5">{pos.desc}</div>
                 </div>
-              ))}
-            </div>
-          </div>
+              </motion.div>
+            ))}
+          </motion.div>
         );
       }
 
+      /* ───── PLAYERS ───── */
       case 'players':
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <motion.div className="space-y-3" variants={staggerContainer} initial="initial" animate="animate">
             {(sp.p || []).map((player, i) => (
-              <div
+              <motion.div
                 key={i}
+                variants={staggerItem}
                 onClick={() => navigate('player/' + i)}
-                style={{
-                  background: '#fff',
-                  border: '1.5px solid #ede8e0',
-                  borderRadius: 14,
-                  padding: '10px 12px',
-                  display: 'flex',
-                  gap: 12,
-                  alignItems: 'center',
-                  cursor: 'pointer',
-                  transition: 'box-shadow .2s',
-                }}
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
+                className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex gap-3 items-center cursor-pointer hover:shadow-md transition-shadow"
               >
                 <PlayerAvatar nm={player.nm} co={player.co} c={c} sz={40} />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: '#2a2520' }}>{player.nm}</div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-bold text-gray-800 truncate">{player.nm}</div>
                   {player.nk && (
-                    <div style={{ fontSize: 9, color: '#8a8380', fontStyle: 'italic' }}>
-                      "{player.nk}"
-                    </div>
+                    <div className="text-xs text-gray-400 italic truncate">"{player.nk}"</div>
                   )}
                   {player.rl && (
-                    <div style={{ fontSize: 9, color: '#6a6560', marginTop: 1 }}>{player.rl}</div>
+                    <div className="text-xs text-gray-500 mt-0.5">{player.rl}</div>
                   )}
                 </div>
                 {player.a && (
-                  <span
-                    style={{
-                      ...pill,
-                      background: '#22c55e18',
-                      color: '#16a34a',
-                    }}
-                  >
+                  <span className="bg-emerald-50 text-emerald-700 text-[10px] font-bold rounded-full px-2 py-0.5 shrink-0">
                     ACTIVE
                   </span>
                 )}
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         );
 
+      /* ───── FACTS ───── */
       case 'facts':
         return <FactsSection facts={sp.f} details={sp.fd_details} color={c} />;
 
+      /* ───── EQUIPMENT ───── */
       case 'equip':
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <motion.div className="space-y-3" variants={staggerContainer} initial="initial" animate="animate">
             {(sp.eq || []).map((item, i) => (
-              <div
+              <motion.div
                 key={i}
-                style={{
-                  background: '#fff',
-                  border: '1.5px solid #ede8e0',
-                  borderRadius: 12,
-                  padding: '10px 12px',
-                  display: 'flex',
-                  gap: 10,
-                  alignItems: 'center',
-                }}
+                variants={staggerItem}
+                className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex gap-3 items-center"
               >
                 <span
-                  style={{
-                    flexShrink: 0,
-                    width: 22,
-                    height: 22,
-                    borderRadius: 7,
-                    background: c + '18',
-                    color: c,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: 10,
-                    fontWeight: 800,
-                  }}
+                  className="shrink-0 w-8 h-8 rounded-xl flex items-center justify-center text-xs font-extrabold"
+                  style={{ background: c + '18', color: c }}
                 >
                   {i + 1}
                 </span>
-                <span style={{ fontSize: 11, fontWeight: 600, color: '#2a2520' }}>
-                  <span role="img" aria-label="equipment">🏷️</span> {item}
-                </span>
-              </div>
+                <span className="text-sm text-gray-700 font-semibold">{item}</span>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         );
 
+      /* ───── FIELD ───── */
       case 'field':
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <SportImg id={sportId} style={{ height: 160, borderRadius: 14 }} />
-            <div
-              style={{
-                background: '#fff',
-                border: '1.5px solid #ede8e0',
-                borderRadius: 12,
-                padding: '12px 14px',
-                fontSize: 11,
-                color: '#2a2520',
-                lineHeight: 1.6,
-              }}
-            >
+          <div className="space-y-3">
+            <div className="rounded-2xl overflow-hidden">
+              <SportImg id={sportId} style={{ height: 180, borderRadius: 16 }} />
+            </div>
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 text-sm text-gray-700 leading-relaxed">
               {sp.fd}
             </div>
           </div>
         );
 
+      /* ───── SCORING ───── */
       case 'scoring':
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <motion.div className="space-y-3" variants={staggerContainer} initial="initial" animate="animate">
             {sp.sc && sp.sc.pts && (
-              <div
-                style={{
-                  background: '#fff',
-                  border: '1.5px solid #ede8e0',
-                  borderRadius: 14,
-                  padding: '14px 14px',
-                }}
-              >
-                <div style={{ fontSize: 10, fontWeight: 800, color: c, textTransform: 'uppercase', marginBottom: 6 }}>
+              <motion.div variants={staggerItem} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                <div className="text-[10px] font-extrabold uppercase tracking-wider mb-2" style={{ color: c }}>
                   How Points are Scored
                 </div>
-                <div style={{ fontSize: 11, color: '#2a2520', lineHeight: 1.6 }}>{sp.sc.pts}</div>
-              </div>
+                <div className="text-sm text-gray-700 leading-relaxed">{sp.sc.pts}</div>
+              </motion.div>
             )}
             {sp.sc && sp.sc.win && (
-              <div
-                style={{
-                  background: '#fff',
-                  border: '1.5px solid #ede8e0',
-                  borderRadius: 14,
-                  padding: '14px 14px',
-                }}
-              >
-                <div style={{ fontSize: 10, fontWeight: 800, color: c, textTransform: 'uppercase', marginBottom: 6 }}>
+              <motion.div variants={staggerItem} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                <div className="text-[10px] font-extrabold uppercase tracking-wider mb-2" style={{ color: c }}>
                   How to Win
                 </div>
-                <div style={{ fontSize: 11, color: '#2a2520', lineHeight: 1.6 }}>{sp.sc.win}</div>
-              </div>
+                <div className="text-sm text-gray-700 leading-relaxed">{sp.sc.win}</div>
+              </motion.div>
             )}
-          </div>
+          </motion.div>
         );
 
+      /* ───── FORMATS ───── */
       case 'formats':
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <motion.div className="space-y-3" variants={staggerContainer} initial="initial" animate="animate">
             {(sp.fmt || []).map((fmt, i) => {
               const dash = fmt.indexOf('\u2014');
               const title = dash > -1 ? fmt.slice(0, dash).trim() : fmt;
               const desc = dash > -1 ? fmt.slice(dash + 1).trim() : '';
               return (
-                <div
+                <motion.div
                   key={i}
-                  style={{
-                    background: '#fff',
-                    border: '1.5px solid #ede8e0',
-                    borderRadius: 14,
-                    padding: '12px 14px',
-                  }}
+                  variants={staggerItem}
+                  className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5"
                 >
-                  <div style={{ fontSize: 12, fontWeight: 700, color: '#2a2520' }}>{title}</div>
+                  <div className="text-sm font-bold text-gray-800">{title}</div>
                   {desc && (
-                    <div style={{ fontSize: 10, color: '#6a6560', marginTop: 4, lineHeight: 1.5 }}>
-                      {desc}
-                    </div>
+                    <div className="text-xs text-gray-500 mt-1.5 leading-relaxed">{desc}</div>
                   )}
-                </div>
+                </motion.div>
               );
             })}
-          </div>
+          </motion.div>
         );
 
+      /* ───── HISTORY ───── */
       case 'history':
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <SportImg id={sportId} style={{ height: 140, borderRadius: 14 }} />
-            <div
-              style={{
-                background: '#fff',
-                border: '1.5px solid #ede8e0',
-                borderRadius: 12,
-                padding: '12px 14px',
-                fontSize: 11,
-                color: '#2a2520',
-                lineHeight: 1.7,
-              }}
-            >
+          <div className="space-y-3">
+            <div className="rounded-2xl overflow-hidden">
+              <SportImg id={sportId} style={{ height: 160, borderRadius: 16 }} />
+            </div>
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 text-sm text-gray-700 leading-relaxed">
               {sp.hist}
             </div>
           </div>
         );
 
+      /* ───── OFFICIALS ───── */
       case 'officials':
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <motion.div className="space-y-3" variants={staggerContainer} initial="initial" animate="animate">
             {sp.gb && (
-              <div
-                style={{
-                  background: c + '10',
-                  border: `1.5px solid ${c}30`,
-                  borderRadius: 14,
-                  padding: '12px 14px',
-                  display: 'flex',
-                  gap: 10,
-                  alignItems: 'center',
-                }}
+              <motion.div
+                variants={staggerItem}
+                className="rounded-2xl p-4 flex gap-3 items-center"
+                style={{ background: c + '10', border: `1.5px solid ${c}30` }}
               >
-                <span style={{ fontSize: 18 }}>🏛️</span>
+                <span className="text-2xl">🏛️</span>
                 <div>
-                  <div style={{ fontSize: 9, fontWeight: 700, color: c, textTransform: 'uppercase' }}>
+                  <div className="text-[10px] font-bold uppercase tracking-wider" style={{ color: c }}>
                     Governing Body
                   </div>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: '#2a2520', marginTop: 2 }}>
-                    {sp.gb}
-                  </div>
+                  <div className="text-sm font-bold text-gray-800 mt-0.5">{sp.gb}</div>
                 </div>
-              </div>
+              </motion.div>
             )}
             {(sp.off || []).map((official, i) => (
-              <div
+              <motion.div
                 key={i}
-                style={{
-                  background: '#fff',
-                  border: '1.5px solid #ede8e0',
-                  borderRadius: 12,
-                  padding: '10px 12px',
-                  display: 'flex',
-                  gap: 10,
-                  alignItems: 'center',
-                }}
+                variants={staggerItem}
+                className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex gap-3 items-center"
               >
-                <span style={{ fontSize: 16 }}>👨‍⚖️</span>
-                <span style={{ fontSize: 11, fontWeight: 600, color: '#2a2520' }}>{official}</span>
-              </div>
+                <span className="text-lg">👨‍⚖️</span>
+                <span className="text-sm font-semibold text-gray-700">{official}</span>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         );
 
+      /* ───── TACTICS ───── */
       case 'tactics':
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <motion.div className="space-y-3" variants={staggerContainer} initial="initial" animate="animate">
             {(sp.tac || []).map((tac, i) => {
               const sep = tac.indexOf(' \u2014 ');
               const title = sep > -1 ? tac.slice(0, sep).trim() : tac;
               const desc = sep > -1 ? tac.slice(sep + 3).trim() : '';
               return (
-                <div
+                <motion.div
                   key={i}
-                  style={{
-                    background: '#fff',
-                    border: '1.5px solid #ede8e0',
-                    borderRadius: 14,
-                    padding: '12px 14px',
-                  }}
+                  variants={staggerItem}
+                  className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5"
                 >
-                  <div style={{ fontSize: 12, fontWeight: 700, color: '#2a2520' }}>{title}</div>
+                  <div className="text-sm font-bold text-gray-800">{title}</div>
                   {desc && (
-                    <div style={{ fontSize: 10, color: '#6a6560', marginTop: 4, lineHeight: 1.5 }}>
-                      {desc}
-                    </div>
+                    <div className="text-xs text-gray-500 mt-1.5 leading-relaxed">{desc}</div>
                   )}
-                </div>
+                </motion.div>
               );
             })}
-          </div>
+          </motion.div>
         );
 
+      /* ───── FAQ ───── */
       case 'faq':
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            {(sp.faq || []).map((item, i) => (
-              <details
-                key={i}
-                style={{
-                  background: '#fff',
-                  border: '1.5px solid #ede8e0',
-                  borderRadius: 12,
-                  padding: '10px 14px',
-                }}
-              >
-                <summary
-                  style={{
-                    fontSize: 11,
-                    fontWeight: 700,
-                    color: '#2a2520',
-                    cursor: 'pointer',
-                    listStyle: 'none',
-                    display: 'flex',
-                    gap: 6,
-                    alignItems: 'center',
-                  }}
+          <motion.div className="space-y-3" variants={staggerContainer} initial="initial" animate="animate">
+            {(sp.faq || []).map((item, i) => {
+              const isOpen = expandedFaq[i];
+              return (
+                <motion.div
+                  key={i}
+                  variants={staggerItem}
+                  className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
                 >
-                  <span style={{ color: c, fontWeight: 800, fontSize: 10 }}>Q</span>
-                  {item.q}
-                </summary>
-                <div
-                  style={{
-                    marginTop: 8,
-                    fontSize: 10,
-                    color: '#6a6560',
-                    lineHeight: 1.6,
-                    paddingLeft: 16,
-                  }}
-                >
-                  {item.a}
-                </div>
-              </details>
-            ))}
-          </div>
+                  <button
+                    onClick={() => setExpandedFaq((prev) => ({ ...prev, [i]: !prev[i] }))}
+                    className="w-full p-4 flex gap-2 items-center text-left"
+                  >
+                    <span className="text-[10px] font-extrabold shrink-0" style={{ color: c }}>Q</span>
+                    <span className="text-sm font-bold text-gray-800 flex-1">{item.q}</span>
+                    <motion.span
+                      animate={{ rotate: isOpen ? 180 : 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="text-gray-400 text-xs shrink-0"
+                    >
+                      ▼
+                    </motion.span>
+                  </button>
+                  <AnimatePresence>
+                    {isOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="px-4 pb-4 pl-8 text-xs text-gray-500 leading-relaxed">
+                          {item.a}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              );
+            })}
+          </motion.div>
         );
 
       default:
@@ -469,243 +375,198 @@ export default function SportDetailPage({ sport, onBookmarkToggle }) {
   };
 
   return (
-    <div style={{ ...h, paddingBottom: 80 }}>
-      {/* Top bar */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '10px 0',
-        }}
-      >
-        <button
-          onClick={() => navigate('/')}
-          style={{
-            background: '#f5f0ea',
-            border: 'none',
-            borderRadius: 10,
-            width: 34,
-            height: 34,
-            fontSize: 16,
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          ←
-        </button>
-        <div style={{ display: 'flex', gap: 6 }}>
-          <button
-            onClick={() => onBookmarkToggle && onBookmarkToggle(sportId)}
-            style={{
-              background: '#f5f0ea',
-              border: 'none',
-              borderRadius: 10,
-              width: 34,
-              height: 34,
-              fontSize: 16,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            {bookmarked ? '\uD83D\uDCCC' : '\uD83D\uDD16'}
-          </button>
-          <button
-            onClick={handleShare}
-            style={{
-              background: '#f5f0ea',
-              border: 'none',
-              borderRadius: 10,
-              width: 34,
-              height: 34,
-              fontSize: 16,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            📤
-          </button>
-        </div>
-      </div>
-
-      {/* Hero image */}
-      <div style={{ position: 'relative', borderRadius: 16, overflow: 'hidden', marginBottom: 12 }}>
-        <SportImg id={sportId} style={{ height: 160, borderRadius: 16 }} />
-        <div
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      className="pb-20"
+    >
+      {/* ── HERO ── */}
+      <div className="relative h-48 md:h-72 overflow-hidden rounded-b-3xl">
+        <SportImg
+          id={sportId}
           style={{
             position: 'absolute',
             inset: 0,
-            background: `linear-gradient(180deg, transparent 30%, ${c}dd 100%)`,
-            borderRadius: 16,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'flex-end',
-            padding: '14px 16px',
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
           }}
+        />
+        {/* gradient overlay */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: `linear-gradient(180deg, rgba(0,0,0,0.15) 0%, ${c}dd 100%)`,
+          }}
+        />
+
+        {/* back button */}
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => navigate('/')}
+          className="absolute top-4 left-4 w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white text-lg border border-white/20 cursor-pointer"
         >
-          <div style={{ fontSize: 28 }}>{sp.emoji || ''}</div>
-          <div style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginTop: 2 }}>
-            {sp.nm || sportId}
-          </div>
-          <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginTop: 4, flexWrap: 'wrap' }}>
-            {sp.fc && (
-              <span style={{ fontSize: 9, color: '#ffffffcc', fontWeight: 600 }}>
-                👥 {sp.fc} fans
-              </span>
-            )}
-            {sp.ol && (
-              <span style={{ ...pill, background: '#fbbf2430', color: '#fbbf24' }}>
-                🏅 OLYMPIC
-              </span>
-            )}
-          </div>
-          <div style={{ display: 'flex', gap: 4, marginTop: 6, flexWrap: 'wrap' }}>
-            {sp.ty && (
-              <span style={{ ...pill, background: '#ffffff25', color: '#fff' }}>
-                {sp.ty === 'team' ? 'TEAM' : sp.ty === 'individual' ? 'INDIVIDUAL' : 'BOTH'}
-              </span>
-            )}
-            {sp.ct && (
-              <span style={{ ...pill, background: '#ffffff25', color: '#fff' }}>
-                {sp.ct === 'full' ? 'FULL CONTACT' : sp.ct === 'limited' ? 'LIMITED CONTACT' : 'NON-CONTACT'}
-              </span>
-            )}
-            {sp.gb && (
-              <span style={{ ...pill, background: '#ffffff25', color: '#fff' }}>
-                {sp.gb}
-              </span>
-            )}
-          </div>
+          ←
+        </motion.button>
+
+        {/* bookmark + share */}
+        <div className="absolute top-4 right-4 flex gap-2">
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => onBookmarkToggle && onBookmarkToggle(sportId)}
+            className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-lg border border-white/20 cursor-pointer"
+          >
+            {bookmarked ? '\uD83D\uDCCC' : '\uD83D\uDD16'}
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={handleShare}
+            className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-lg border border-white/20 cursor-pointer"
+          >
+            📤
+          </motion.button>
+        </div>
+
+        {/* hero content overlay */}
+        <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1, duration: 0.4 }}
+          >
+            <span className="text-3xl md:text-4xl">{sp.emoji || ''}</span>
+            <h1 className="font-[Outfit] font-black text-white text-2xl md:text-4xl mt-1 leading-tight">
+              {sp.nm || sportId}
+            </h1>
+            <div className="flex gap-2 items-center mt-2 flex-wrap">
+              {sp.fc && (
+                <span className="text-xs text-white/80 font-semibold">
+                  👥 {sp.fc} fans
+                </span>
+              )}
+              {sp.ol && (
+                <span className="rounded-full px-2.5 py-0.5 text-[10px] font-bold bg-amber-400/25 text-amber-300">
+                  🏅 OLYMPIC
+                </span>
+              )}
+            </div>
+            <div className="flex gap-1.5 mt-2.5 flex-wrap">
+              {sp.ty && (
+                <span className="rounded-full px-2.5 py-0.5 text-[10px] font-bold bg-white/20 text-white backdrop-blur-sm">
+                  {sp.ty === 'team' ? 'TEAM' : sp.ty === 'individual' ? 'INDIVIDUAL' : 'BOTH'}
+                </span>
+              )}
+              {sp.ct && (
+                <span className="rounded-full px-2.5 py-0.5 text-[10px] font-bold bg-white/20 text-white backdrop-blur-sm">
+                  {sp.ct === 'full' ? 'FULL CONTACT' : sp.ct === 'limited' ? 'LIMITED CONTACT' : 'NON-CONTACT'}
+                </span>
+              )}
+              {sp.gb && (
+                <span className="rounded-full px-2.5 py-0.5 text-[10px] font-bold bg-white/20 text-white backdrop-blur-sm">
+                  {sp.gb}
+                </span>
+              )}
+            </div>
+          </motion.div>
         </div>
       </div>
 
-      {/* Birthday alert */}
+      {/* ── BIRTHDAY ALERT ── */}
       {sp.bd && sp.bd.length > 0 && (
-        <div
-          style={{
-            background: '#fef9c3',
-            border: '1.5px solid #fde047',
-            borderRadius: 14,
-            padding: '10px 14px',
-            marginBottom: 12,
-            display: 'flex',
-            gap: 10,
-            alignItems: 'center',
-          }}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="mx-4 mt-3 bg-yellow-50 border border-yellow-300 rounded-2xl p-4 flex gap-3 items-center"
         >
-          <span style={{ fontSize: 22, animation: 'bounce 1s infinite' }}>🎂</span>
+          <span className="text-2xl animate-bounce">🎂</span>
           <div>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#854d0e' }}>Birthday Alert!</div>
+            <div className="text-sm font-bold text-yellow-800">Birthday Alert!</div>
             {sp.bd.map((b, i) => (
-              <div key={i} style={{ fontSize: 9, color: '#a16207', marginTop: 2 }}>{b}</div>
+              <div key={i} className="text-xs text-yellow-700 mt-0.5">{b}</div>
             ))}
           </div>
-          <style>{`@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}`}</style>
-        </div>
+        </motion.div>
       )}
 
-      {/* Comparison card */}
+      {/* ── COMPARISON CARD ── */}
       {sp.cs && sp.cs.length > 0 && (
-        <div
-          style={{
-            background: '#fff',
-            border: '1.5px solid #ede8e0',
-            borderRadius: 14,
-            padding: '12px 14px',
-            marginBottom: 12,
-          }}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="mx-4 mt-3 bg-white rounded-2xl border border-gray-100 shadow-sm p-4"
         >
-          <div style={{ fontSize: 10, fontWeight: 800, color: c, textTransform: 'uppercase', marginBottom: 8 }}>
+          <div className="text-[10px] font-extrabold uppercase tracking-wider mb-3" style={{ color: c }}>
             Quick Comparisons
           </div>
           {sp.cs.map((row, i) => (
             <div
               key={i}
-              style={{
-                display: 'flex',
-                gap: 8,
-                alignItems: 'flex-start',
-                marginBottom: i < sp.cs.length - 1 ? 8 : 0,
-                paddingBottom: i < sp.cs.length - 1 ? 8 : 0,
-                borderBottom: i < sp.cs.length - 1 ? '1px solid #f5f0ea' : 'none',
-              }}
+              className={`flex gap-3 items-start ${i < sp.cs.length - 1 ? 'mb-3 pb-3 border-b border-gray-50' : ''}`}
             >
-              <span style={{ fontSize: 14, flexShrink: 0 }}>🔄</span>
+              <span className="text-base shrink-0">🔄</span>
               <div>
-                <div style={{ fontSize: 11, fontWeight: 700, color: '#2a2520' }}>{row.map}</div>
+                <div className="text-sm font-bold text-gray-800">{row.map}</div>
                 {row.desc && (
-                  <div style={{ fontSize: 9, color: '#8a8380', marginTop: 2 }}>{row.desc}</div>
+                  <div className="text-xs text-gray-400 mt-0.5">{row.desc}</div>
                 )}
               </div>
             </div>
           ))}
-        </div>
+        </motion.div>
       )}
 
-      {/* Tab navigation */}
-      <div
-        style={{
-          display: 'flex',
-          gap: 6,
-          overflowX: 'auto',
-          paddingBottom: 8,
-          marginBottom: 10,
-          WebkitOverflowScrolling: 'touch',
-          scrollbarWidth: 'none',
-        }}
-      >
-        {tabs.map((t) => {
-          const active = tab === t.key;
-          return (
-            <button
-              key={t.key}
-              onClick={() => setTab(t.key)}
-              style={{
-                flexShrink: 0,
-                padding: '5px 10px',
-                borderRadius: 8,
-                border: 'none',
-                fontSize: 10,
-                fontWeight: 700,
-                cursor: 'pointer',
-                background: active ? c : '#f5f0ea',
-                color: active ? '#fff' : '#5a5550',
-                transition: 'background .2s, color .2s',
-                display: 'flex',
-                gap: 4,
-                alignItems: 'center',
-                ...h,
-              }}
-            >
-              {t.label}
-              {t.count != null && (
-                <span
-                  style={{
-                    fontSize: 8,
-                    fontWeight: 800,
-                    background: active ? '#ffffff30' : '#e8e3db',
-                    color: active ? '#fff' : '#8a8380',
-                    borderRadius: 4,
-                    padding: '0 3px',
-                    lineHeight: '14px',
-                  }}
-                >
-                  {t.count}
-                </span>
-              )}
-            </button>
-          );
-        })}
+      {/* ── TAB NAVIGATION ── */}
+      <div className="sticky top-14 z-30 bg-white/90 backdrop-blur-lg border-b border-gray-100 mt-3">
+        <div className="flex gap-1 overflow-x-auto px-4 py-2 scrollbar-hide" style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
+          {tabs.map((t) => {
+            const active = tab === t.key;
+            return (
+              <button
+                key={t.key}
+                onClick={() => { setTab(t.key); setExpandedFaq({}); }}
+                className={`shrink-0 rounded-full px-4 py-1.5 text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
+                  active
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                }`}
+              >
+                {t.label}
+                {t.count != null && (
+                  <span
+                    className={`text-[10px] font-extrabold rounded px-1 leading-4 ${
+                      active
+                        ? 'bg-white/20 text-white'
+                        : 'bg-gray-200 text-gray-400'
+                    }`}
+                  >
+                    {t.count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      {/* Tab content */}
-      {renderContent()}
-    </div>
+      {/* ── TAB CONTENT ── */}
+      <div className="px-4 pt-4">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={tab}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+          >
+            {renderContent()}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </motion.div>
   );
 }
