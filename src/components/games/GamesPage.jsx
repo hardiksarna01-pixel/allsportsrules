@@ -173,6 +173,7 @@ export default function GamesPage() {
   const [timer, setTimer] = useState(0);
   const timerRef = useRef(null);
   const [clickPos, setClickPos] = useState(null);
+  const [lastGameMode, setLastGameMode] = useState('ref');
   const [stylesInjected, setStylesInjected] = useState(false);
 
   // Inject keyframes once
@@ -196,6 +197,7 @@ export default function GamesPage() {
 
   const startGame = useCallback((gameMode) => {
     setMode(gameMode);
+    setLastGameMode(gameMode);
     setRound(0);
     setScore(0);
     setAnswered(false);
@@ -337,7 +339,7 @@ export default function GamesPage() {
               Back to Games
             </button>
             <button
-              onClick={() => startGame(questions._gameMode || 'ref')}
+              onClick={() => startGame(lastGameMode)}
               style={{ ...btnBase, width: 'auto', padding: '14px 28px', background: GREEN, color: '#fff', fontSize: 15 }}
             >
               Play Again
