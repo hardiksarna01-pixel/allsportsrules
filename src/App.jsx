@@ -39,6 +39,7 @@ import GlossaryTermPage from './components/glossary/GlossaryTermPage';
 import EventPage from './components/events/EventPage';
 import CategoryPage from './components/category/CategoryPage';
 import BeginnerGuidePage from './components/sport/BeginnerGuidePage';
+import GamesPage from './components/games/GamesPage';
 import InstallPrompt from './components/ui/InstallPrompt';
 import { sportsMap } from './data/sports';
 import { h } from './constants';
@@ -82,6 +83,7 @@ export default function App() {
           <Route path="/events/:eventId" element={<EventPage />} />
           <Route path="/category/:catId" element={<CategoryPage />} />
           <Route path="/sports/:sportId/beginners" element={<BeginnerGuidePage />} />
+          <Route path="/games" element={<GamesPage />} />
         </Routes>
         <InstallPrompt />
         <BottomNav />
