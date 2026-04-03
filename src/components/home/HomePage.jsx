@@ -16,29 +16,37 @@ const ACTIONS = [
   { title: 'Quiz', sub: 'Test your knowledge', path: '/quiz', accent: '#10B981' },
   { title: 'AI Tutor', sub: 'Ask any question', path: '/ai', accent: '#3B82F6' },
   { title: 'Games', sub: 'Learn by playing', path: '/games', accent: '#8B5CF6' },
-  { title: 'Glossary', sub: `300+ terms defined`, path: '/glossary', accent: '#F59E0B' },
-  { title: 'Calculators', sub: 'Run rate, PER, xG', path: '/calculators', accent: '#EF4444' },
+  { title: 'Glossary', sub: '300+ terms', path: '/glossary', accent: '#F59E0B' },
+  { title: 'Calculators', sub: 'Stats & tools', path: '/calculators', accent: '#EF4444' },
+  { title: 'Diagrams', sub: 'Field positions', path: '/sports/cricket', accent: '#06B6D4' },
+];
+
+const FAQ = [
+  { q: 'What is the offside rule in football?', a: 'A player is offside if they are nearer to the opponent\'s goal line than both the ball and the second-last opponent when the ball is played to them.' },
+  { q: 'How does DRS work in cricket?', a: 'DRS (Decision Review System) allows teams to challenge umpire decisions using ball-tracking technology, Snickometer, and HotSpot.' },
+  { q: 'What are the basic rules of basketball?', a: 'Two teams of 5 players score by shooting a ball through the opponent\'s hoop. Games have 4 quarters of 12 minutes (NBA).' },
+  { q: 'How does the F1 points system work?', a: 'Points are awarded to the top 10 finishers: 25-18-15-12-10-8-6-4-2-1, with 1 extra point for fastest lap if finishing in the top 10.' },
+  { q: 'What is LBW in cricket?', a: 'Leg Before Wicket — a batter is out if the ball would have hit the stumps but was blocked by their body (not the bat).' },
 ];
 
 const TYPE_FILTERS = [
-  { id: 'all', label: 'All' },
-  { id: 'team', label: 'Team' },
-  { id: 'individual', label: 'Individual' },
-  { id: 'full', label: 'Contact' },
-  { id: 'non', label: 'Non-Contact' },
+  { id: 'all', label: 'All' }, { id: 'team', label: 'Team' },
+  { id: 'individual', label: 'Individual' }, { id: 'full', label: 'Contact' }, { id: 'non', label: 'Non-Contact' },
 ];
 
-/* ── SVG Icons (no emoji) ── */
-const SearchIcon = ({ className }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-  </svg>
-);
+const TICKER_MATCHES = [
+  { t1: 'IND', s1: '287/4', t2: 'AUS', s2: '152/3', status: 'LIVE', color: 'text-red-500 bg-red-500/15' },
+  { t1: 'MUN', s1: '2', t2: 'ARS', s2: '1', status: 'FT', color: 'text-gray-400 bg-gray-400/15' },
+  { t1: 'LAL', s1: '108', t2: 'GSW', s2: '102', status: 'Q4', color: 'text-emerald-500 bg-emerald-500/15' },
+  { t1: 'VER', s1: 'P1', t2: 'NOR', s2: 'P2', status: 'QUAL', color: 'text-blue-400 bg-blue-400/15' },
+];
 
-const ArrowIcon = () => (
-  <svg className="w-4 h-4 text-gray-300 group-hover:text-emerald-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-  </svg>
+/* SVG Icons */
+const SearchIcon = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+);
+const ChevronIcon = ({ open }) => (
+  <svg className={`w-4 h-4 text-gray-400 transition-transform ${open ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
 );
 
 export default function HomePage() {
@@ -47,14 +55,16 @@ export default function HomePage() {
   const [search, setSearch] = useState('');
   const [cat, setCat] = useState('all');
   const [type, setType] = useState('all');
+  const [openFaq, setOpenFaq] = useState(null);
+  const [sportFilter, setSportFilter] = useState('All');
 
   const featured = useMemo(() => FEATURED_IDS.map(id => sports.find(s => s.id === id)).filter(Boolean), []);
-  const topSports = useMemo(() => TOP_FIVE.map(id => sports.find(s => s.id === id)).filter(Boolean), []);
+  const topSport = useMemo(() => sports.find(s => s.id === 'cricket'), []);
 
   const upcomingEvents = useMemo(() => {
     const now = new Date();
     return events.filter(ev => new Date(ev.end || ev.date) >= now)
-      .sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, 3);
+      .sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, 4);
   }, []);
 
   const filtered = useMemo(() => sports.filter(s => {
@@ -74,169 +84,214 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="min-h-screen pb-24" style={{ background: '#F8F8FA' }}>
+    <div className="min-h-screen" style={{ background: '#F5F7F9' }}>
 
-      {/* ═══ HERO ═══ */}
-      <section className="max-w-3xl mx-auto px-6 pt-16 md:pt-24 pb-12 text-center">
-        <motion.h1
-          initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
-          className="font-[Outfit] text-[40px] md:text-[52px] font-black tracking-[-0.03em] text-gray-900 leading-[1.08]">
+      {/* ═══ 1. LIVE TICKER (ESPN-style dark bar) ═══ */}
+      <div className="bg-[#121217] overflow-x-auto scrollbar-none">
+        <div className="max-w-7xl mx-auto px-4 h-9 flex items-center gap-0">
+          {TICKER_MATCHES.map((m, i) => (
+            <div key={i} className="flex items-center gap-3 shrink-0 px-5">
+              {i > 0 && <div className="absolute -ml-5 w-px h-5 bg-gray-700" />}
+              <span className="text-[11px] font-bold text-white">{m.t1}</span>
+              <span className="text-[11px] text-gray-400 font-medium">{m.s1}</span>
+              <span className="text-[11px] text-gray-600">v</span>
+              <span className="text-[11px] font-bold text-white">{m.t2}</span>
+              <span className="text-[11px] text-gray-400 font-medium">{m.s2}</span>
+              <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${m.color}`}>{m.status}</span>
+            </div>
+          ))}
+          <button className="ml-auto shrink-0 text-[11px] font-semibold text-emerald-500 hover:text-emerald-400 pr-2">
+            All scores →
+          </button>
+        </div>
+      </div>
+
+      {/* ═══ 2. HERO — Google-style centered search ═══ */}
+      <section className="max-w-3xl mx-auto px-6 pt-14 md:pt-20 pb-8 text-center">
+        <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+          className="font-[Outfit] text-[40px] md:text-[48px] font-black tracking-[-0.03em] text-gray-900 leading-[1.1]">
           Learn the rules of<br /><span className="text-emerald-500">any sport</span>
         </motion.h1>
-        <motion.p
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
-          className="mt-4 text-gray-500 text-base max-w-md mx-auto">
-          {sports.length} sports. Simple rules. Interactive quizzes. AI-powered answers.
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
+          className="mt-3 text-gray-500 text-[15px]">
+          The free encyclopedia of sports rules. {sports.length} sports · {glossary.length}+ terms · AI-powered.
         </motion.p>
 
-        {/* Search bar — thick border, visible */}
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-          className="mt-8 max-w-xl mx-auto relative">
+        {/* Big search bar */}
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+          className="mt-7 max-w-2xl mx-auto relative">
           <input value={search} onChange={e => setSearch(e.target.value)}
-            placeholder="Search a sport, rule, or term..."
-            className="w-full py-4 pl-12 pr-5 rounded-2xl bg-white border-2 border-gray-300 text-base text-gray-900 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:shadow-lg transition-all" />
+            placeholder="Search any sport, rule, or term..."
+            className="w-full py-4 pl-12 pr-5 rounded-full bg-white border border-gray-300 text-[15px] text-gray-900 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:shadow-lg transition-all" />
           <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
         </motion.div>
 
-        {/* 5 circular sport photos */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
-          className="mt-8 flex gap-7 justify-center">
-          {topSports.map(s => (
-            <button key={s.id} onClick={() => navigate('/sports/' + s.id)}
-              className="group flex flex-col items-center gap-2">
-              <div className="w-16 h-16 rounded-full overflow-hidden border-[3px] border-gray-200 group-hover:border-emerald-400 transition-colors shadow-sm">
-                <SportAvatar sport={s} />
-              </div>
-              <span className="text-xs font-semibold text-gray-500 group-hover:text-emerald-600 transition-colors">
-                {s.n.split('(')[0].trim()}
-              </span>
+        {/* Filter pills (Google-style) */}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
+          className="mt-4 flex gap-2 justify-center flex-wrap">
+          {['All', 'Cricket', 'Football', 'NBA', 'F1', 'Tennis', 'Rugby', 'Rules', 'Glossary'].map(p => (
+            <button key={p} onClick={() => setSportFilter(p)}
+              className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${sportFilter === p ? 'bg-gray-900 text-white' : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'}`}>
+              {p}
             </button>
           ))}
         </motion.div>
       </section>
 
-      <div className="max-w-6xl mx-auto px-5 md:px-8">
+      {/* ═══ 3. THREE-COLUMN LAYOUT (ESPN meets Wikipedia) ═══ */}
+      <section className="max-w-7xl mx-auto px-4 md:px-8 pb-12">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px_260px] gap-6">
 
-        {/* ═══ FEATURED SPORTS ═══ */}
-        <section className="py-12">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="font-[Outfit] text-xl md:text-2xl font-bold text-gray-900">Featured sports</h2>
-            <button onClick={() => { setCat('all'); setType('all'); }}
-              className="text-sm font-semibold text-emerald-600 hover:text-emerald-700 transition-colors">
-              See all →
-            </button>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-            {featured.slice(0, 4).map(s => (
-              <SportCard key={s.id} sport={s} onClick={() => navigate('/sports/' + s.id)} />
-            ))}
-          </div>
-        </section>
-
-        {/* ═══ QUICK ACTIONS — colored left accent, no emoji ═══ */}
-        <section className="py-12">
-          <h2 className="font-[Outfit] text-xl md:text-2xl font-bold text-gray-900 mb-8">Quick actions</h2>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            {ACTIONS.map(a => (
-              <div key={a.path} onClick={() => navigate(a.path)}
-                className="group relative bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md cursor-pointer transition-all overflow-hidden">
-                <div className="absolute left-0 top-0 bottom-0 w-1 rounded-l-xl" style={{ background: a.accent }} />
-                <div className="p-4 pl-5">
-                  <div className="font-[Outfit] text-sm font-bold text-gray-900 group-hover:text-emerald-600 transition-colors">{a.title}</div>
-                  <div className="text-xs text-gray-500 mt-1">{a.sub}</div>
-                </div>
+          {/* LEFT: Featured Articles */}
+          <div className="space-y-4">
+            {/* Hero article */}
+            <div onClick={() => navigate('/sports/cricket')}
+              className="relative rounded-2xl overflow-hidden cursor-pointer group h-[340px] bg-gray-200">
+              {images.cricket && (
+                <img src={images.cricket} alt="Cricket" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-6">
+                <span className="inline-block px-2.5 py-1 rounded text-[10px] font-bold text-white bg-emerald-500 uppercase tracking-wide mb-3">Cricket</span>
+                <h2 className="font-[Outfit] text-xl md:text-2xl font-bold text-white leading-snug">
+                  ICC Cricket World Cup 2026:<br />Everything You Need to Know
+                </h2>
+                <p className="text-gray-300 text-xs mt-2">Complete guide · Rules · Format · Schedule · Teams</p>
               </div>
-            ))}
-          </div>
-        </section>
+            </div>
 
-        {/* ═══ UPCOMING EVENTS ═══ */}
-        <section className="py-12">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="font-[Outfit] text-xl md:text-2xl font-bold text-gray-900">Upcoming events</h2>
-            <button onClick={() => navigate('/events/wc26')}
-              className="text-sm font-semibold text-emerald-600 hover:text-emerald-700 transition-colors">
-              All events →
-            </button>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {upcomingEvents.map(ev => {
-              const now = new Date(), start = new Date(ev.date), end = new Date(ev.end);
-              const isLive = now >= start && now <= end;
-              const isWC = ev.id === 'wc26';
-              return (
-                <div key={ev.id} onClick={isWC ? () => navigate('/worldcup') : () => navigate('/events/' + ev.id)}
-                  className="group flex items-center gap-4 p-4 bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md cursor-pointer transition-all">
-                  <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center text-xl shrink-0">{ev.e}</div>
-                  <div className="min-w-0 flex-1">
-                    <div className="font-[Outfit] text-sm font-bold text-gray-900 truncate group-hover:text-emerald-600 transition-colors">{ev.n}</div>
-                    <div className="text-xs text-gray-500 mt-1">
-                      {isLive && <span className="text-red-500 font-bold mr-1">● Live</span>}
-                      {!isLive && start.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-                      {' · '}{ev.loc}
-                    </div>
+            {/* Two smaller cards */}
+            <div className="grid grid-cols-2 gap-4">
+              {[
+                { id: 'football', tag: 'FOOTBALL', title: 'Offside Rule Explained: The Complete Visual Guide', color: 'bg-blue-500' },
+                { id: 'basketball', tag: 'NBA', title: 'Shot Clock, Fouls & Violations: NBA Rules Decoded', color: 'bg-orange-500' },
+              ].map(c => (
+                <div key={c.id} onClick={() => navigate('/sports/' + c.id)}
+                  className="relative rounded-xl overflow-hidden cursor-pointer group h-[180px] bg-gray-200">
+                  {images[c.id] && (
+                    <img src={images[c.id]} alt={c.tag} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <span className={`inline-block px-2 py-0.5 rounded text-[9px] font-bold text-white ${c.color} uppercase tracking-wide mb-2`}>{c.tag}</span>
+                    <h3 className="font-[Outfit] text-sm font-bold text-white leading-snug">{c.title}</h3>
                   </div>
-                  <ArrowIcon />
                 </div>
-              );
-            })}
+              ))}
+            </div>
           </div>
-        </section>
 
-        {/* ═══ TRENDING ═══ */}
-        <section className="py-12">
-          <h2 className="font-[Outfit] text-xl md:text-2xl font-bold text-gray-900 mb-8">People are searching</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {trending.slice(0, 3).map(t => (
-              <div key={t.id} onClick={() => navigate('/search')}
-                className="group flex items-center gap-4 p-4 bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md cursor-pointer transition-all">
-                <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
-                  <SearchIcon className="w-4 h-4 text-gray-400" />
+          {/* CENTER: Knowledge Panel (Wikipedia-style) */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden self-start">
+            <div className="bg-emerald-500 px-4 py-3">
+              <h3 className="text-white font-[Outfit] font-bold text-sm">
+                {topSport?.n || 'Cricket'} — Quick Facts
+              </h3>
+            </div>
+            <div className="divide-y divide-gray-100">
+              {[
+                ['Players', '11 per team'],
+                ['Type', 'Bat-and-ball, team sport'],
+                ['Contact', 'Non-contact'],
+                ['Origin', 'England, 16th century'],
+                ['Governing body', 'ICC'],
+                ['Olympic sport', '2028 (returning)'],
+                ['Formats', 'Test, ODI, T20'],
+                ['Duration', '3hrs (T20) to 5 days'],
+                ['Field', 'Oval, 137m diameter'],
+                ['Equipment', 'Bat, ball, stumps, pads'],
+                ['Major events', 'World Cup, IPL, Ashes'],
+                ['Fans', '2.5 billion worldwide'],
+              ].map(([k, v]) => (
+                <div key={k} className="flex px-4 py-2.5 text-xs">
+                  <span className="text-gray-500 w-28 shrink-0 font-medium">{k}</span>
+                  <span className="text-gray-900 font-semibold">{v}</span>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className="font-[Outfit] text-sm font-semibold text-gray-900 truncate">{t.q}</div>
-                  <div className="text-xs text-gray-500 mt-0.5">{t.vol} searches</div>
+              ))}
+            </div>
+            <div className="p-3">
+              <button onClick={() => navigate('/sports/cricket')}
+                className="w-full py-2 rounded-lg text-xs font-semibold text-emerald-600 bg-gray-50 hover:bg-emerald-50 transition-colors">
+                Read full rules →
+              </button>
+            </div>
+          </div>
+
+          {/* RIGHT: Trending Sidebar (ESPN headline list) */}
+          <div className="hidden lg:block self-start">
+            <h3 className="text-base font-bold text-gray-900 mb-1">Trending</h3>
+            <div className="w-10 h-0.5 bg-emerald-500 mb-4" />
+            <div className="space-y-0">
+              {trending.slice(0, 10).map((tr, i) => (
+                <div key={tr.id} onClick={() => navigate('/search')}
+                  className="flex gap-2.5 py-3 border-b border-gray-100 last:border-0 cursor-pointer group">
+                  <span className="text-[11px] font-bold text-gray-300 mt-0.5 w-5 shrink-0">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <div>
+                    <div className="text-[13px] font-semibold text-gray-700 group-hover:text-emerald-600 transition-colors leading-snug">{tr.q}</div>
+                    <div className="text-[11px] text-gray-400 mt-0.5">{tr.vol} searches</div>
+                  </div>
                 </div>
-                <ArrowIcon />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ 4. QUICK ACTIONS ═══ */}
+      <section className="max-w-7xl mx-auto px-4 md:px-8 py-10">
+        <h2 className="font-[Outfit] text-xl font-bold text-gray-900 mb-6">Quick actions</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+          {ACTIONS.map(a => (
+            <div key={a.path} onClick={() => navigate(a.path)}
+              className="group bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md cursor-pointer transition-all overflow-hidden">
+              <div className="h-[3px] w-full" style={{ background: a.accent }} />
+              <div className="p-3.5">
+                <div className="text-sm font-bold text-gray-900 group-hover:text-emerald-600 transition-colors">{a.title}</div>
+                <div className="text-[11px] text-gray-500 mt-0.5">{a.sub}</div>
               </div>
-            ))}
-          </div>
-        </section>
-      </div>
+            </div>
+          ))}
+        </div>
+      </section>
 
-      {/* ═══ BROWSE ALL SPORTS ═══ */}
-      <section className="max-w-6xl mx-auto px-5 md:px-8 py-12">
-        <h2 className="font-[Outfit] text-xl md:text-2xl font-bold text-gray-900 mb-6">Browse all sports</h2>
+      {/* ═══ 5. BROWSE ALL SPORTS ═══ */}
+      <section className="max-w-7xl mx-auto px-4 md:px-8 py-10">
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="font-[Outfit] text-xl font-bold text-gray-900">Browse all sports</h2>
+          <span className="text-sm font-semibold text-emerald-600">All {sports.length} sports →</span>
+        </div>
 
         {/* Category pills */}
-        <div className="flex gap-2 overflow-x-auto scrollbar-none pb-4">
+        <div className="flex gap-2 overflow-x-auto scrollbar-none pb-3">
           <button onClick={() => setCat('all')}
-            className={`shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all ${cat === 'all' ? 'bg-gray-900 text-white shadow-sm' : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'}`}>
+            className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${cat === 'all' ? 'bg-gray-900 text-white' : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'}`}>
             All ({sports.length})
           </button>
           {categories.map(c => catCounts[c.id] > 0 && (
             <button key={c.id} onClick={() => setCat(c.id)}
-              className={`shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all ${cat === c.id ? 'bg-gray-900 text-white shadow-sm' : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'}`}>
+              className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${cat === c.id ? 'bg-gray-900 text-white' : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'}`}>
               {c.n}
             </button>
           ))}
         </div>
 
         {/* Type filters */}
-        <div className="flex gap-2 overflow-x-auto scrollbar-none pb-6">
-          {TYPE_FILTERS.map(t => (
-            <button key={t.id} onClick={() => setType(t.id)}
-              className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${type === t.id ? 'bg-gray-900 text-white' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'}`}>
-              {t.label}
+        <div className="flex gap-2 pb-5">
+          {TYPE_FILTERS.map(f => (
+            <button key={f.id} onClick={() => setType(f.id)}
+              className={`px-3 py-1 rounded-full text-[11px] font-semibold transition-all ${type === f.id ? 'bg-gray-900 text-white' : 'text-gray-400 hover:text-gray-600'}`}>
+              {f.label}
             </button>
           ))}
         </div>
 
-        {/* Sport grid */}
+        {/* Grid */}
         <AnimatePresence mode="wait">
           <motion.div key={cat + type + search}
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}
-            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
+            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {filtered.length === 0 && (
               <div className="col-span-full text-center py-20 text-gray-400">
                 <SearchIcon className="w-8 h-8 mx-auto mb-3 text-gray-300" />
@@ -252,57 +307,85 @@ export default function HomePage() {
         </AnimatePresence>
       </section>
 
-      {/* ═══ FOOTER ═══ */}
-      <footer className="bg-gray-950 text-white mt-8">
-        <div className="max-w-6xl mx-auto px-6 md:px-8 py-16 md:py-20">
+      {/* ═══ 6. PEOPLE ALSO ASK (Google pattern) ═══ */}
+      <section className="max-w-7xl mx-auto px-4 md:px-8 py-10">
+        <h2 className="font-[Outfit] text-xl font-bold text-gray-900 mb-5">People also ask</h2>
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden divide-y divide-gray-100">
+          {FAQ.map((f, i) => (
+            <div key={i}>
+              <button onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-gray-50 transition-colors">
+                <span className="text-sm font-medium text-gray-700 pr-4">{f.q}</span>
+                <ChevronIcon open={openFaq === i} />
+              </button>
+              {openFaq === i && (
+                <div className="px-5 pb-4 text-sm text-gray-500 leading-relaxed">{f.a}</div>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
 
-          {/* Tagline + CTAs */}
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-12 pb-12 border-b border-gray-800">
+      {/* ═══ 7. UPCOMING EVENTS ═══ */}
+      <section className="max-w-7xl mx-auto px-4 md:px-8 py-10">
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="font-[Outfit] text-xl font-bold text-gray-900">Upcoming events</h2>
+          <button onClick={() => navigate('/events/wc26')} className="text-sm font-semibold text-emerald-600">Full calendar →</button>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+          {upcomingEvents.map(ev => {
+            const now = new Date(), start = new Date(ev.date), end = new Date(ev.end);
+            const isLive = now >= start && now <= end;
+            return (
+              <div key={ev.id} onClick={() => ev.id === 'wc26' ? navigate('/worldcup') : navigate('/events/' + ev.id)}
+                className="group flex items-center gap-3 p-3.5 bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md cursor-pointer transition-all">
+                <div className="w-11 h-11 rounded-lg bg-gray-100 flex items-center justify-center text-lg shrink-0">{ev.e}</div>
+                <div className="min-w-0">
+                  <div className="text-[13px] font-bold text-gray-900 truncate group-hover:text-emerald-600 transition-colors">{ev.n}</div>
+                  <div className="text-[11px] text-gray-500 mt-0.5">
+                    {isLive && <span className="text-red-500 font-bold mr-1">● Live</span>}
+                    {!isLive && start.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                    {' · '}{ev.loc}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ═══ 8. FOOTER ═══ */}
+      <footer className="bg-[#121217] text-white mt-8">
+        <div className="max-w-7xl mx-auto px-6 md:px-8 py-14 md:py-16">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-10 pb-10 border-b border-gray-800">
             <div>
-              <h2 className="font-[Outfit] text-3xl md:text-4xl font-black tracking-tight leading-tight">
-                Don't just watch.<br />
-                <span className="text-emerald-500">Understand the game.</span>
+              <h2 className="font-[Outfit] text-2xl md:text-3xl font-black tracking-tight leading-tight">
+                Don't just watch.<br /><span className="text-emerald-500">Understand the game.</span>
               </h2>
-              <p className="mt-3 text-gray-500 text-sm max-w-md">
-                {sports.length} sports, {glossary.length} terms, interactive quizzes, AI tutor — all free.
-              </p>
+              <p className="mt-2 text-gray-500 text-sm">{sports.length} sports, {glossary.length} terms, quizzes, AI tutor — all free.</p>
             </div>
             <div className="flex gap-3 shrink-0">
               <button onClick={() => navigate('/quiz')}
-                className="px-7 py-3 rounded-full bg-emerald-500 text-white font-[Outfit] font-bold text-sm hover:bg-emerald-400 transition-colors">
+                className="px-6 py-2.5 rounded-full bg-emerald-500 text-white font-bold text-sm hover:bg-emerald-400 transition-colors">
                 Start learning
               </button>
               <button onClick={() => navigate('/search')}
-                className="px-7 py-3 rounded-full border border-gray-700 text-gray-400 font-[Outfit] font-semibold text-sm hover:border-gray-500 hover:text-white transition-all">
+                className="px-6 py-2.5 rounded-full border border-gray-700 text-gray-400 font-semibold text-sm hover:text-white hover:border-gray-500 transition-all">
                 Explore
               </button>
             </div>
           </div>
 
-          {/* Feature links — text only, no emoji */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-y-5 gap-x-8 mb-12 pb-12 border-b border-gray-800">
-            {[
-              { label: 'Glossary', path: '/glossary' },
-              { label: 'Rankings', path: '/rankings' },
-              { label: 'World Cup 2026', path: '/worldcup' },
-              { label: 'Quiz & Games', path: '/quiz' },
-              { label: 'AI Tutor', path: '/ai' },
-              { label: 'Field Diagrams', path: '/sports/cricket' },
-              { label: 'Calculators', path: '/calculators' },
-              { label: 'Events Calendar', path: '/events/wc26' },
-            ].map(f => (
-              <button key={f.path} onClick={() => navigate(f.path)}
-                className="text-left text-sm text-gray-500 hover:text-white transition-colors font-medium">
-                {f.label}
-              </button>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-y-4 gap-x-8 mb-10 pb-10 border-b border-gray-800">
+            {['Glossary', 'Rankings', 'World Cup 2026', 'Quiz & Games', 'AI Tutor', 'Field Diagrams', 'Calculators', 'Events Calendar'].map(l => (
+              <button key={l} className="text-left text-sm text-gray-500 hover:text-white transition-colors font-medium">{l}</button>
             ))}
           </div>
 
-          {/* Copyright */}
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 text-xs text-gray-600">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-xs text-gray-600">
             <span>© 2026 SportDecoded. All rights reserved.</span>
             <div className="flex gap-6">
-              {['Home', 'Sports', 'Quiz', 'Rankings', 'AI Tutor', 'Privacy'].map(l => (
+              {['Home', 'Sports', 'Privacy', 'Terms'].map(l => (
                 <button key={l} className="hover:text-gray-400 transition-colors">{l}</button>
               ))}
             </div>
@@ -313,43 +396,27 @@ export default function HomePage() {
   );
 }
 
-/* ── Sport Avatar (circular photo with fallback) ── */
-function SportAvatar({ sport: s }) {
-  const [err, setErr] = useState(false);
-  if (images[s.id] && !err) {
-    return <img src={images[s.id]} alt={s.n} onError={() => setErr(true)} className="w-full h-full object-cover" />;
-  }
-  return (
-    <div className="w-full h-full flex items-center justify-center bg-gray-100 text-lg font-bold text-gray-400">
-      {s.n.charAt(0)}
-    </div>
-  );
-}
-
-/* ── Sport Card (white card, image top, info bottom) ── */
+/* ── Sport Card ── */
 function SportCard({ sport: s, onClick }) {
   const [err, setErr] = useState(false);
   const hasImg = images[s.id] && !err;
-
   return (
     <div onClick={onClick} className="group cursor-pointer">
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg transition-shadow overflow-hidden">
-        {/* Image */}
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg transition-shadow overflow-hidden">
         <div className="aspect-[3/2] bg-gray-100 overflow-hidden">
           {hasImg ? (
             <img src={images[s.id]} alt={s.n} loading="lazy" onError={() => setErr(true)}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-gray-300"
-              style={{ background: `linear-gradient(135deg, ${s.c}15, ${s.c}30)` }}>
+            <div className="w-full h-full flex items-center justify-center text-2xl font-bold text-gray-300"
+              style={{ background: `linear-gradient(135deg, ${s.c}12, ${s.c}25)` }}>
               {s.n.charAt(0)}
             </div>
           )}
         </div>
-        {/* Info */}
         <div className="p-3">
-          <div className="font-[Outfit] text-sm font-bold text-gray-900 group-hover:text-emerald-600 transition-colors truncate">{s.n}</div>
-          <div className="text-xs text-gray-500 mt-0.5">{s.r ? s.r.length : 0} rules · {s.fans}</div>
+          <div className="text-sm font-bold text-gray-900 group-hover:text-emerald-600 transition-colors truncate">{s.n}</div>
+          <div className="text-[11px] text-gray-500 mt-0.5">{s.r ? s.r.length : 0} rules · {s.fans}</div>
         </div>
       </div>
     </div>
