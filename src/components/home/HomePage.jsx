@@ -140,13 +140,37 @@ export default function HomePage() {
           <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: '#6B7280' }} />
         </motion.div>
 
-        {/* Filter pills (Google-style) */}
+        {/* Category tabs — large, prominent */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
-          className="mt-4 flex gap-2 justify-center flex-wrap">
-          {['All', 'Cricket', 'Football', 'NBA', 'F1', 'Tennis', 'Rugby', 'Rules', 'Glossary'].map(p => (
-            <button key={p} onClick={() => setSportFilter(p)}
-              className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${sportFilter === p ? 'bg-gray-900 text-white' : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'}`}>
-              {p}
+          className="mt-8 flex gap-3 justify-center flex-wrap">
+          {[
+            { label: 'All Sports', icon: '🌍' },
+            { label: 'Cricket', icon: '🏏' },
+            { label: 'Football', icon: '⚽' },
+            { label: 'NBA', icon: '🏀' },
+            { label: 'F1', icon: '🏎️' },
+            { label: 'Tennis', icon: '🎾' },
+            { label: 'Rugby', icon: '🏉' },
+            { label: 'Rules', icon: '📋' },
+            { label: 'Glossary', icon: '📖' },
+          ].map(p => (
+            <button key={p.label} onClick={() => setSportFilter(p.label)}
+              style={{
+                padding: '10px 20px',
+                borderRadius: '9999px',
+                fontSize: '14px',
+                fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                transition: 'all 0.2s',
+                border: sportFilter === p.label ? '2px solid #111827' : '2px solid #E5E7EB',
+                background: sportFilter === p.label ? '#111827' : '#FFFFFF',
+                color: sportFilter === p.label ? '#FFFFFF' : '#374151',
+                boxShadow: sportFilter === p.label ? '0 2px 8px rgba(0,0,0,0.15)' : '0 1px 4px rgba(0,0,0,0.05)',
+              }}>
+              <span style={{ fontSize: '16px' }}>{p.icon}</span>
+              {p.label}
             </button>
           ))}
         </motion.div>
