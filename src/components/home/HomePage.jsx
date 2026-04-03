@@ -70,7 +70,7 @@ export default function HomePage() {
           className="mt-6 max-w-xl mx-auto relative">
           <input value={search} onChange={e => setSearch(e.target.value)}
             placeholder="Search a sport, rule, or term..."
-            className="w-full px-5 py-4 pl-12 rounded-2xl bg-gray-50 border border-gray-200 text-base text-gray-800 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent focus:bg-white transition-all" />
+            className="w-full px-5 py-4 pl-12 rounded-2xl bg-white border-2 border-gray-300 text-base text-gray-900 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:shadow-md transition-all" />
           <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
         </motion.div>
         {/* Popular sport quick-nav */}
@@ -79,7 +79,7 @@ export default function HomePage() {
           {topSports.map(s => (
             <button key={s.id} onClick={() => navigate('/sports/' + s.id)} className="group flex flex-col items-center gap-1.5">
               <div className="w-12 h-12 md:w-14 md:h-14 rounded-full overflow-hidden border-2 border-gray-100 group-hover:border-emerald-400 transition-colors">
-                {images[s.id] ? <img src={images[s.id]} alt={s.n} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center bg-gray-100 text-xl">{s.i}</div>}
+                <SportAvatar sport={s} />
               </div>
               <span className="text-[11px] font-semibold text-gray-400 group-hover:text-emerald-600 transition-colors">{s.n.split('(')[0].trim()}</span>
             </button>
@@ -87,11 +87,11 @@ export default function HomePage() {
         </motion.div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4">
+      <div className="max-w-6xl mx-auto px-4 md:px-8">
 
         {/* ═══ 2. FEATURED SPORTS ═══ */}
-        <section className="mt-8 md:mt-12">
-          <h2 className="font-[Outfit] text-lg font-bold text-gray-900 mb-4">Featured sports</h2>
+        <section className="mt-12 md:mt-16 pt-8 border-t border-gray-100">
+          <h2 className="font-[Outfit] text-xl md:text-2xl font-bold text-gray-900 mb-6">Featured sports</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
             {featured.map(s => (
               <SportCard key={s.id} sport={s} onClick={() => navigate('/sports/' + s.id)} />
@@ -100,22 +100,22 @@ export default function HomePage() {
         </section>
 
         {/* ═══ 3. QUICK ACTIONS ═══ */}
-        <section className="mt-8 md:mt-12">
-          <h2 className="font-[Outfit] text-lg font-bold text-gray-900 mb-4">Quick actions</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+        <section className="mt-12 md:mt-16 pt-8 border-t border-gray-100">
+          <h2 className="font-[Outfit] text-xl md:text-2xl font-bold text-gray-900 mb-6">Quick actions</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
             {[
-              { icon: '🧠', title: 'Quiz', sub: 'Test knowledge', path: '/quiz' },
-              { icon: '🤖', title: 'AI Tutor', sub: 'Ask anything', path: '/ai' },
-              { icon: '🎮', title: 'Games', sub: 'Play & learn', path: '/games' },
-              { icon: '📖', title: 'Glossary', sub: `${glossary.length} terms`, path: '/glossary' },
-              { icon: '🧮', title: 'Calculators', sub: 'Stats tools', path: '/calculators' },
+              { icon: '🧠', title: 'Quiz', sub: 'Test your knowledge', path: '/quiz', bg: 'bg-emerald-50 border-emerald-200' },
+              { icon: '🤖', title: 'AI Tutor', sub: 'Ask anything', path: '/ai', bg: 'bg-blue-50 border-blue-200' },
+              { icon: '🎮', title: 'Games', sub: 'Play & learn', path: '/games', bg: 'bg-purple-50 border-purple-200' },
+              { icon: '📖', title: 'Glossary', sub: `${glossary.length} terms`, path: '/glossary', bg: 'bg-amber-50 border-amber-200' },
+              { icon: '🧮', title: 'Calculators', sub: 'Stats tools', path: '/calculators', bg: 'bg-rose-50 border-rose-200' },
             ].map(a => (
               <div key={a.path} onClick={() => navigate(a.path)}
-                className="flex items-center gap-3 p-4 rounded-xl bg-white border border-gray-100 cursor-pointer hover:shadow-md transition-shadow">
-                <div className="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center text-xl shrink-0">{a.icon}</div>
+                className={`flex flex-col items-center text-center gap-2 p-5 md:p-6 rounded-2xl border cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all ${a.bg}`}>
+                <span className="text-3xl md:text-4xl">{a.icon}</span>
                 <div>
-                  <div className="font-[Outfit] text-sm font-bold text-gray-800">{a.title}</div>
-                  <div className="text-xs text-gray-400">{a.sub}</div>
+                  <div className="font-[Outfit] text-sm md:text-base font-bold text-gray-800">{a.title}</div>
+                  <div className="text-xs text-gray-500 mt-0.5">{a.sub}</div>
                 </div>
               </div>
             ))}
@@ -123,21 +123,21 @@ export default function HomePage() {
         </section>
 
         {/* ═══ 4. UPCOMING EVENTS ═══ */}
-        <section className="mt-8 md:mt-12">
-          <h2 className="font-[Outfit] text-lg font-bold text-gray-900 mb-4">Upcoming events</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <section className="mt-12 md:mt-16 pt-8 border-t border-gray-100">
+          <h2 className="font-[Outfit] text-xl md:text-2xl font-bold text-gray-900 mb-6">Upcoming events</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {upcomingEvents.map(ev => {
               const now = new Date(), start = new Date(ev.date), end = new Date(ev.end);
               const isLive = now >= start && now <= end;
               const isWC = ev.id === 'wc26';
               return (
                 <div key={ev.id} onClick={isWC ? () => navigate('/worldcup') : () => navigate('/events/' + ev.id)}
-                  className="flex items-center gap-3 p-4 rounded-xl bg-white border border-gray-100 cursor-pointer hover:shadow-md transition-shadow">
-                  <span className="text-2xl shrink-0">{ev.e}</span>
+                  className="flex items-center gap-4 p-5 rounded-2xl bg-gray-50 border border-gray-200 cursor-pointer hover:shadow-md hover:bg-white transition-all">
+                  <span className="text-3xl shrink-0">{ev.e}</span>
                   <div className="min-w-0">
-                    <div className="font-[Outfit] text-sm font-bold text-gray-800 truncate">{ev.n}</div>
-                    <div className="text-xs text-gray-400">
-                      {isLive ? <span className="text-red-500 font-bold">Live</span> : start.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    <div className="font-[Outfit] text-base font-bold text-gray-900 truncate">{ev.n}</div>
+                    <div className="text-sm text-gray-500 mt-1">
+                      {isLive ? <span className="text-red-500 font-bold mr-1">● Live</span> : start.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                       {' · '}{ev.loc}
                     </div>
                   </div>
@@ -148,16 +148,18 @@ export default function HomePage() {
         </section>
 
         {/* ═══ 5. TRENDING ═══ */}
-        <section className="mt-8 md:mt-12">
-          <h2 className="font-[Outfit] text-lg font-bold text-gray-900 mb-4">People are searching</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <section className="mt-12 md:mt-16 pt-8 border-t border-gray-100">
+          <h2 className="font-[Outfit] text-xl md:text-2xl font-bold text-gray-900 mb-6">People are searching</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {trending.slice(0, 3).map(t => (
               <div key={t.id} onClick={() => navigate('/search')}
-                className="flex items-center gap-3 p-4 rounded-xl bg-white border border-gray-100 cursor-pointer hover:shadow-md transition-shadow">
-                <svg className="w-5 h-5 text-gray-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                className="flex items-center gap-4 p-5 rounded-2xl bg-gray-50 border border-gray-200 cursor-pointer hover:shadow-md hover:bg-white transition-all">
+                <div className="w-10 h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center shrink-0">
+                  <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                </div>
                 <div>
-                  <div className="font-[Outfit] text-sm font-bold text-gray-800">{t.q}</div>
-                  <div className="text-xs text-gray-400">{t.vol} searches</div>
+                  <div className="font-[Outfit] text-base font-bold text-gray-900">{t.q}</div>
+                  <div className="text-sm text-gray-500 mt-0.5">{t.vol} searches</div>
                 </div>
               </div>
             ))}
@@ -166,7 +168,10 @@ export default function HomePage() {
       </div>
 
       {/* ═══ 6. BROWSE ALL SPORTS ═══ */}
-      <div className="sticky top-14 z-20 bg-white/90 backdrop-blur-lg border-b border-gray-100 mt-8 md:mt-12">
+      <div className="max-w-6xl mx-auto px-4 md:px-8 mt-12 md:mt-16 pt-8 border-t border-gray-100">
+        <h2 className="font-[Outfit] text-xl md:text-2xl font-bold text-gray-900 mb-4">Browse all sports</h2>
+      </div>
+      <div className="sticky top-14 z-20 bg-white/95 backdrop-blur-lg border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4 py-2 flex gap-1.5 overflow-x-auto scrollbar-none">
           <button onClick={() => setCat('all')}
             className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-semibold transition-all ${cat === 'all' ? 'bg-gray-900 text-white' : 'text-gray-400 hover:bg-gray-100'}`}>All ({sports.length})</button>
@@ -232,13 +237,27 @@ export default function HomePage() {
   );
 }
 
+/* ── Sport Avatar (circular, with error fallback) ── */
+function SportAvatar({ sport: s }) {
+  const [imgErr, setImgErr] = useState(false);
+  if (images[s.id] && !imgErr) {
+    return <img src={images[s.id]} alt={s.n} onError={() => setImgErr(true)} className="w-full h-full object-cover" />;
+  }
+  return <div className="w-full h-full flex items-center justify-center bg-gray-100 text-xl">{s.i}</div>;
+}
+
 /* ── Sport Card ── */
 function SportCard({ sport: s, onClick }) {
+  const [imgErr, setImgErr] = useState(false);
+  const hasImg = images[s.id] && !imgErr;
+
   return (
     <div onClick={onClick} className="group cursor-pointer">
       <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-gray-100">
-        {images[s.id] ? (
-          <img src={images[s.id]} alt={s.n} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+        {hasImg ? (
+          <img src={images[s.id]} alt={s.n} loading="lazy"
+            onError={() => setImgErr(true)}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-4xl" style={{ background: `linear-gradient(135deg, ${s.c}22, ${s.c}44)` }}>{s.i}</div>
         )}
