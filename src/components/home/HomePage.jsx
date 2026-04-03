@@ -209,29 +209,67 @@ export default function HomePage() {
         </AnimatePresence>
       </div>
 
-      {/* ═══ 7. FOOTER CTA ═══ */}
-      <div className="max-w-4xl mx-auto px-6 py-12 text-center">
-        <h2 className="font-[Outfit] text-xl font-bold text-gray-900">Keep exploring</h2>
-        <p className="mt-2 text-sm text-gray-400 max-w-md mx-auto">Beginner guides, streaming info, term glossary, and more.</p>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 max-w-2xl mx-auto">
-          {[
-            { icon: '📖', title: 'Glossary', sub: `${glossary.length} terms`, path: '/glossary' },
-            { icon: '🏆', title: 'Rankings', sub: 'World standings', path: '/rankings' },
-            { icon: '⚽', title: 'World Cup', sub: '2026 guide', path: '/worldcup' },
-            { icon: '🏅', title: 'Profile', sub: 'Your progress', path: '/profile' },
-          ].map(l => (
-            <div key={l.path} onClick={() => navigate(l.path)}
-              className="p-4 rounded-xl bg-gray-50 hover:bg-gray-100 cursor-pointer transition-colors text-center">
-              <div className="text-2xl mb-1">{l.icon}</div>
-              <div className="font-[Outfit] text-sm font-bold text-gray-700">{l.title}</div>
-              <div className="text-xs text-gray-400">{l.sub}</div>
+      {/* ═══ 7. FOOTER ═══ */}
+      <div className="mt-16 md:mt-24 bg-gray-950 text-white">
+        <div className="max-w-6xl mx-auto px-6 md:px-8 py-16 md:py-20">
+
+          {/* top row: tagline + CTA */}
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-14 pb-14 border-b border-gray-800">
+            <div>
+              <h2 className="font-[Outfit] text-3xl md:text-4xl font-black tracking-tight">Don't just watch.<br />Understand the game.</h2>
+              <p className="mt-3 text-gray-400 text-sm md:text-base max-w-md">{sports.length} sports, {glossary.length} terms, interactive quizzes, AI tutor, and field diagrams — all free.</p>
             </div>
-          ))}
+            <div className="flex gap-3 shrink-0">
+              <button onClick={() => navigate('/quiz')}
+                className="px-8 py-3.5 rounded-full bg-emerald-500 text-white font-[Outfit] font-bold text-sm hover:bg-emerald-400 transition-colors active:scale-95">
+                Start learning
+              </button>
+              <button onClick={() => navigate('/search')}
+                className="px-8 py-3.5 rounded-full border border-gray-700 text-gray-300 font-[Outfit] font-bold text-sm hover:border-gray-500 hover:text-white transition-all active:scale-95">
+                Explore
+              </button>
+            </div>
+          </div>
+
+          {/* feature grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 mb-14 pb-14 border-b border-gray-800">
+            {[
+              { icon: '📖', title: 'Glossary', sub: `${glossary.length} sports terms explained in plain language`, path: '/glossary' },
+              { icon: '🏆', title: 'Rankings', sub: 'Live standings for cricket, football, F1, NBA, and more', path: '/rankings' },
+              { icon: '⚽', title: 'World Cup 2026', sub: '48 teams, 104 matches — your complete guide', path: '/worldcup' },
+              { icon: '🧠', title: 'Quiz & Games', sub: 'Test your knowledge with 4 game modes', path: '/quiz' },
+              { icon: '🤖', title: 'AI Tutor', sub: 'Ask any sports question and get an instant answer', path: '/ai' },
+              { icon: '📐', title: 'Field Diagrams', sub: 'Interactive position maps for 8 major sports', path: '/sports/cricket' },
+              { icon: '🧮', title: 'Calculators', sub: 'Run rate, F1 points, xG, PER, DLS, and more', path: '/calculators' },
+              { icon: '📅', title: 'Events Calendar', sub: '76 events tracked from 2026 to 2031', path: '/events/wc26' },
+            ].map(f => (
+              <div key={f.path} onClick={() => navigate(f.path)}
+                className="cursor-pointer group">
+                <span className="text-3xl md:text-4xl block mb-3">{f.icon}</span>
+                <div className="font-[Outfit] text-base font-bold text-white group-hover:text-emerald-400 transition-colors">{f.title}</div>
+                <div className="text-sm text-gray-500 mt-1 leading-relaxed group-hover:text-gray-400 transition-colors">{f.sub}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* bottom row: links + copyright */}
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 text-sm text-gray-500">
+            <div className="flex gap-6">
+              {[
+                { label: 'Home', path: '/' },
+                { label: 'Glossary', path: '/glossary' },
+                { label: 'Quiz', path: '/quiz' },
+                { label: 'Rankings', path: '/rankings' },
+                { label: 'AI Tutor', path: '/ai' },
+                { label: 'Games', path: '/games' },
+              ].map(l => (
+                <button key={l.path} onClick={() => navigate(l.path)}
+                  className="hover:text-white transition-colors">{l.label}</button>
+              ))}
+            </div>
+            <div className="text-gray-600">© 2026 SportDecoded. All rights reserved.</div>
+          </div>
         </div>
-        <button onClick={() => navigate('/quiz')}
-          className="mt-6 px-8 py-3 rounded-full bg-emerald-500 text-white font-bold text-sm hover:bg-emerald-600 transition-colors active:scale-95">
-          Start learning
-        </button>
       </div>
     </div>
   );
