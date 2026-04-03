@@ -34,6 +34,11 @@ import WorldCupHub from './components/worldcup/WorldCupHub';
 import GlossaryPage from './components/glossary/GlossaryPage';
 import SearchPage from './components/search/SearchPage';
 import QuizPage from './components/quiz/QuizPage';
+import ComparisonPage from './components/comparison/ComparisonPage';
+import GlossaryTermPage from './components/glossary/GlossaryTermPage';
+import EventPage from './components/events/EventPage';
+import CategoryPage from './components/category/CategoryPage';
+import BeginnerGuidePage from './components/sport/BeginnerGuidePage';
 import { sportsMap } from './data/sports';
 import { h } from './constants';
 
@@ -71,6 +76,11 @@ export default function App() {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/quiz" element={<QuizPage />} />
           <Route path="/search" element={<SearchPage />} />
+          <Route path="/compare/:matchup" element={<ComparisonPage />} />
+          <Route path="/glossary/:termSlug" element={<GlossaryTermPage />} />
+          <Route path="/events/:eventId" element={<EventPage />} />
+          <Route path="/category/:catId" element={<CategoryPage />} />
+          <Route path="/sports/:sportId/beginners" element={<BeginnerGuidePage />} />
         </Routes>
         <BottomNav />
       </div>
