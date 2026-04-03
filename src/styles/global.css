@@ -67,23 +67,13 @@ html {
 body {
   font-family: var(--font-body);
   color: var(--text);
-  background: #ffffff;
+  background: #F5F7F9;
   line-height: 1.6;
   min-height: 100dvh;
 }
 
 /* ── Base Typography ─────────────────────────────────── */
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading);
-  font-weight: 700;
-  line-height: 1.15;
-  color: var(--text);
-}
-
-h1 { font-size: 2rem;   }
-h2 { font-size: 1.5rem; }
-h3 { font-size: 1.25rem;}
-h4 { font-size: 1.1rem; }
+/* Heading defaults — Tailwind classes override these */
 
 p {
   font-family: var(--font-body);
@@ -103,8 +93,6 @@ img, svg {
 button {
   font-family: var(--font-body);
   cursor: pointer;
-  border: none;
-  background: none;
 }
 
 ul, ol {
@@ -123,8 +111,6 @@ ul, ol {
 /* ── Responsive Shell ───────────────────────────────── */
 #root {
   width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
   min-height: 100dvh;
   position: relative;
   overflow-x: hidden;
