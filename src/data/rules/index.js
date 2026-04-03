@@ -2,6 +2,9 @@
 // Imports only files that exist — others added as they're created
 
 import { footballRules } from './football';
+import { basketballRules } from './basketball';
+import { tennisRules } from './tennis';
+import { f1Rules } from './f1';
 import { rugbyRules } from './rugby';
 import { baseballRules } from './baseball';
 import { nflRules } from './nfl';
@@ -14,6 +17,9 @@ import { mmaRules } from './mma';
 // Map sport IDs to their structured rules
 export const rulesMap = {
   football: footballRules,
+  basketball: basketballRules,
+  tennis: tennisRules,
+  f1: f1Rules,
   rugby: rugbyRules,
   baseball: baseballRules,
   nfl: nflRules,
