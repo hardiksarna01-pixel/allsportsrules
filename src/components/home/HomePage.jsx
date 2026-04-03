@@ -83,94 +83,54 @@ export default function HomePage() {
   return (
     <div className="pb-24 max-w-6xl mx-auto">
 
-      {/* ═══════ HERO ═══════ */}
-      <section className="relative overflow-hidden rounded-b-[2rem] md:rounded-b-[3rem] bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50 px-5 md:px-12 pt-12 md:pt-20 pb-10 md:pb-16 text-center -mx-4 md:-mx-0 mb-6">
-        {/* sparkles */}
-        {Array.from({ length: 12 }).map((_, i) => (
-          <motion.div key={i} className="absolute rounded-full pointer-events-none"
-            style={{ width: 3 + (i % 4) * 2, height: 3 + (i % 4) * 2, background: ['#16a34a','#2563eb','#7c3aed','#f59e0b','#ec4899'][i % 5], top: `${10 + (i * 7) % 80}%`, left: `${5 + (i * 13) % 90}%` }}
-            animate={{ opacity: [0, 0.7, 0], y: [0, -40], scale: [0, 1, 0.3] }}
-            transition={{ duration: 2 + (i % 3), delay: i * 0.5, repeat: Infinity }}
-          />
-        ))}
+      {/* ═══════ HERO — minimal, clean ═══════ */}
+      <section className="relative px-5 md:px-12 pt-20 md:pt-32 pb-16 md:pb-24 text-center mb-10">
+        {/* single subtle gradient orb — not 12 sparkles */}
+        <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full bg-gradient-to-br from-emerald-100/60 via-blue-100/40 to-purple-100/30 blur-3xl pointer-events-none" />
 
-        {/* floating sport chips */}
-        <div className="flex justify-center gap-2 md:gap-4 flex-wrap mb-8 md:mb-12 relative z-10">
-          {floatingCards.map((fc, i) => (
-            <motion.div key={fc.name}
-              animate={{ y: [0, -14, 0] }}
-              transition={{ duration: fc.dur, delay: fc.delay, repeat: Infinity, ease: 'easeInOut' }}
-              whileHover={{ scale: 1.12 }}
-              className="flex items-center gap-1.5 md:gap-2 px-3 md:px-5 py-2 md:py-2.5 rounded-2xl bg-white/60 backdrop-blur-md border border-white/80 shadow-lg cursor-default select-none"
-            >
-              <span className="text-lg md:text-2xl">{fc.emoji}</span>
-              <span className="text-[11px] md:text-sm font-bold text-gray-700 font-[Outfit]">{fc.name}</span>
-            </motion.div>
-          ))}
-        </div>
+        {/* title — one line, big, clean */}
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.25, 0.1, 0, 1] }}
+          className="relative z-10 font-[Outfit] text-5xl md:text-8xl font-black tracking-[-0.04em] text-gray-900 leading-[0.95]"
+        >
+          Every sport.<br />
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-500 to-blue-500">Simply explained.</span>
+        </motion.h1>
 
-        {/* title */}
-        <div className="relative z-10">
-          {['Every sport.', 'Every rule.', 'Made fun.'].map((line, i) => (
-            <motion.div key={i}
-              initial={{ opacity: 0, y: 24, filter: 'blur(8px)' }}
-              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-              transition={{ duration: 0.6, delay: 0.2 + i * 0.2 }}
-              className="font-[Outfit] text-4xl md:text-7xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 leading-[1.1]"
-            >{line}</motion.div>
-          ))}
-        </div>
-
-        {/* subtitle */}
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}
-          className="mt-4 md:mt-6 text-sm md:text-base text-gray-500 font-[Outfit]">
-          <strong className="text-gray-700">{sports.length}+ sports</strong> · AI tutor · Quizzes · {glossary.length}+ terms
+        {/* one short subtitle */}
+        <motion.p
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4, duration: 0.6 }}
+          className="relative z-10 mt-5 md:mt-6 text-base md:text-lg text-gray-400 font-[Outfit] max-w-md mx-auto"
+        >
+          {sports.length} sports · {glossary.length} terms · Quizzes · AI tutor
         </motion.p>
 
-        {/* stat pills */}
-        <div className="flex justify-center gap-2 md:gap-4 mt-6 md:mt-8 flex-wrap relative z-10">
-          {[
-            { val: `${sports.length}+`, label: 'Sports', color: 'text-emerald-600' },
-            { val: '5K+', label: 'Rules', color: 'text-blue-600' },
-            { val: `${glossary.length}+`, label: 'Terms', color: 'text-purple-600' },
-            { val: 'AI', label: 'Powered', color: 'text-pink-600' },
-          ].map((s, i) => (
-            <motion.div key={s.label}
-              initial={{ opacity: 0, scale: 0.7 }} animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 1.1 + i * 0.12, type: 'spring', stiffness: 300 }}
-              className="px-4 md:px-6 py-2 md:py-3 rounded-2xl bg-white/60 backdrop-blur-md border border-white/80 text-center"
-            >
-              <div className={`font-[Outfit] text-lg md:text-2xl font-black ${s.color}`}>{s.val}</div>
-              <div className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wider">{s.label}</div>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* CTAs */}
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.6 }}
-          className="flex gap-3 justify-center mt-6 md:mt-10 relative z-10">
-          <button onClick={() => navigate('/quiz')}
-            className="px-6 md:px-8 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-[Outfit] font-bold text-sm md:text-base shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:-translate-y-0.5 transition-all active:scale-95">
-            🧠 Take a Quiz
-          </button>
+        {/* one CTA — not two competing buttons */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}
+          className="relative z-10 mt-8 flex gap-3 justify-center"
+        >
           <button onClick={() => navigate('/search')}
-            className="px-6 md:px-8 py-3 rounded-2xl bg-white/70 backdrop-blur-md border border-white/80 text-gray-700 font-[Outfit] font-bold text-sm md:text-base hover:bg-white hover:-translate-y-0.5 transition-all active:scale-95">
-            🔍 Search anything
+            className="group flex items-center gap-2 px-7 py-3.5 rounded-full bg-gray-900 text-white font-[Outfit] font-bold text-sm hover:bg-gray-800 transition-colors active:scale-95">
+            <span>Explore sports</span>
+            <span className="group-hover:translate-x-1 transition-transform">→</span>
+          </button>
+          <button onClick={() => navigate('/quiz')}
+            className="px-7 py-3.5 rounded-full border border-gray-200 text-gray-600 font-[Outfit] font-semibold text-sm hover:border-gray-300 hover:text-gray-900 transition-all active:scale-95">
+            Take a quiz
           </button>
         </motion.div>
-
-        {/* scroll indicator */}
-        <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 2, repeat: Infinity }}
-          className="mt-8 text-gray-300 text-xl">↓</motion.div>
       </section>
 
       <div className="px-4 md:px-0">
 
       {/* ═══════ EVENTS ═══════ */}
       <Section>
-        <h2 className="font-[Outfit] text-xl md:text-2xl font-black mb-4">📅 Upcoming Events</h2>
+        <h2 className="font-[Outfit] text-lg md:text-xl font-black text-gray-900 mb-4">Upcoming Events</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {events.slice(0, 6).map((ev, idx) => {
+          {events.slice(0, 3).map((ev, idx) => {
             const now = new Date(), start = new Date(ev.date), end = new Date(ev.end);
             const isLive = now >= start && now <= end;
             const isWC = ev.id === 'wc26';
@@ -202,24 +162,21 @@ export default function HomePage() {
 
       {/* ═══════ TRENDING ═══════ */}
       <Section className="mt-10">
-        <h2 className="font-[Outfit] text-xl md:text-2xl font-black mb-4">🔥 Trending Searches</h2>
+        <h2 className="font-[Outfit] text-lg md:text-xl font-black text-gray-900 mb-4">People are searching</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {trending.slice(0, 6).map((t, i) => {
-            const cls = ['border-l-purple-500 bg-purple-50/50','border-l-blue-500 bg-blue-50/50','border-l-red-500 bg-red-50/50','border-l-orange-500 bg-orange-50/50','border-l-emerald-500 bg-emerald-50/50','border-l-cyan-500 bg-cyan-50/50'][i % 6];
-            return (
-              <motion.div key={t.id} whileHover={{ y: -2 }} className={`rounded-2xl border-l-4 ${cls} p-4 md:p-5`}>
-                <div className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">Trending</div>
-                <div className="font-[Outfit] text-sm md:text-base font-bold text-gray-800">"{t.q}"</div>
-                <span className="inline-block mt-2 text-xs font-bold text-white bg-gray-800 rounded-full px-3 py-0.5">🔥 {t.vol}</span>
-              </motion.div>
-            );
-          })}
+          {trending.slice(0, 3).map((t, i) => (
+            <motion.div key={t.id} whileHover={{ y: -2 }}
+              className="rounded-2xl bg-white border border-gray-100 p-5 hover:shadow-md transition-shadow">
+              <div className="font-[Outfit] text-base font-bold text-gray-800 leading-snug">"{t.q}"</div>
+              <div className="mt-3 text-xs font-semibold text-gray-400">{t.vol} monthly searches</div>
+            </motion.div>
+          ))}
         </div>
       </Section>
 
       {/* ═══════ 5-MIN GUIDES ═══════ */}
       <Section className="mt-10">
-        <h2 className="font-[Outfit] text-xl md:text-2xl font-black mb-4">⏱️ 5-Minute Guides</h2>
+        <h2 className="font-[Outfit] text-lg md:text-xl font-black text-gray-900 mb-4">Learn in 5 minutes</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {fiveMinGuides.map(g => {
             const sp = sports.find(s => s.id === g.sport);
@@ -239,7 +196,7 @@ export default function HomePage() {
 
       {/* ═══════ WHERE TO WATCH ═══════ */}
       <Section className="mt-10">
-        <h2 className="font-[Outfit] text-xl md:text-2xl font-black mb-4">📺 Where to Watch</h2>
+        <h2 className="font-[Outfit] text-lg md:text-xl font-black text-gray-900 mb-4">Where to watch</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {whereToWatch.map(w => {
             const sp = sports.find(s => s.id === w.sport);
@@ -272,7 +229,7 @@ export default function HomePage() {
       {/* ═══════ GLOSSARY ═══════ */}
       <Section className="mt-10">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-[Outfit] text-xl md:text-2xl font-black">📖 Glossary</h2>
+          <h2 className="font-[Outfit] text-lg md:text-xl font-black text-gray-900">Key terms</h2>
           <button onClick={() => navigate('/glossary')} className="text-sm font-bold text-blue-600 hover:text-blue-800 transition-colors font-[Outfit]">
             View all {glossary.length} →
           </button>
@@ -295,7 +252,7 @@ export default function HomePage() {
 
       {/* ═══════ EXPLORE ═══════ */}
       <Section className="mt-12">
-        <h2 className="font-[Outfit] text-2xl md:text-3xl font-black mb-5">🔍 Explore Sports</h2>
+        <h2 className="font-[Outfit] text-lg md:text-xl font-black text-gray-900 mb-5">All sports</h2>
 
         {/* search */}
         <div className="relative mb-4" ref={searchRef}>
