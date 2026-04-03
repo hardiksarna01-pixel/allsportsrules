@@ -40,6 +40,10 @@ import EventPage from './components/events/EventPage';
 import CategoryPage from './components/category/CategoryPage';
 import BeginnerGuidePage from './components/sport/BeginnerGuidePage';
 import GamesPage from './components/games/GamesPage';
+import RulePage from './components/pseo/RulePage';
+import AnswerPage from './components/pseo/AnswerPage';
+import BestPlayersPage from './components/pseo/BestPlayersPage';
+import EquipmentPage from './components/pseo/EquipmentPage';
 import InstallPrompt from './components/ui/InstallPrompt';
 import { sportsMap } from './data/sports';
 import { h } from './constants';
@@ -84,6 +88,10 @@ export default function App() {
           <Route path="/category/:catId" element={<CategoryPage />} />
           <Route path="/sports/:sportId/beginners" element={<BeginnerGuidePage />} />
           <Route path="/games" element={<GamesPage />} />
+          <Route path="/rules/:sportId/:ruleSlug" element={<RulePage />} />
+          <Route path="/answers/:sportId/:questionSlug" element={<AnswerPage />} />
+          <Route path="/best/:sportId/:positionSlug" element={<BestPlayersPage />} />
+          <Route path="/equipment/:sportId" element={<EquipmentPage />} />
         </Routes>
         <InstallPrompt />
         <BottomNav />
