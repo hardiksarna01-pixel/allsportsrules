@@ -307,6 +307,73 @@ const layer10 = [
 // ===========================================================================
 // Combine all layers
 // ===========================================================================
+// ===========================================================================
+// Layer 11 — pSEO Learn pages (10 intents × key topics per sport)
+// ===========================================================================
+const pseoIntents = ['what-is', 'how-to', 'rules-for', 'explained', 'examples-of', 'history-of', 'why', 'penalty-for', 'advanced-guide', 'beginners-guide'];
+const layer11 = sports.flatMap((s) => {
+  const n = s.n;
+  const topics = [];
+  // From rules: extract first word/phrase as topic
+  (s.r || []).forEach((rule) => {
+    const clean = rule.replace(/\u2696\uFE0F\s*/g, '').trim();
+    const title = (clean.split(':')[0] || clean.split('—')[0] || '').trim().slice(0, 50);
+    if (title.length > 2) topics.push(title);
+  });
+  // From equipment
+  (s.eq || []).forEach(eq => {
+    const name = eq.split('(')[0].trim();
+    if (name.length > 2) topics.push(name);
+  });
+  // From tactics
+  (s.tac || []).forEach(tac => {
+    const title = tac.split('—')[0].trim().slice(0, 50);
+    if (title.length > 2) topics.push(title);
+  });
+  // From FAQ
+  (s.faq || []).forEach(([q]) => topics.push(q.slice(0, 50)));
+
+  const kwArr = [];
+  const uniqueTopics = [...new Set(topics)].slice(0, 30); // cap at 30 per sport
+  uniqueTopics.forEach((topic) => {
+    const topicSlug = slugify(topic);
+    // Generate 3 key intents per topic (what-is, explained, how-to)
+    kwArr.push(kw(`what is ${topic.toLowerCase()} in ${n}`, `/learn/${s.id}/what-is-${topicSlug}`, `What Is ${topic} in ${n}?`, `${topic} in ${n} explained: definition, rules, and real examples.`, 'pseo-learn', s.id, 'medium'));
+    kwArr.push(kw(`${topic.toLowerCase()} ${n} explained`, `/learn/${s.id}/explained-${topicSlug}`, `${topic} in ${n} Explained`, `${topic} in ${n} explained simply for beginners and fans.`, 'pseo-learn', s.id, 'medium'));
+    kwArr.push(kw(`how does ${topic.toLowerCase()} work in ${n}`, `/learn/${s.id}/how-to-${topicSlug}`, `How ${topic} Works in ${n}`, `How ${topic.toLowerCase()} works in ${n}: step by step.`, 'pseo-learn', s.id, 'low'));
+  });
+  return kwArr;
+});
+
+// ===========================================================================
+// Layer 12 — pSEO Scenario pages (can-you, what-happens per sport)
+// ===========================================================================
+const scenarioTemplates = [
+  'score from halfway', 'use hands', 'substitute during play', 'challenge a decision',
+  'score directly from a throw-in', 'pass back to keeper', 'score an own goal',
+  'play with fewer players', 'wear any number', 'get a red card for diving',
+  'be offside from a goal kick', 'take a quick free kick', 'delay the game',
+  'appeal after the next ball', 'run on a wide ball', 'retire hurt',
+  'hit the ball twice', 'obstruct the fielder', 'bowl underarm',
+  'serve from anywhere', 'challenge with no challenges left',
+];
+const layer12 = sports.flatMap((s) => {
+  return scenarioTemplates.slice(0, 10).map(scenario => {
+    const scenarioSlug = slugify(scenario);
+    return kw(`can you ${scenario} in ${s.n}`, `/scenario/${s.id}/can-you-${scenarioSlug}`, `Can You ${scenario.charAt(0).toUpperCase() + scenario.slice(1)} in ${s.n}?`, `Can you ${scenario} in ${s.n}? Rules, penalties and edge cases explained.`, 'pseo-scenario', s.id, 'low');
+  });
+});
+
+// ===========================================================================
+// Layer 13 — pSEO Guide pages (audience-specific per sport)
+// ===========================================================================
+const audiences = ['kids', 'beginners', 'coaches', 'parents', 'referees'];
+const layer13 = sports.flatMap((s) => {
+  return audiences.map(aud => {
+    return kw(`${s.n} rules for ${aud}`, `/guide/${s.id}/${s.id}-rules-for-${aud}`, `${s.n} Rules for ${aud.charAt(0).toUpperCase() + aud.slice(1)}`, `${s.n} rules explained specifically for ${aud}. Simplified and practical.`, 'pseo-guide', s.id, 'low');
+  });
+});
+
 export const allKeywords = [
   ...layer1,
   ...layer2,
@@ -318,6 +385,9 @@ export const allKeywords = [
   ...layer8,
   ...layer9,
   ...layer10,
+  ...layer11,
+  ...layer12,
+  ...layer13,
 ];
 
 // ---------------------------------------------------------------------------
