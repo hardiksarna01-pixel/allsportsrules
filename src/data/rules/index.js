@@ -1,6 +1,7 @@
 // Central index for all sport rules
 // Imports only files that exist — others added as they're created
 
+import { cricketRules } from './cricket';
 import { footballRules } from './football';
 import { basketballRules } from './basketball';
 import { tennisRules } from './tennis';
@@ -16,6 +17,7 @@ import { mmaRules } from './mma';
 
 // Map sport IDs to their structured rules
 export const rulesMap = {
+  cricket: cricketRules,
   football: footballRules,
   basketball: basketballRules,
   tennis: tennisRules,
