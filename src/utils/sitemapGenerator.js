@@ -1,72 +1,77 @@
 import { sports } from '../data/sports';
+import { enumerateUrls, getPageCount } from '../data/pseo/megaIndex';
 
 const BASE_URL = 'https://allsportsrules.com';
 
-function generateSitemap() {
+// ---------------------------------------------------------------------------
+// Sitemap index — splits 200K+ URLs into multiple sitemap files (50K each)
+// Google allows max 50,000 URLs per sitemap file
+// ---------------------------------------------------------------------------
+const URLS_PER_SITEMAP = 50000;
+
+function generateSitemapIndex() {
+  const total = getPageCount();
+  const sitemapCount = Math.ceil(total / URLS_PER_SITEMAP) + 1; // +1 for static
+  const now = new Date().toISOString().split('T')[0];
+
+  const entries = [];
+  entries.push(`  <sitemap>
+    <loc>${BASE_URL}/sitemap-static.xml</loc>
+    <lastmod>${now}</lastmod>
+  </sitemap>`);
+
+  for (let i = 0; i < sitemapCount; i++) {
+    entries.push(`  <sitemap>
+    <loc>${BASE_URL}/sitemap-pseo-${i}.xml</loc>
+    <lastmod>${now}</lastmod>
+  </sitemap>`);
+  }
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${entries.join('\n')}
+</sitemapindex>`;
+}
+
+// ---------------------------------------------------------------------------
+// Static sitemap — core pages, sport pages, categories, comparisons
+// ---------------------------------------------------------------------------
+function generateStaticSitemap() {
   const urls = [];
   const now = new Date().toISOString().split('T')[0];
 
-  // Static pages
-  const staticPages = [
-    { path: '/', priority: '1.0', changefreq: 'daily' },
-    { path: '/quiz', priority: '0.8', changefreq: 'weekly' },
-    { path: '/search', priority: '0.6', changefreq: 'monthly' },
-    { path: '/ai', priority: '0.7', changefreq: 'monthly' },
-    { path: '/calculators', priority: '0.7', changefreq: 'monthly' },
-    { path: '/rankings', priority: '0.8', changefreq: 'weekly' },
-    { path: '/glossary', priority: '0.9', changefreq: 'weekly' },
-    { path: '/worldcup', priority: '0.9', changefreq: 'weekly' },
-    { path: '/profile', priority: '0.3', changefreq: 'monthly' },
-    { path: '/olympics-2028', priority: '0.8', changefreq: 'monthly' },
-  ];
-
-  staticPages.forEach(p => {
+  function add(path, priority, changefreq) {
     urls.push(`  <url>
-    <loc>${BASE_URL}${p.path}</loc>
+    <loc>${BASE_URL}${path}</loc>
     <lastmod>${now}</lastmod>
-    <changefreq>${p.changefreq}</changefreq>
-    <priority>${p.priority}</priority>
+    <changefreq>${changefreq}</changefreq>
+    <priority>${priority}</priority>
   </url>`);
-  });
+  }
 
-  // Sport pages
+  // Core static pages
+  add('/', '1.0', 'daily');
+  add('/quiz', '0.8', 'weekly');
+  add('/search', '0.6', 'monthly');
+  add('/ai', '0.7', 'monthly');
+  add('/calculators', '0.7', 'monthly');
+  add('/rankings', '0.8', 'weekly');
+  add('/glossary', '0.9', 'weekly');
+  add('/worldcup', '0.9', 'weekly');
+  add('/games', '0.6', 'monthly');
+  add('/profile', '0.3', 'monthly');
+
+  // Sport pages + beginner guides
   sports.forEach(s => {
-    urls.push(`  <url>
-    <loc>${BASE_URL}/sports/${s.id}</loc>
-    <lastmod>${now}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>`);
-
-    // Beginner guide
-    urls.push(`  <url>
-    <loc>${BASE_URL}/sports/${s.id}/beginners</loc>
-    <lastmod>${now}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>`);
-
-    // Positions (if sport has position data)
-    urls.push(`  <url>
-    <loc>${BASE_URL}/sports/${s.id}/positions</loc>
-    <lastmod>${now}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>`);
+    add(`/sports/${s.id}`, '0.9', 'weekly');
+    add(`/sports/${s.id}/beginners`, '0.7', 'monthly');
   });
 
   // Category pages
   const cats = ['popular','trending','indoor','ball','combat','aquatic','track','gym','cycle','target','winter','motor','outdoor','racquet','esports','womens','other'];
-  cats.forEach(c => {
-    urls.push(`  <url>
-    <loc>${BASE_URL}/category/${c}</loc>
-    <lastmod>${now}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>`);
-  });
+  cats.forEach(c => add(`/category/${c}`, '0.6', 'monthly'));
 
-  // Comparison pairs (top 50)
+  // Comparison pairs
   const pairs = [
     'cricket-vs-baseball','rugby-vs-nfl','pickleball-vs-tennis','padel-vs-tennis',
     'futsal-vs-football','table-tennis-vs-badminton','boxing-vs-mma','judo-vs-wrestling',
@@ -82,23 +87,67 @@ function generateSitemap() {
     'padel-vs-pickleball','flag-football-vs-nfl','lacrosse-vs-field-hockey',
     'breaking-vs-gymnastics','darts-vs-archery','snooker-vs-bowling','sepak-takraw-vs-volleyball'
   ];
-  pairs.forEach(p => {
-    urls.push(`  <url>
-    <loc>${BASE_URL}/compare/${p}</loc>
+  pairs.forEach(p => add(`/compare/${p}`, '0.6', 'monthly'));
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls.join('\n')}
+</urlset>`;
+}
+
+// ---------------------------------------------------------------------------
+// pSEO sitemap chunk — returns URLs for a given chunk index (0-based)
+// ---------------------------------------------------------------------------
+function generatePSEOSitemapChunk(chunkIndex) {
+  const urls = [];
+  const now = new Date().toISOString().split('T')[0];
+  const start = chunkIndex * URLS_PER_SITEMAP;
+  const end = start + URLS_PER_SITEMAP;
+  let count = 0;
+
+  for (const url of enumerateUrls()) {
+    if (count >= end) break;
+    if (count >= start) {
+      urls.push(`  <url>
+    <loc>${BASE_URL}${url}</loc>
     <lastmod>${now}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>`);
-  });
+    }
+    count++;
+  }
 
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+  return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls.join('\n')}
 </urlset>`;
-
-  return xml;
 }
 
-// For use in build scripts
-export { generateSitemap };
+// ---------------------------------------------------------------------------
+// Legacy single-file sitemap (for backwards compatibility)
+// Returns static pages only + count summary as comment
+// ---------------------------------------------------------------------------
+function generateSitemap() {
+  const total = getPageCount();
+  const staticXml = generateStaticSitemap();
+  // Append a comment with total page count
+  return staticXml.replace('</urlset>',
+    `  <!-- Total pSEO pages: ${total.toLocaleString()}. Use sitemap index for full coverage. -->\n</urlset>`);
+}
+
+// ---------------------------------------------------------------------------
+// Page count report — for verification
+// ---------------------------------------------------------------------------
+function getPageCountReport() {
+  const total = getPageCount();
+  return {
+    total,
+    perSitemap: URLS_PER_SITEMAP,
+    sitemapFiles: Math.ceil(total / URLS_PER_SITEMAP) + 1,
+    breakdown: `${sports.length} sports × topics × intents × variants = ${total.toLocaleString()} unique pages`,
+  };
+}
+
+export { generateSitemap, generateSitemapIndex, generateStaticSitemap, generatePSEOSitemapChunk, getPageCountReport };
 export default generateSitemap;

@@ -44,6 +44,7 @@ import RulePage from './components/pseo/RulePage';
 import AnswerPage from './components/pseo/AnswerPage';
 import BestPlayersPage from './components/pseo/BestPlayersPage';
 import EquipmentPage from './components/pseo/EquipmentPage';
+import UniversalPage from './components/pseo/UniversalPage';
 import InstallPrompt from './components/ui/InstallPrompt';
 import { sportsMap } from './data/sports';
 import { h } from './constants';
@@ -92,6 +93,17 @@ export default function App() {
           <Route path="/answers/:sportId/:questionSlug" element={<AnswerPage />} />
           <Route path="/best/:sportId/:positionSlug" element={<BestPlayersPage />} />
           <Route path="/equipment/:sportId" element={<EquipmentPage />} />
+          {/* ── 200K+ pSEO routes ── */}
+          <Route path="/learn/:sportId/:slug" element={<UniversalPage />} />
+          <Route path="/scenario/:sportId/:slug" element={<UniversalPage />} />
+          <Route path="/guide/:sportId/:slug" element={<UniversalPage />} />
+          <Route path="/calc/:sportId/:slug" element={<UniversalPage />} />
+          <Route path="/history/:sportId/:slug" element={<UniversalPage />} />
+          <Route path="/strategy/:sportId/:slug" element={<UniversalPage />} />
+          <Route path="/records/:sportId/:slug" element={<UniversalPage />} />
+          <Route path="/format/:sportId/:slug" element={<UniversalPage />} />
+          <Route path="/positions/:sportId/:slug" element={<UniversalPage />} />
+          <Route path="/vs/:matchup/:topic" element={<UniversalPage />} />
         </Routes>
         <InstallPrompt />
         <BottomNav />
