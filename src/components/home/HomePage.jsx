@@ -225,38 +225,63 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* CENTER: Knowledge Panel (Wikipedia-style) */}
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden self-start">
-            <div className="bg-emerald-500 px-4 py-3">
-              <h3 className="text-white font-[Outfit] font-bold text-sm">
-                {topSport?.n || 'Cricket'} — Quick Facts
-              </h3>
+          {/* CENTER: Knowledge Panel — compact visual cards */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden self-start">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 px-5 py-3.5 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <span className="text-2xl">{topSport?.i || '🏏'}</span>
+                <div>
+                  <h3 className="text-white font-[Outfit] font-bold text-sm leading-tight">{topSport?.n || 'Cricket'}</h3>
+                  <span className="text-emerald-100 text-[10px] font-medium">Quick Facts</span>
+                </div>
+              </div>
+              <span className="text-white/60 text-[10px] font-semibold bg-white/15 px-2 py-0.5 rounded-full">ICC</span>
             </div>
-            <div className="divide-y divide-gray-100">
+
+            {/* Key stats — icon grid */}
+            <div className="grid grid-cols-3 gap-px bg-gray-100">
               {[
-                ['Players', '11 per team'],
-                ['Type', 'Bat-and-ball, team sport'],
-                ['Contact', 'Non-contact'],
-                ['Origin', 'England, 16th century'],
-                ['Governing body', 'ICC'],
-                ['Olympic sport', '2028 (returning)'],
-                ['Formats', 'Test, ODI, T20'],
-                ['Duration', '3hrs (T20) to 5 days'],
-                ['Field', 'Oval, 137m diameter'],
-                ['Equipment', 'Bat, ball, stumps, pads'],
-                ['Major events', 'World Cup, IPL, Ashes'],
-                ['Fans', '2.5 billion worldwide'],
-              ].map(([k, v]) => (
-                <div key={k} className="flex px-4 py-2.5 text-xs">
-                  <span className="text-gray-500 w-28 shrink-0 font-medium">{k}</span>
-                  <span className="text-gray-900 font-semibold">{v}</span>
+                { icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="4"/><path d="M20 21c0-4.42-3.58-8-8-8s-8 3.58-8 8"/></svg>, val: '11', label: 'Players' },
+                { icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>, val: '3h–5d', label: 'Duration' },
+                { icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v-2"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>, val: '2.5B', label: 'Fans' },
+              ].map(s => (
+                <div key={s.label} className="bg-white flex flex-col items-center py-3 gap-1">
+                  <span className="text-emerald-500">{s.icon}</span>
+                  <span className="text-base font-extrabold text-gray-900 font-[Outfit] leading-none">{s.val}</span>
+                  <span className="text-[9px] text-gray-400 font-semibold uppercase tracking-wider">{s.label}</span>
                 </div>
               ))}
             </div>
-            <div className="p-3">
+
+            {/* Compact detail chips */}
+            <div className="px-4 py-3.5 flex flex-wrap gap-1.5">
+              {[
+                { label: 'Test', color: 'bg-red-50 text-red-600' },
+                { label: 'ODI', color: 'bg-blue-50 text-blue-600' },
+                { label: 'T20', color: 'bg-amber-50 text-amber-600' },
+                { label: 'Olympics 2028', color: 'bg-purple-50 text-purple-600' },
+                { label: 'Non-contact', color: 'bg-emerald-50 text-emerald-600' },
+                { label: 'Bat & Ball', color: 'bg-gray-100 text-gray-600' },
+              ].map(c => (
+                <span key={c.label} className={`${c.color} px-2.5 py-1 rounded-full text-[10px] font-bold`}>{c.label}</span>
+              ))}
+            </div>
+
+            {/* Highlight row */}
+            <div className="mx-4 mb-3 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl px-3.5 py-2.5 flex items-center gap-2.5">
+              <span className="text-lg">🏆</span>
+              <div>
+                <div className="text-[11px] font-bold text-gray-800">World Cup · IPL · Ashes</div>
+                <div className="text-[9px] text-gray-500 mt-0.5">Top 3 global events</div>
+              </div>
+            </div>
+
+            {/* CTA */}
+            <div className="p-3 pt-0">
               <button onClick={() => navigate('/sports/cricket')}
-                className="w-full py-2 rounded-lg text-xs font-semibold text-emerald-600 bg-gray-50 hover:bg-emerald-50 transition-colors">
-                Read full rules →
+                className="w-full py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-sm">
+                Explore Cricket Rules →
               </button>
             </div>
           </div>
