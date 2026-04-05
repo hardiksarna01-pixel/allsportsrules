@@ -13,12 +13,18 @@ const FEATURED_IDS = ['cricket', 'football', 'basketball', 'tennis', 'f1', 'nfl'
 const TOP_FIVE = ['cricket', 'football', 'basketball', 'tennis', 'f1'];
 
 const ACTIONS = [
-  { title: 'Quiz', sub: 'Test your knowledge', path: '/quiz', accent: '#10B981' },
-  { title: 'AI Tutor', sub: 'Ask any question', path: '/ai', accent: '#3B82F6' },
-  { title: 'Games', sub: 'Learn by playing', path: '/games', accent: '#8B5CF6' },
-  { title: 'Glossary', sub: '300+ terms', path: '/glossary', accent: '#F59E0B' },
-  { title: 'Calculators', sub: 'Stats & tools', path: '/calculators', accent: '#EF4444' },
-  { title: 'Diagrams', sub: 'Field positions', path: '/sports/cricket', accent: '#06B6D4' },
+  { title: 'Quiz', sub: 'Test your knowledge', path: '/quiz', accent: '#10B981', gradient: 'from-emerald-500 to-teal-600',
+    icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r=".5" fill="white"/></svg> },
+  { title: 'AI Tutor', sub: 'Ask any question', path: '/ai', accent: '#3B82F6', gradient: 'from-blue-500 to-indigo-600',
+    icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2C6.48 2 2 6 2 10.5C2 13.8 4.46 16.54 8 17.6V22L12 19C17.52 19 22 15 22 10.5C22 6 17.52 2 12 2Z"/><path d="M8 11h0M12 11h0M16 11h0" strokeWidth="3"/></svg> },
+  { title: 'Games', sub: 'Learn by playing', path: '/games', accent: '#8B5CF6', gradient: 'from-violet-500 to-purple-600',
+    icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="6" width="20" height="12" rx="3"/><line x1="8.5" y1="9" x2="8.5" y2="15"/><line x1="5.5" y1="12" x2="11.5" y2="12"/><circle cx="16" cy="10" r="1" fill="white" stroke="none"/><circle cx="19" cy="13" r="1" fill="white" stroke="none"/></svg> },
+  { title: 'Glossary', sub: '300+ terms', path: '/glossary', accent: '#F59E0B', gradient: 'from-amber-400 to-orange-500',
+    icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/><line x1="9" y1="7" x2="17" y2="7"/><line x1="9" y1="11" x2="14" y2="11"/></svg> },
+  { title: 'Calculators', sub: 'Stats & tools', path: '/calculators', accent: '#EF4444', gradient: 'from-red-500 to-rose-600',
+    icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="8" y2="10" strokeWidth="3"/><line x1="12" y1="10" x2="12" y2="10" strokeWidth="3"/><line x1="16" y1="10" x2="16" y2="10" strokeWidth="3"/><line x1="8" y1="14" x2="8" y2="14" strokeWidth="3"/><line x1="12" y1="14" x2="12" y2="14" strokeWidth="3"/><line x1="16" y1="14" x2="16" y2="14" strokeWidth="3"/><line x1="8" y1="18" x2="16" y2="18"/></svg> },
+  { title: 'Diagrams', sub: 'Field positions', path: '/sports/cricket', accent: '#06B6D4', gradient: 'from-cyan-500 to-sky-600',
+    icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="12" y1="3" x2="12" y2="21"/><circle cx="7" cy="8" r="1.5" fill="white" stroke="none"/><circle cx="17" cy="16" r="1.5" fill="white" stroke="none"/><circle cx="12" cy="12" r="2"/></svg> },
 ];
 
 const FAQ = [
@@ -279,15 +285,31 @@ export default function HomePage() {
 
       {/* ═══ 4. QUICK ACTIONS ═══ */}
       <section className="max-w-7xl mx-auto px-4 md:px-8 py-10">
-        <h2 className="font-[Outfit] text-xl font-bold text-gray-900 mb-6">Quick actions</h2>
+        <div className="flex items-center gap-2.5 mb-6">
+          <div className="w-1.5 h-6 rounded-full bg-gradient-to-b from-emerald-500 to-blue-500" />
+          <h2 className="font-[Outfit] text-xl font-bold text-gray-900">Quick actions</h2>
+        </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
           {ACTIONS.map(a => (
             <div key={a.path} onClick={() => navigate(a.path)}
-              className="group bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md cursor-pointer transition-all overflow-hidden">
-              <div className="h-[3px] w-full" style={{ background: a.accent }} />
+              className="group relative bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-0.5 cursor-pointer transition-all duration-200 overflow-hidden">
+              {/* Icon area with gradient background */}
+              <div className={`flex items-center justify-center py-5 bg-gradient-to-br ${a.gradient} relative`}>
+                {/* Subtle pattern overlay */}
+                <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 20%, white 1px, transparent 1px), radial-gradient(circle at 60% 80%, white 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+                {/* Icon */}
+                <div className="relative z-10 group-hover:scale-110 transition-transform duration-200">
+                  {a.icon}
+                </div>
+              </div>
+              {/* Text content */}
               <div className="p-3.5">
-                <div className="text-sm font-bold text-gray-900 group-hover:text-emerald-600 transition-colors">{a.title}</div>
-                <div className="text-[11px] text-gray-500 mt-0.5">{a.sub}</div>
+                <div className="text-sm font-bold text-gray-900 group-hover:text-gray-700 transition-colors font-[Outfit]">{a.title}</div>
+                <div className="text-[11px] text-gray-400 mt-0.5 font-medium">{a.sub}</div>
+              </div>
+              {/* Hover arrow indicator */}
+              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
               </div>
             </div>
           ))}
