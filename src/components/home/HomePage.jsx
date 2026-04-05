@@ -225,62 +225,62 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* CENTER: Knowledge Panel — compact visual cards */}
+          {/* CENTER: Knowledge Panel */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden self-start">
             {/* Header */}
-            <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 px-5 py-3.5 flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <span className="text-2xl">{topSport?.i || '🏏'}</span>
+            <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 px-5 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="text-3xl drop-shadow">{topSport?.i || '🏏'}</span>
                 <div>
-                  <h3 className="text-white font-[Outfit] font-bold text-sm leading-tight">{topSport?.n || 'Cricket'}</h3>
-                  <span className="text-emerald-100 text-[10px] font-medium">Quick Facts</span>
+                  <h3 className="text-white font-[Outfit] font-bold text-base leading-tight">{topSport?.n || 'Cricket'}</h3>
+                  <span className="text-emerald-100 text-[11px] font-medium">Quick Facts</span>
                 </div>
               </div>
-              <span className="text-white/60 text-[10px] font-semibold bg-white/15 px-2 py-0.5 rounded-full">ICC</span>
+              <span className="text-white/80 text-[10px] font-semibold bg-white/20 px-2.5 py-1 rounded-full">ICC</span>
             </div>
 
             {/* Key stats — icon grid */}
             <div className="grid grid-cols-3 gap-px bg-gray-100">
               {[
-                { icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="4"/><path d="M20 21c0-4.42-3.58-8-8-8s-8 3.58-8 8"/></svg>, val: '11', label: 'Players' },
-                { icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>, val: '3h–5d', label: 'Duration' },
-                { icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v-2"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>, val: '2.5B', label: 'Fans' },
+                { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M20 21c0-4.42-3.58-8-8-8s-8 3.58-8 8"/></svg>, val: '11', label: 'Players' },
+                { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>, val: '3h–5d', label: 'Duration' },
+                { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>, val: '2.5B', label: 'Fans' },
               ].map(s => (
-                <div key={s.label} className="bg-white flex flex-col items-center py-3 gap-1">
+                <div key={s.label} className="bg-white flex flex-col items-center py-5 gap-1.5">
                   <span className="text-emerald-500">{s.icon}</span>
-                  <span className="text-base font-extrabold text-gray-900 font-[Outfit] leading-none">{s.val}</span>
-                  <span className="text-[9px] text-gray-400 font-semibold uppercase tracking-wider">{s.label}</span>
+                  <span className="text-lg font-extrabold text-gray-900 font-[Outfit] leading-none">{s.val}</span>
+                  <span className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">{s.label}</span>
                 </div>
               ))}
             </div>
 
-            {/* Compact detail chips */}
-            <div className="px-4 py-3.5 flex flex-wrap gap-1.5">
+            {/* Format chips */}
+            <div className="px-5 pt-5 pb-4 flex flex-wrap gap-2">
               {[
-                { label: 'Test', color: 'bg-red-50 text-red-600' },
-                { label: 'ODI', color: 'bg-blue-50 text-blue-600' },
-                { label: 'T20', color: 'bg-amber-50 text-amber-600' },
-                { label: 'Olympics 2028', color: 'bg-purple-50 text-purple-600' },
-                { label: 'Non-contact', color: 'bg-emerald-50 text-emerald-600' },
-                { label: 'Bat & Ball', color: 'bg-gray-100 text-gray-600' },
+                { label: 'Test', color: 'bg-red-50 text-red-600 border-red-100' },
+                { label: 'ODI', color: 'bg-blue-50 text-blue-600 border-blue-100' },
+                { label: 'T20', color: 'bg-amber-50 text-amber-600 border-amber-100' },
+                { label: 'Olympics 2028', color: 'bg-purple-50 text-purple-600 border-purple-100' },
+                { label: 'Non-contact', color: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
+                { label: 'Bat & Ball', color: 'bg-gray-50 text-gray-600 border-gray-200' },
               ].map(c => (
-                <span key={c.label} className={`${c.color} px-2.5 py-1 rounded-full text-[10px] font-bold`}>{c.label}</span>
+                <span key={c.label} className={`${c.color} border px-3 py-1.5 rounded-lg text-[10px] font-bold`}>{c.label}</span>
               ))}
             </div>
 
-            {/* Highlight row */}
-            <div className="mx-4 mb-3 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl px-3.5 py-2.5 flex items-center gap-2.5">
-              <span className="text-lg">🏆</span>
+            {/* Events highlight */}
+            <div className="mx-5 mb-4 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-100 rounded-xl px-4 py-3 flex items-center gap-3">
+              <span className="text-xl">🏆</span>
               <div>
-                <div className="text-[11px] font-bold text-gray-800">World Cup · IPL · Ashes</div>
-                <div className="text-[9px] text-gray-500 mt-0.5">Top 3 global events</div>
+                <div className="text-xs font-bold text-gray-800">World Cup · IPL · Ashes</div>
+                <div className="text-[10px] text-gray-500 mt-0.5">Top 3 global cricket events</div>
               </div>
             </div>
 
             {/* CTA */}
-            <div className="p-3 pt-0">
+            <div className="px-5 pb-5">
               <button onClick={() => navigate('/sports/cricket')}
-                className="w-full py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-sm">
+                className="w-full py-3 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-sm cursor-pointer border-none">
                 Explore Cricket Rules →
               </button>
             </div>
@@ -309,17 +309,17 @@ export default function HomePage() {
       </section>
 
       {/* ═══ 4. QUICK ACTIONS ═══ */}
-      <section className="max-w-7xl mx-auto px-4 md:px-8 py-10">
-        <div className="flex items-center gap-2.5 mb-6">
+      <section className="max-w-7xl mx-auto px-4 md:px-8 py-12">
+        <div className="flex items-center gap-2.5 mb-8">
           <div className="w-1.5 h-6 rounded-full bg-gradient-to-b from-emerald-500 to-blue-500" />
           <h2 className="font-[Outfit] text-xl font-bold text-gray-900">Quick actions</h2>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
           {ACTIONS.map(a => (
             <div key={a.path} onClick={() => navigate(a.path)}
-              className="group relative bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-0.5 cursor-pointer transition-all duration-200 overflow-hidden">
+              className="group relative bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 cursor-pointer transition-all duration-200 overflow-hidden">
               {/* Icon area with gradient background */}
-              <div className={`flex items-center justify-center py-5 bg-gradient-to-br ${a.gradient} relative`}>
+              <div className={`flex items-center justify-center py-7 bg-gradient-to-br ${a.gradient} relative`}>
                 {/* Subtle pattern overlay */}
                 <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 20%, white 1px, transparent 1px), radial-gradient(circle at 60% 80%, white 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
                 {/* Icon */}
@@ -328,12 +328,12 @@ export default function HomePage() {
                 </div>
               </div>
               {/* Text content */}
-              <div className="p-3.5">
+              <div className="p-4">
                 <div className="text-sm font-bold text-gray-900 group-hover:text-gray-700 transition-colors font-[Outfit]">{a.title}</div>
-                <div className="text-[11px] text-gray-400 mt-0.5 font-medium">{a.sub}</div>
+                <div className="text-[11px] text-gray-400 mt-1 font-medium">{a.sub}</div>
               </div>
               {/* Hover arrow indicator */}
-              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="absolute top-3.5 right-3.5 opacity-0 group-hover:opacity-100 transition-opacity">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
               </div>
             </div>
