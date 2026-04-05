@@ -366,31 +366,34 @@ export default function HomePage() {
       </section>
 
       {/* ═══ 5. BROWSE ALL SPORTS ═══ */}
-      <section className="max-w-7xl mx-auto px-4 md:px-8 py-10">
-        <div className="flex items-center justify-between mb-5">
-          <h2 className="font-[Outfit] text-xl font-bold text-gray-900">Browse all sports</h2>
-          <span className="text-sm font-semibold text-emerald-600">All {sports.length} sports →</span>
+      <section className="max-w-7xl mx-auto px-4 md:px-8 py-14">
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-3">
+            <div className="w-1.5 h-7 rounded-full bg-gradient-to-b from-blue-500 to-purple-500" />
+            <h2 className="font-[Outfit] text-2xl font-extrabold text-gray-900">Browse all sports</h2>
+          </div>
+          <span className="text-sm font-bold text-emerald-600 hover:text-emerald-700 cursor-pointer transition-colors">All {sports.length} sports →</span>
         </div>
 
-        {/* Category pills */}
-        <div className="flex gap-2 overflow-x-auto scrollbar-none pb-3">
+        {/* Category tabs — large pills with emojis */}
+        <div className="flex gap-2.5 overflow-x-auto scrollbar-none pb-4 -mx-1 px-1">
           <button onClick={() => setCat('all')}
-            className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${cat === 'all' ? 'bg-gray-900 text-white' : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'}`}>
-            All ({sports.length})
+            className={`shrink-0 flex items-center gap-2 px-5 py-3 rounded-2xl text-sm font-bold transition-all border ${cat === 'all' ? 'bg-gray-900 text-white border-gray-900 shadow-lg' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:shadow-sm'}`}>
+            <span className="text-base">🌐</span> All <span className={`text-xs font-semibold ${cat === 'all' ? 'text-gray-400' : 'text-gray-400'}`}>({sports.length})</span>
           </button>
           {categories.map(c => catCounts[c.id] > 0 && (
             <button key={c.id} onClick={() => setCat(c.id)}
-              className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${cat === c.id ? 'bg-gray-900 text-white' : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'}`}>
-              {c.n}
+              className={`shrink-0 flex items-center gap-2 px-5 py-3 rounded-2xl text-sm font-bold transition-all border ${cat === c.id ? 'bg-gray-900 text-white border-gray-900 shadow-lg' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:shadow-sm'}`}>
+              <span className="text-base">{c.e}</span> {c.n}
             </button>
           ))}
         </div>
 
         {/* Type filters */}
-        <div className="flex gap-2 pb-5">
+        <div className="flex gap-2 pb-6">
           {TYPE_FILTERS.map(f => (
             <button key={f.id} onClick={() => setType(f.id)}
-              className={`px-3 py-1 rounded-full text-[11px] font-semibold transition-all ${type === f.id ? 'bg-gray-900 text-white' : 'text-gray-400 hover:text-gray-600'}`}>
+              className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${type === f.id ? 'bg-gray-900 text-white' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'}`}>
               {f.label}
             </button>
           ))}
@@ -400,7 +403,7 @@ export default function HomePage() {
         <AnimatePresence mode="wait">
           <motion.div key={cat + type + search}
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}
-            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5">
             {filtered.length === 0 && (
               <div className="col-span-full text-center py-20 text-gray-400">
                 <SearchIcon className="w-8 h-8 mx-auto mb-3 text-gray-300" />
@@ -511,21 +514,39 @@ function SportCard({ sport: s, onClick }) {
   const hasImg = images[s.id] && !err;
   return (
     <div onClick={onClick} className="group cursor-pointer">
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg transition-shadow overflow-hidden">
-        <div className="aspect-[3/2] bg-gray-100 overflow-hidden">
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden hover:-translate-y-1">
+        {/* Image with overlay */}
+        <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
           {hasImg ? (
             <img src={images[s.id]} alt={s.n} loading="lazy" onError={() => setErr(true)}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-2xl font-bold text-gray-300"
-              style={{ background: `linear-gradient(135deg, ${s.c}12, ${s.c}25)` }}>
-              {s.n.charAt(0)}
+            <div className="w-full h-full flex items-center justify-center"
+              style={{ background: `linear-gradient(135deg, ${s.c}20, ${s.c}40)` }}>
+              <span className="text-5xl drop-shadow-sm">{s.i}</span>
+            </div>
+          )}
+          {/* Sport emoji badge */}
+          {hasImg && (
+            <div className="absolute top-3 left-3 w-10 h-10 rounded-xl bg-white/90 backdrop-blur-sm shadow-md flex items-center justify-center">
+              <span className="text-xl">{s.i}</span>
+            </div>
+          )}
+          {/* Fan count badge */}
+          {s.fans && (
+            <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold px-2.5 py-1 rounded-lg">
+              {s.fans} fans
             </div>
           )}
         </div>
-        <div className="p-3">
-          <div className="text-sm font-bold text-gray-900 group-hover:text-emerald-600 transition-colors truncate">{s.n}</div>
-          <div className="text-[11px] text-gray-500 mt-0.5">{s.r ? s.r.length : 0} rules · {s.fans}</div>
+        {/* Info */}
+        <div className="p-4">
+          <div className="text-base font-bold text-gray-900 group-hover:text-emerald-600 transition-colors truncate font-[Outfit]">{s.n}</div>
+          <div className="flex items-center gap-2 mt-1.5">
+            <span className="text-xs text-gray-400 font-medium">{s.r ? s.r.length : 0} rules</span>
+            {s.oly && <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">Olympic</span>}
+            {s.tp === 'team' && <span className="text-[10px] font-bold text-blue-500 bg-blue-50 px-2 py-0.5 rounded-full">Team</span>}
+          </div>
         </div>
       </div>
     </div>
