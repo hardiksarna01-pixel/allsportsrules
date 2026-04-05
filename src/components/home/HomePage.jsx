@@ -36,8 +36,11 @@ const FAQ = [
 ];
 
 const TYPE_FILTERS = [
-  { id: 'all', label: 'All' }, { id: 'team', label: 'Team' },
-  { id: 'individual', label: 'Individual' }, { id: 'full', label: 'Contact' }, { id: 'non', label: 'Non-Contact' },
+  { id: 'all', label: 'All', icon: '📋' },
+  { id: 'team', label: 'Team', icon: '👥' },
+  { id: 'individual', label: 'Individual', icon: '🏃' },
+  { id: 'full', label: 'Contact', icon: '💥' },
+  { id: 'non', label: 'Non-Contact', icon: '🤝' },
 ];
 
 const TICKER_MATCHES = [
@@ -390,11 +393,11 @@ export default function HomePage() {
         </div>
 
         {/* Type filters */}
-        <div className="flex gap-2 pb-6">
+        <div className="flex gap-2.5 pb-8">
           {TYPE_FILTERS.map(f => (
             <button key={f.id} onClick={() => setType(f.id)}
-              className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${type === f.id ? 'bg-gray-900 text-white' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'}`}>
-              {f.label}
+              className={`flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-bold transition-all border ${type === f.id ? 'bg-gray-900 text-white border-gray-900 shadow-md' : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300 hover:shadow-sm'}`}>
+              <span className="text-sm">{f.icon}</span> {f.label}
             </button>
           ))}
         </div>
