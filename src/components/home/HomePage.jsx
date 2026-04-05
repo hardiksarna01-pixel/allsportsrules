@@ -226,61 +226,84 @@ export default function HomePage() {
           </div>
 
           {/* CENTER: Knowledge Panel */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden self-start">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-md overflow-hidden self-start">
             {/* Header */}
-            <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 px-5 py-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="text-3xl drop-shadow">{topSport?.i || '🏏'}</span>
+            <div className="bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-600 px-6 py-6 flex items-center justify-between relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+              <div className="absolute bottom-0 left-0 w-20 h-20 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/3" />
+              <div className="flex items-center gap-4 relative z-10">
+                <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center">
+                  <span className="text-3xl">{topSport?.i || '🏏'}</span>
+                </div>
                 <div>
-                  <h3 className="text-white font-[Outfit] font-bold text-base leading-tight">{topSport?.n || 'Cricket'}</h3>
-                  <span className="text-emerald-100 text-[11px] font-medium">Quick Facts</span>
+                  <h3 className="text-white font-[Outfit] font-extrabold text-lg leading-tight">{topSport?.n || 'Cricket'}</h3>
+                  <span className="text-emerald-100 text-xs font-medium">Quick Facts</span>
                 </div>
               </div>
-              <span className="text-white/80 text-[10px] font-semibold bg-white/20 px-2.5 py-1 rounded-full">ICC</span>
+              <span className="relative z-10 text-white/90 text-[11px] font-bold bg-white/20 backdrop-blur px-3 py-1.5 rounded-lg">ICC</span>
             </div>
 
-            {/* Key stats — icon grid */}
-            <div className="grid grid-cols-3 gap-px bg-gray-100">
+            {/* Key stats row */}
+            <div className="grid grid-cols-3 divide-x divide-gray-100 border-b border-gray-100">
               {[
-                { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M20 21c0-4.42-3.58-8-8-8s-8 3.58-8 8"/></svg>, val: '11', label: 'Players' },
-                { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>, val: '3h–5d', label: 'Duration' },
-                { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>, val: '2.5B', label: 'Fans' },
+                { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M20 21c0-4.42-3.58-8-8-8s-8 3.58-8 8"/></svg>, val: '11', label: 'Players' },
+                { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>, val: '3h–5d', label: 'Duration' },
+                { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>, val: '2.5B', label: 'Fans' },
               ].map(s => (
-                <div key={s.label} className="bg-white flex flex-col items-center py-5 gap-1.5">
-                  <span className="text-emerald-500">{s.icon}</span>
-                  <span className="text-lg font-extrabold text-gray-900 font-[Outfit] leading-none">{s.val}</span>
-                  <span className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">{s.label}</span>
+                <div key={s.label} className="flex flex-col items-center py-6 gap-2">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-500">{s.icon}</div>
+                  <span className="text-xl font-extrabold text-gray-900 font-[Outfit] leading-none">{s.val}</span>
+                  <span className="text-[10px] text-gray-400 font-semibold uppercase tracking-widest">{s.label}</span>
                 </div>
               ))}
             </div>
 
-            {/* Format chips */}
-            <div className="px-5 pt-5 pb-4 flex flex-wrap gap-2">
-              {[
-                { label: 'Test', color: 'bg-red-50 text-red-600 border-red-100' },
-                { label: 'ODI', color: 'bg-blue-50 text-blue-600 border-blue-100' },
-                { label: 'T20', color: 'bg-amber-50 text-amber-600 border-amber-100' },
-                { label: 'Olympics 2028', color: 'bg-purple-50 text-purple-600 border-purple-100' },
-                { label: 'Non-contact', color: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
-                { label: 'Bat & Ball', color: 'bg-gray-50 text-gray-600 border-gray-200' },
-              ].map(c => (
-                <span key={c.label} className={`${c.color} border px-3 py-1.5 rounded-lg text-[10px] font-bold`}>{c.label}</span>
-              ))}
+            {/* Formats section */}
+            <div className="px-6 pt-6 pb-5">
+              <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Formats</div>
+              <div className="flex flex-wrap gap-2.5">
+                {[
+                  { label: 'Test', color: 'bg-red-50 text-red-600 border-red-200' },
+                  { label: 'ODI', color: 'bg-blue-50 text-blue-600 border-blue-200' },
+                  { label: 'T20', color: 'bg-amber-50 text-amber-700 border-amber-200' },
+                ].map(c => (
+                  <span key={c.label} className={`${c.color} border px-4 py-2 rounded-xl text-xs font-bold`}>{c.label}</span>
+                ))}
+              </div>
+            </div>
+
+            {/* Tags section */}
+            <div className="px-6 pb-5">
+              <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">About</div>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { label: 'Olympics 2028', icon: '🥇' },
+                  { label: 'Non-contact', icon: '🤝' },
+                  { label: 'Bat & Ball', icon: '🏏' },
+                  { label: 'England Origin', icon: '🏴󠁧󠁢󠁥󠁮󠁧󠁿' },
+                ].map(t => (
+                  <span key={t.label} className="bg-gray-50 border border-gray-100 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-gray-600 flex items-center gap-1.5">
+                    <span className="text-sm">{t.icon}</span>{t.label}
+                  </span>
+                ))}
+              </div>
             </div>
 
             {/* Events highlight */}
-            <div className="mx-5 mb-4 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-100 rounded-xl px-4 py-3 flex items-center gap-3">
-              <span className="text-xl">🏆</span>
+            <div className="mx-6 mb-5 bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 border border-amber-200/60 rounded-2xl px-5 py-4 flex items-center gap-4">
+              <div className="w-11 h-11 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
+                <span className="text-xl">🏆</span>
+              </div>
               <div>
-                <div className="text-xs font-bold text-gray-800">World Cup · IPL · Ashes</div>
-                <div className="text-[10px] text-gray-500 mt-0.5">Top 3 global cricket events</div>
+                <div className="text-sm font-bold text-gray-900 font-[Outfit]">World Cup · IPL · Ashes</div>
+                <div className="text-[11px] text-gray-500 mt-0.5">Top 3 global cricket events</div>
               </div>
             </div>
 
             {/* CTA */}
-            <div className="px-5 pb-5">
+            <div className="px-6 pb-6">
               <button onClick={() => navigate('/sports/cricket')}
-                className="w-full py-3 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-sm cursor-pointer border-none">
+                className="w-full py-3.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-md hover:shadow-lg cursor-pointer border-none font-[Outfit]">
                 Explore Cricket Rules →
               </button>
             </div>
@@ -309,32 +332,33 @@ export default function HomePage() {
       </section>
 
       {/* ═══ 4. QUICK ACTIONS ═══ */}
-      <section className="max-w-7xl mx-auto px-4 md:px-8 py-12">
-        <div className="flex items-center gap-2.5 mb-8">
-          <div className="w-1.5 h-6 rounded-full bg-gradient-to-b from-emerald-500 to-blue-500" />
-          <h2 className="font-[Outfit] text-xl font-bold text-gray-900">Quick actions</h2>
+      <section className="max-w-7xl mx-auto px-4 md:px-8 py-14">
+        <div className="flex items-center gap-3 mb-10">
+          <div className="w-1.5 h-7 rounded-full bg-gradient-to-b from-emerald-500 to-blue-500" />
+          <h2 className="font-[Outfit] text-2xl font-extrabold text-gray-900">Quick actions</h2>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-6 gap-5">
           {ACTIONS.map(a => (
             <div key={a.path} onClick={() => navigate(a.path)}
-              className="group relative bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 cursor-pointer transition-all duration-200 overflow-hidden">
-              {/* Icon area with gradient background */}
-              <div className={`flex items-center justify-center py-7 bg-gradient-to-br ${a.gradient} relative`}>
-                {/* Subtle pattern overlay */}
-                <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 20%, white 1px, transparent 1px), radial-gradient(circle at 60% 80%, white 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+              className="group relative bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1.5 cursor-pointer transition-all duration-300 overflow-hidden">
+              {/* Icon area */}
+              <div className={`flex items-center justify-center py-10 bg-gradient-to-br ${a.gradient} relative`}>
+                {/* Decorative circles */}
+                <div className="absolute top-0 right-0 w-16 h-16 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/3" />
+                <div className="absolute bottom-0 left-0 w-10 h-10 bg-white/10 rounded-full translate-y-1/3 -translate-x-1/4" />
                 {/* Icon */}
-                <div className="relative z-10 group-hover:scale-110 transition-transform duration-200">
+                <div className="relative z-10 group-hover:scale-110 transition-transform duration-300">
                   {a.icon}
+                </div>
+                {/* Hover arrow */}
+                <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
                 </div>
               </div>
               {/* Text content */}
-              <div className="p-4">
-                <div className="text-sm font-bold text-gray-900 group-hover:text-gray-700 transition-colors font-[Outfit]">{a.title}</div>
-                <div className="text-[11px] text-gray-400 mt-1 font-medium">{a.sub}</div>
-              </div>
-              {/* Hover arrow indicator */}
-              <div className="absolute top-3.5 right-3.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+              <div className="px-4 py-5">
+                <div className="text-base font-bold text-gray-900 font-[Outfit]">{a.title}</div>
+                <div className="text-xs text-gray-400 mt-1.5 font-medium leading-relaxed">{a.sub}</div>
               </div>
             </div>
           ))}
