@@ -1,90 +1,330 @@
 export const rankings = [
   {
-    sport: "Cricket",
-    icon: "\uD83C\uDFCF",
-    source: "ICC Rankings",
-    color: "#16a34a",
-    teams: [
-      { rank: 1, name: "India", flag: "\uD83C\uDDEE\uD83C\uDDF3", pts: 121, change: "up" },
-      { rank: 2, name: "Australia", flag: "\uD83C\uDDE6\uD83C\uDDFA", pts: 116, change: "same" },
-      { rank: 3, name: "England", flag: "\uD83C\uDDEC\uD83C\uDDE7", pts: 111, change: "down" },
-      { rank: 4, name: "South Africa", flag: "\uD83C\uDDFF\uD83C\uDDE6", pts: 108, change: "up" },
-      { rank: 5, name: "New Zealand", flag: "\uD83C\uDDF3\uD83C\uDDFF", pts: 105, change: "down" },
+    "sport": "Cricket",
+    "icon": "🏏",
+    "source": "ICC Rankings",
+    "color": "#16a34a",
+    "teams": [
+      {
+        "rank": 1,
+        "name": "India",
+        "flag": "🇮🇳",
+        "pts": 121,
+        "change": "up"
+      },
+      {
+        "rank": 2,
+        "name": "Australia",
+        "flag": "🇦🇺",
+        "pts": 116,
+        "change": "up"
+      },
+      {
+        "rank": 3,
+        "name": "England",
+        "flag": "🇬🇧",
+        "pts": 111,
+        "change": "down"
+      },
+      {
+        "rank": 4,
+        "name": "South Africa",
+        "flag": "🇿🇦",
+        "pts": 108,
+        "change": "up"
+      },
+      {
+        "rank": 5,
+        "name": "New Zealand",
+        "flag": "🇳🇿",
+        "pts": 105,
+        "change": "down"
+      }
     ],
-    players: [
-      { rank: 1, name: "Joe Root", flag: "\uD83C\uDDEC\uD83C\uDDE7", pts: 897, change: "same" },
-      { rank: 2, name: "Kane Williamson", flag: "\uD83C\uDDF3\uD83C\uDDFF", pts: 883, change: "up" },
-      { rank: 3, name: "Marnus Labuschagne", flag: "\uD83C\uDDE6\uD83C\uDDFA", pts: 878, change: "down" },
-      { rank: 4, name: "Babar Azam", flag: "\uD83C\uDDF5\uD83C\uDDF0", pts: 860, change: "up" },
-      { rank: 5, name: "Steve Smith", flag: "\uD83C\uDDE6\uD83C\uDDFA", pts: 845, change: "down" },
+    "players": [
+      {
+        "rank": 1,
+        "name": "Joe Root",
+        "flag": "🇬🇧",
+        "pts": 897,
+        "change": "same"
+      },
+      {
+        "rank": 2,
+        "name": "Kane Williamson",
+        "flag": "🇳🇿",
+        "pts": 883,
+        "change": "down"
+      },
+      {
+        "rank": 3,
+        "name": "Marnus Labuschagne",
+        "flag": "🇦🇺",
+        "pts": 878,
+        "change": "up"
+      },
+      {
+        "rank": 4,
+        "name": "Babar Azam",
+        "flag": "🇵🇰",
+        "pts": 860,
+        "change": "same"
+      },
+      {
+        "rank": 5,
+        "name": "Steve Smith",
+        "flag": "🇦🇺",
+        "pts": 845,
+        "change": "down"
+      }
     ],
-    bowlers: [
-      { rank: 1, name: "Jasprit Bumrah", flag: "\uD83C\uDDEE\uD83C\uDDF3", pts: 904, change: "up" },
-      { rank: 2, name: "Pat Cummins", flag: "\uD83C\uDDE6\uD83C\uDDFA", pts: 883, change: "down" },
-      { rank: 3, name: "Kagiso Rabada", flag: "\uD83C\uDDFF\uD83C\uDDE6", pts: 845, change: "same" },
-      { rank: 4, name: "Ravichandran Ashwin", flag: "\uD83C\uDDEE\uD83C\uDDF3", pts: 832, change: "up" },
-      { rank: 5, name: "Josh Hazlewood", flag: "\uD83C\uDDE6\uD83C\uDDFA", pts: 815, change: "down" },
-    ],
+    "bowlers": [
+      {
+        "rank": 1,
+        "name": "Jasprit Bumrah",
+        "flag": "🇮🇳",
+        "pts": 904,
+        "change": "same"
+      },
+      {
+        "rank": 2,
+        "name": "Pat Cummins",
+        "flag": "🇦🇺",
+        "pts": 883,
+        "change": "down"
+      },
+      {
+        "rank": 3,
+        "name": "Kagiso Rabada",
+        "flag": "🇿🇦",
+        "pts": 845,
+        "change": "same"
+      },
+      {
+        "rank": 4,
+        "name": "Ravichandran Ashwin",
+        "flag": "🇮🇳",
+        "pts": 832,
+        "change": "same"
+      },
+      {
+        "rank": 5,
+        "name": "Josh Hazlewood",
+        "flag": "🇦🇺",
+        "pts": 815,
+        "change": "same"
+      }
+    ]
   },
   {
-    sport: "Football",
-    icon: "\u26BD",
-    source: "FIFA Rankings",
-    color: "#2563eb",
-    teams: [
-      { rank: 1, name: "Argentina", flag: "\uD83C\uDDE6\uD83C\uDDF7", pts: 1867, change: "same" },
-      { rank: 2, name: "France", flag: "\uD83C\uDDEB\uD83C\uDDF7", pts: 1859, change: "same" },
-      { rank: 3, name: "Brazil", flag: "\uD83C\uDDE7\uD83C\uDDF7", pts: 1840, change: "up" },
-      { rank: 4, name: "England", flag: "\uD83C\uDDEC\uD83C\uDDE7", pts: 1792, change: "down" },
-      { rank: 5, name: "Belgium", flag: "\uD83C\uDDE7\uD83C\uDDEA", pts: 1781, change: "same" },
+    "sport": "Football",
+    "icon": "⚽",
+    "source": "FIFA Rankings",
+    "color": "#2563eb",
+    "teams": [
+      {
+        "rank": 1,
+        "name": "Argentina",
+        "flag": "🇦🇷",
+        "pts": 1867,
+        "change": "same"
+      },
+      {
+        "rank": 2,
+        "name": "France",
+        "flag": "🇫🇷",
+        "pts": 1859,
+        "change": "up"
+      },
+      {
+        "rank": 3,
+        "name": "Brazil",
+        "flag": "🇧🇷",
+        "pts": 1840,
+        "change": "same"
+      },
+      {
+        "rank": 4,
+        "name": "England",
+        "flag": "🇬🇧",
+        "pts": 1792,
+        "change": "down"
+      },
+      {
+        "rank": 5,
+        "name": "Belgium",
+        "flag": "🇧🇪",
+        "pts": 1781,
+        "change": "up"
+      }
     ],
-    players: [
-      { rank: 1, name: "Lionel Messi", flag: "\uD83C\uDDE6\uD83C\uDDF7", pts: 93, change: "same" },
-      { rank: 2, name: "Erling Haaland", flag: "\uD83C\uDDF3\uD83C\uDDF4", pts: 91, change: "up" },
-      { rank: 3, name: "Kylian Mbappe", flag: "\uD83C\uDDEB\uD83C\uDDF7", pts: 90, change: "down" },
-      { rank: 4, name: "Vinicius Jr", flag: "\uD83C\uDDE7\uD83C\uDDF7", pts: 89, change: "up" },
-      { rank: 5, name: "Jude Bellingham", flag: "\uD83C\uDDEC\uD83C\uDDE7", pts: 88, change: "up" },
-    ],
+    "players": [
+      {
+        "rank": 1,
+        "name": "Lionel Messi",
+        "flag": "🇦🇷",
+        "pts": 93,
+        "change": "down"
+      },
+      {
+        "rank": 2,
+        "name": "Erling Haaland",
+        "flag": "🇳🇴",
+        "pts": 91,
+        "change": "down"
+      },
+      {
+        "rank": 3,
+        "name": "Kylian Mbappe",
+        "flag": "🇫🇷",
+        "pts": 90,
+        "change": "up"
+      },
+      {
+        "rank": 4,
+        "name": "Vinicius Jr",
+        "flag": "🇧🇷",
+        "pts": 89,
+        "change": "down"
+      },
+      {
+        "rank": 5,
+        "name": "Jude Bellingham",
+        "flag": "🇬🇧",
+        "pts": 88,
+        "change": "down"
+      }
+    ]
   },
   {
-    sport: "Tennis",
-    icon: "\uD83C\uDFBE",
-    source: "ATP / WTA Rankings",
-    color: "#ca8a04",
-    players: [
-      { rank: 1, name: "Jannik Sinner", flag: "\uD83C\uDDEE\uD83C\uDDF9", pts: 11830, change: "same" },
-      { rank: 2, name: "Carlos Alcaraz", flag: "\uD83C\uDDEA\uD83C\uDDF8", pts: 9255, change: "same" },
-      { rank: 3, name: "Alexander Zverev", flag: "\uD83C\uDDE9\uD83C\uDDEA", pts: 7465, change: "up" },
-      { rank: 4, name: "Novak Djokovic", flag: "\uD83C\uDDF7\uD83C\uDDF8", pts: 6540, change: "down" },
-      { rank: 5, name: "Daniil Medvedev", flag: "\uD83C\uDDF7\uD83C\uDDFA", pts: 5790, change: "same" },
-    ],
+    "sport": "Tennis",
+    "icon": "🎾",
+    "source": "ATP / WTA Rankings",
+    "color": "#ca8a04",
+    "players": [
+      {
+        "rank": 1,
+        "name": "Jannik Sinner",
+        "flag": "🇮🇹",
+        "pts": 11830,
+        "change": "same"
+      },
+      {
+        "rank": 2,
+        "name": "Carlos Alcaraz",
+        "flag": "🇪🇸",
+        "pts": 9255,
+        "change": "same"
+      },
+      {
+        "rank": 3,
+        "name": "Alexander Zverev",
+        "flag": "🇩🇪",
+        "pts": 7465,
+        "change": "same"
+      },
+      {
+        "rank": 4,
+        "name": "Novak Djokovic",
+        "flag": "🇷🇸",
+        "pts": 6540,
+        "change": "up"
+      },
+      {
+        "rank": 5,
+        "name": "Daniil Medvedev",
+        "flag": "🇷🇺",
+        "pts": 5790,
+        "change": "down"
+      }
+    ]
   },
   {
-    sport: "Basketball",
-    icon: "\uD83C\uDFC0",
-    source: "FIBA Rankings",
-    color: "#ea580c",
-    teams: [
-      { rank: 1, name: "USA", flag: "\uD83C\uDDFA\uD83C\uDDF8", pts: 857, change: "same" },
-      { rank: 2, name: "Spain", flag: "\uD83C\uDDEA\uD83C\uDDF8", pts: 753, change: "same" },
-      { rank: 3, name: "Germany", flag: "\uD83C\uDDE9\uD83C\uDDEA", pts: 741, change: "up" },
-      { rank: 4, name: "France", flag: "\uD83C\uDDEB\uD83C\uDDF7", pts: 725, change: "down" },
-      { rank: 5, name: "Serbia", flag: "\uD83C\uDDF7\uD83C\uDDF8", pts: 711, change: "same" },
-    ],
+    "sport": "Basketball",
+    "icon": "🏀",
+    "source": "FIBA Rankings",
+    "color": "#ea580c",
+    "teams": [
+      {
+        "rank": 1,
+        "name": "USA",
+        "flag": "🇺🇸",
+        "pts": 857,
+        "change": "down"
+      },
+      {
+        "rank": 2,
+        "name": "Spain",
+        "flag": "🇪🇸",
+        "pts": 753,
+        "change": "same"
+      },
+      {
+        "rank": 3,
+        "name": "Germany",
+        "flag": "🇩🇪",
+        "pts": 741,
+        "change": "down"
+      },
+      {
+        "rank": 4,
+        "name": "France",
+        "flag": "🇫🇷",
+        "pts": 725,
+        "change": "up"
+      },
+      {
+        "rank": 5,
+        "name": "Serbia",
+        "flag": "🇷🇸",
+        "pts": 711,
+        "change": "same"
+      }
+    ]
   },
   {
-    sport: "Rugby",
-    icon: "\uD83C\uDFC9",
-    source: "World Rugby Rankings",
-    color: "#7c3aed",
-    teams: [
-      { rank: 1, name: "South Africa", flag: "\uD83C\uDDFF\uD83C\uDDE6", pts: 92.78, change: "same" },
-      { rank: 2, name: "Ireland", flag: "\uD83C\uDDEE\uD83C\uDDEA", pts: 90.78, change: "same" },
-      { rank: 3, name: "New Zealand", flag: "\uD83C\uDDF3\uD83C\uDDFF", pts: 88.38, change: "up" },
-      { rank: 4, name: "France", flag: "\uD83C\uDDEB\uD83C\uDDF7", pts: 86.29, change: "down" },
-      { rank: 5, name: "England", flag: "\uD83C\uDDEC\uD83C\uDDE7", pts: 83.96, change: "same" },
-    ],
-  },
+    "sport": "Rugby",
+    "icon": "🏉",
+    "source": "World Rugby Rankings",
+    "color": "#7c3aed",
+    "teams": [
+      {
+        "rank": 1,
+        "name": "South Africa",
+        "flag": "🇿🇦",
+        "pts": 92.78,
+        "change": "down"
+      },
+      {
+        "rank": 2,
+        "name": "Ireland",
+        "flag": "🇮🇪",
+        "pts": 90.78,
+        "change": "up"
+      },
+      {
+        "rank": 3,
+        "name": "New Zealand",
+        "flag": "🇳🇿",
+        "pts": 88.38,
+        "change": "down"
+      },
+      {
+        "rank": 4,
+        "name": "France",
+        "flag": "🇫🇷",
+        "pts": 86.29,
+        "change": "down"
+      },
+      {
+        "rank": 5,
+        "name": "England",
+        "flag": "🇬🇧",
+        "pts": 83.96,
+        "change": "up"
+      }
+    ]
+  }
 ];
 
 export default rankings;
