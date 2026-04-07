@@ -115,78 +115,89 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ═══ 2. HERO — Google-style centered search ═══ */}
-      <section className="max-w-3xl mx-auto px-6 pt-14 md:pt-20 pb-8 text-center">
-        <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-          className="font-[Outfit] text-[40px] md:text-[48px] font-black tracking-[-0.03em] text-gray-900 leading-[1.1]">
-          Learn the rules of<br /><span className="text-emerald-500">any sport</span>
-        </motion.h1>
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
-          className="mt-3 text-gray-500 text-[15px]">
-          The free encyclopedia of sports rules. {sports.length} sports · {glossary.length}+ terms · AI-powered.
-        </motion.p>
+      {/* ═══ 2. HERO — immersive gradient with floating sport images ═══ */}
+      <section className="relative overflow-hidden">
+        {/* Gradient mesh background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 via-white to-sky-50" />
+        {/* Decorative blurred shapes */}
+        <div className="absolute top-10 left-[10%] w-72 h-72 bg-emerald-200/30 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-[5%] w-96 h-96 bg-blue-200/20 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-violet-100/15 rounded-full blur-3xl" />
+        {/* Subtle grid pattern */}
+        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle, #000 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
 
-        {/* Big search bar — inline styles to prevent CSS override */}
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-          className="mt-7 max-w-2xl mx-auto relative">
-          <input value={search} onChange={e => setSearch(e.target.value)}
-            placeholder="Search any sport, rule, or term..."
-            style={{
-              width: '100%',
-              padding: '16px 20px 16px 48px',
-              borderRadius: '9999px',
-              backgroundColor: '#FFFFFF',
-              border: '2px solid #D1D5DB',
-              fontSize: '16px',
-              color: '#111827',
-              boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-              outline: 'none',
-              transition: 'all 0.2s',
-            }}
-            onFocus={e => { e.target.style.borderColor = '#10B981'; e.target.style.boxShadow = '0 4px 24px rgba(16,185,129,0.15)'; }}
-            onBlur={e => { e.target.style.borderColor = '#D1D5DB'; e.target.style.boxShadow = '0 4px 16px rgba(0,0,0,0.08)'; }}
-          />
-          <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: '#6B7280' }} />
-        </motion.div>
+        <div className="relative max-w-4xl mx-auto px-6 pt-20 md:pt-28 pb-24 text-center">
+          {/* Floating sport circles — top row */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.6 }}
+            className="flex justify-center gap-4 md:gap-6 mb-10">
+            {TOP_FIVE.map((id, i) => {
+              const s = sports.find(sp => sp.id === id);
+              if (!s) return null;
+              return (
+                <div key={id} onClick={() => navigate('/sports/' + id)}
+                  className="group cursor-pointer flex flex-col items-center gap-2">
+                  <div className="w-14 h-14 md:w-[72px] md:h-[72px] rounded-full overflow-hidden border-[3px] border-white shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-300"
+                    style={{ boxShadow: `0 4px 20px ${s.c}30` }}>
+                    {images[id] ? (
+                      <img src={images[id]} alt={s.n} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-2xl" style={{ background: s.c + '20' }}>{s.i}</div>
+                    )}
+                  </div>
+                  <span className="text-[11px] font-bold text-gray-500 group-hover:text-gray-900 transition-colors">{s.n.split(' ')[0]}</span>
+                </div>
+              );
+            })}
+          </motion.div>
 
-        {/* Category tabs — large, prominent */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
-          className="mt-8 flex gap-3 justify-center flex-wrap">
-          {[
-            { label: 'All Sports', icon: '🌍' },
-            { label: 'Cricket', icon: '🏏' },
-            { label: 'Football', icon: '⚽' },
-            { label: 'NBA', icon: '🏀' },
-            { label: 'F1', icon: '🏎️' },
-            { label: 'Tennis', icon: '🎾' },
-            { label: 'Rugby', icon: '🏉' },
-            { label: 'Rules', icon: '📋' },
-            { label: 'Glossary', icon: '📖' },
-          ].map(p => (
-            <button key={p.label} onClick={() => setSportFilter(p.label)}
-              style={{
-                padding: '10px 20px',
-                borderRadius: '9999px',
-                fontSize: '14px',
-                fontWeight: 600,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                transition: 'all 0.2s',
-                border: sportFilter === p.label ? '2px solid #111827' : '2px solid #E5E7EB',
-                background: sportFilter === p.label ? '#111827' : '#FFFFFF',
-                color: sportFilter === p.label ? '#FFFFFF' : '#374151',
-                boxShadow: sportFilter === p.label ? '0 2px 8px rgba(0,0,0,0.15)' : '0 1px 4px rgba(0,0,0,0.05)',
-              }}>
-              <span style={{ fontSize: '16px' }}>{p.icon}</span>
-              {p.label}
-            </button>
-          ))}
-        </motion.div>
+          {/* Main heading */}
+          <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.5 }}
+            className="font-[Outfit] text-[42px] md:text-[56px] font-black tracking-[-0.03em] text-gray-900 leading-[1.05]">
+            Learn the rules of<br />
+            <span className="relative">
+              <span className="relative z-10 bg-gradient-to-r from-emerald-500 to-teal-500 bg-clip-text text-transparent">any sport</span>
+              <span className="absolute bottom-1 left-0 right-0 h-3 md:h-4 bg-emerald-200/40 rounded-sm -z-0" />
+            </span>
+          </motion.h1>
+
+          {/* Subtitle */}
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 }}
+            className="mt-5 text-gray-500 text-base md:text-lg max-w-xl mx-auto leading-relaxed">
+            The free encyclopedia of sports rules — explained simply, beautifully, and with AI.
+          </motion.p>
+
+          {/* Search bar */}
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }}
+            className="mt-8 max-w-2xl mx-auto relative">
+            <input value={search} onChange={e => setSearch(e.target.value)}
+              placeholder="Search any sport, rule, or term..."
+              className="w-full py-4 pl-14 pr-6 rounded-2xl bg-white border-2 border-gray-200 text-base text-gray-900 shadow-lg outline-none transition-all duration-200 focus:border-emerald-400 focus:shadow-[0_8px_30px_rgba(16,185,129,0.15)] placeholder:text-gray-400 font-[Outfit]"
+            />
+            <SearchIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          </motion.div>
+
+          {/* Stats bar */}
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}
+            className="mt-8 inline-flex items-center gap-6 md:gap-8 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-2xl px-8 py-4 shadow-sm">
+            {[
+              { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>, val: `${sports.length}`, label: 'Sports' },
+              { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>, val: `${glossary.length}+`, label: 'Terms' },
+              { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2C6.48 2 2 6 2 10.5C2 13.8 4.46 16.54 8 17.6V22l4-3c5.52 0 10-4 10-8.5C22 6 17.52 2 12 2z"/></svg>, val: 'AI', label: 'Powered' },
+            ].map(s => (
+              <div key={s.label} className="flex items-center gap-2.5">
+                <span className="text-emerald-500">{s.icon}</span>
+                <div className="text-left">
+                  <div className="text-lg font-extrabold text-gray-900 font-[Outfit] leading-none">{s.val}</div>
+                  <div className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">{s.label}</div>
+                </div>
+              </div>
+            ))}
+          </motion.div>
+        </div>
       </section>
 
       {/* ═══ 3. THREE-COLUMN LAYOUT (ESPN meets Wikipedia) ═══ */}
-      <section className="max-w-7xl mx-auto px-4 md:px-8 pb-12">
+      <section className="max-w-7xl mx-auto px-4 md:px-8 py-20">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px_260px] gap-6">
 
           {/* LEFT: Featured Articles */}
@@ -334,8 +345,11 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Section divider */}
+      <div className="max-w-7xl mx-auto px-8"><div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" /></div>
+
       {/* ═══ 4. QUICK ACTIONS ═══ */}
-      <section className="max-w-7xl mx-auto px-4 md:px-8 py-14">
+      <section className="max-w-7xl mx-auto px-4 md:px-8 py-20">
         <div className="flex items-center gap-3 mb-10">
           <div className="w-1.5 h-7 rounded-full bg-gradient-to-b from-emerald-500 to-blue-500" />
           <h2 className="font-[Outfit] text-2xl font-extrabold text-gray-900">Quick actions</h2>
@@ -368,8 +382,11 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Section divider */}
+      <div className="max-w-7xl mx-auto px-8"><div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" /></div>
+
       {/* ═══ 5. BROWSE ALL SPORTS ═══ */}
-      <section className="max-w-7xl mx-auto px-4 md:px-8 py-14">
+      <section className="max-w-7xl mx-auto px-4 md:px-8 py-20">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
             <div className="w-1.5 h-7 rounded-full bg-gradient-to-b from-blue-500 to-purple-500" />
@@ -422,10 +439,16 @@ export default function HomePage() {
         </AnimatePresence>
       </section>
 
+      {/* Section divider */}
+      <div className="max-w-7xl mx-auto px-8"><div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" /></div>
+
       {/* ═══ 6. PEOPLE ALSO ASK (Google pattern) ═══ */}
-      <section className="max-w-7xl mx-auto px-4 md:px-8 py-10">
-        <h2 className="font-[Outfit] text-xl font-bold text-gray-900 mb-5">People also ask</h2>
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden divide-y divide-gray-100">
+      <section className="max-w-7xl mx-auto px-4 md:px-8 py-20">
+        <div className="flex items-center gap-3 mb-10">
+          <div className="w-1.5 h-7 rounded-full bg-gradient-to-b from-amber-400 to-orange-500" />
+          <h2 className="font-[Outfit] text-2xl font-extrabold text-gray-900">People also ask</h2>
+        </div>
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden divide-y divide-gray-100">
           {FAQ.map((f, i) => (
             <div key={i}>
               <button onClick={() => setOpenFaq(openFaq === i ? null : i)}
@@ -441,20 +464,26 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Section divider */}
+      <div className="max-w-7xl mx-auto px-8"><div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" /></div>
+
       {/* ═══ 7. UPCOMING EVENTS ═══ */}
-      <section className="max-w-7xl mx-auto px-4 md:px-8 py-10">
-        <div className="flex items-center justify-between mb-5">
-          <h2 className="font-[Outfit] text-xl font-bold text-gray-900">Upcoming events</h2>
-          <button onClick={() => navigate('/events/wc26')} className="text-sm font-semibold text-emerald-600">Full calendar →</button>
+      <section className="max-w-7xl mx-auto px-4 md:px-8 py-20">
+        <div className="flex items-center justify-between mb-10">
+          <div className="flex items-center gap-3">
+            <div className="w-1.5 h-7 rounded-full bg-gradient-to-b from-rose-400 to-red-500" />
+            <h2 className="font-[Outfit] text-2xl font-extrabold text-gray-900">Upcoming events</h2>
+          </div>
+          <button onClick={() => navigate('/events/wc26')} className="text-sm font-bold text-emerald-600 hover:text-emerald-700 transition-colors">Full calendar →</button>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
           {upcomingEvents.map(ev => {
             const now = new Date(), start = new Date(ev.date), end = new Date(ev.end);
             const isLive = now >= start && now <= end;
             return (
               <div key={ev.id} onClick={() => ev.id === 'wc26' ? navigate('/worldcup') : navigate('/events/' + ev.id)}
-                className="group flex items-center gap-3 p-3.5 bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md cursor-pointer transition-all">
-                <div className="w-11 h-11 rounded-lg bg-gray-100 flex items-center justify-center text-lg shrink-0">{ev.e}</div>
+                className="group flex items-center gap-4 p-5 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-0.5 cursor-pointer transition-all duration-200">
+                <div className="w-12 h-12 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center text-xl shrink-0">{ev.e}</div>
                 <div className="min-w-0">
                   <div className="text-[13px] font-bold text-gray-900 truncate group-hover:text-emerald-600 transition-colors">{ev.n}</div>
                   <div className="text-[11px] text-gray-500 mt-0.5">
@@ -470,7 +499,7 @@ export default function HomePage() {
       </section>
 
       {/* ═══ 8. FOOTER ═══ */}
-      <footer className="bg-[#121217] text-white mt-8">
+      <footer className="bg-[#121217] text-white mt-0">
         <div className="max-w-7xl mx-auto px-6 md:px-8 py-14 md:py-16">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-10 pb-10 border-b border-gray-800">
             <div>
