@@ -17,14 +17,14 @@ export const rankings = [
         "name": "Australia",
         "flag": "🇦🇺",
         "pts": 116,
-        "change": "down"
+        "change": "up"
       },
       {
         "rank": 3,
         "name": "England",
         "flag": "🇬🇧",
         "pts": 111,
-        "change": "same"
+        "change": "up"
       },
       {
         "rank": 4,
@@ -38,7 +38,7 @@ export const rankings = [
         "name": "New Zealand",
         "flag": "🇳🇿",
         "pts": 105,
-        "change": "down"
+        "change": "same"
       }
     ],
     "players": [
@@ -47,21 +47,21 @@ export const rankings = [
         "name": "Joe Root",
         "flag": "🇬🇧",
         "pts": 897,
-        "change": "down"
+        "change": "up"
       },
       {
         "rank": 2,
         "name": "Kane Williamson",
         "flag": "🇳🇿",
         "pts": 883,
-        "change": "same"
+        "change": "up"
       },
       {
         "rank": 3,
         "name": "Marnus Labuschagne",
         "flag": "🇦🇺",
         "pts": 878,
-        "change": "down"
+        "change": "same"
       },
       {
         "rank": 4,
@@ -75,7 +75,7 @@ export const rankings = [
         "name": "Steve Smith",
         "flag": "🇦🇺",
         "pts": 845,
-        "change": "down"
+        "change": "same"
       }
     ],
     "bowlers": [
@@ -84,28 +84,28 @@ export const rankings = [
         "name": "Jasprit Bumrah",
         "flag": "🇮🇳",
         "pts": 904,
-        "change": "up"
+        "change": "same"
       },
       {
         "rank": 2,
         "name": "Pat Cummins",
         "flag": "🇦🇺",
         "pts": 883,
-        "change": "same"
+        "change": "down"
       },
       {
         "rank": 3,
         "name": "Kagiso Rabada",
         "flag": "🇿🇦",
         "pts": 845,
-        "change": "same"
+        "change": "down"
       },
       {
         "rank": 4,
         "name": "Ravichandran Ashwin",
         "flag": "🇮🇳",
         "pts": 832,
-        "change": "up"
+        "change": "down"
       },
       {
         "rank": 5,
@@ -134,21 +134,21 @@ export const rankings = [
         "name": "France",
         "flag": "🇫🇷",
         "pts": 1859,
-        "change": "same"
+        "change": "up"
       },
       {
         "rank": 3,
         "name": "Brazil",
         "flag": "🇧🇷",
         "pts": 1840,
-        "change": "down"
+        "change": "same"
       },
       {
         "rank": 4,
         "name": "England",
         "flag": "🇬🇧",
         "pts": 1792,
-        "change": "down"
+        "change": "up"
       },
       {
         "rank": 5,
@@ -178,7 +178,7 @@ export const rankings = [
         "name": "Kylian Mbappe",
         "flag": "🇫🇷",
         "pts": 90,
-        "change": "same"
+        "change": "up"
       },
       {
         "rank": 4,
@@ -207,35 +207,35 @@ export const rankings = [
         "name": "Jannik Sinner",
         "flag": "🇮🇹",
         "pts": 11830,
-        "change": "down"
+        "change": "up"
       },
       {
         "rank": 2,
         "name": "Carlos Alcaraz",
         "flag": "🇪🇸",
         "pts": 9255,
-        "change": "same"
+        "change": "down"
       },
       {
         "rank": 3,
         "name": "Alexander Zverev",
         "flag": "🇩🇪",
         "pts": 7465,
-        "change": "same"
+        "change": "down"
       },
       {
         "rank": 4,
         "name": "Novak Djokovic",
         "flag": "🇷🇸",
         "pts": 6540,
-        "change": "same"
+        "change": "up"
       },
       {
         "rank": 5,
         "name": "Daniil Medvedev",
         "flag": "🇷🇺",
         "pts": 5790,
-        "change": "same"
+        "change": "up"
       }
     ]
   },
@@ -250,7 +250,7 @@ export const rankings = [
         "name": "USA",
         "flag": "🇺🇸",
         "pts": 857,
-        "change": "down"
+        "change": "same"
       },
       {
         "rank": 2,
@@ -264,21 +264,21 @@ export const rankings = [
         "name": "Germany",
         "flag": "🇩🇪",
         "pts": 741,
-        "change": "same"
+        "change": "down"
       },
       {
         "rank": 4,
         "name": "France",
         "flag": "🇫🇷",
         "pts": 725,
-        "change": "same"
+        "change": "down"
       },
       {
         "rank": 5,
         "name": "Serbia",
         "flag": "🇷🇸",
         "pts": 711,
-        "change": "down"
+        "change": "same"
       }
     ]
   },
@@ -293,7 +293,7 @@ export const rankings = [
         "name": "South Africa",
         "flag": "🇿🇦",
         "pts": 92.78,
-        "change": "down"
+        "change": "same"
       },
       {
         "rank": 2,
@@ -307,21 +307,21 @@ export const rankings = [
         "name": "New Zealand",
         "flag": "🇳🇿",
         "pts": 88.38,
-        "change": "up"
+        "change": "same"
       },
       {
         "rank": 4,
         "name": "France",
         "flag": "🇫🇷",
         "pts": 86.29,
-        "change": "up"
+        "change": "down"
       },
       {
         "rank": 5,
         "name": "England",
         "flag": "🇬🇧",
         "pts": 83.96,
-        "change": "down"
+        "change": "same"
       }
     ]
   }
